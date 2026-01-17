@@ -14,13 +14,13 @@
 // +x is towards the front of the robot, and +y is to the robot's left.
 SwerveDrive::SwerveDrive()
     : m_gyro{Constants::kPigeonCanId},
-      m_kinematics{frc::Translation2d{Constants::kWheelBaseWidth / 2,
+      m_kinematics{frc::Translation2d{Constants::kWheelBaseLength / 2,
                                       Constants::kWheelBaseWidth / 2},
-                   frc::Translation2d{Constants::kWheelBaseWidth / 2,
+                   frc::Translation2d{Constants::kWheelBaseLength / 2,
                                       -Constants::kWheelBaseWidth / 2},
-                   frc::Translation2d{-Constants::kWheelBaseWidth / 2,
+                   frc::Translation2d{-Constants::kWheelBaseLength / 2,
                                       Constants::kWheelBaseWidth / 2},
-                   frc::Translation2d{-Constants::kWheelBaseWidth / 2,
+                   frc::Translation2d{-Constants::kWheelBaseLength / 2,
                                       -Constants::kWheelBaseWidth / 2}},
       m_steeringMotors{{Constants::kFlSteeringMotorId},
                        {Constants::kFrSteeringMotorId},

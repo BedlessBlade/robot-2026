@@ -16,7 +16,8 @@ public:
   // Constants for the drivetrain
   static constexpr int kPigeonCanId = 25;
 
-  static constexpr auto kWheelBaseWidth = 24.375_in;
+  static constexpr auto kWheelBaseWidth = 24.375_in; //left to right
+  static constexpr auto kWheelBaseLength = 24.375_in; //front to back
 
   static constexpr int kFlSteeringMotorId = 14;
   static constexpr int kFrSteeringMotorId = 12;
