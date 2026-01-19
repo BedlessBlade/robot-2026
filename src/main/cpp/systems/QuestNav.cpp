@@ -31,9 +31,9 @@ frc::Pose2d QuestNav::GetQuestPose() {
         frc::Rotation2d(units::radian_t{theta})
     );
 
-    return rawPose.RelativeTo(m_offset);
+    return rawPose;
 };
 
 void QuestNav::Calibrate() {
-    m_offset = GetQuestPose();
+    // not implemented
 }

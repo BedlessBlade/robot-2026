@@ -8,7 +8,6 @@
 #include <networktables/NetworkTableInstance.h>
 #include <frc/geometry/Rotation2d.h>
 
-
 #include "Constants.h"
 #include "Controllers.h"
 #include "Locations.h"
