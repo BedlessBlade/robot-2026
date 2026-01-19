@@ -72,86 +72,6 @@ public:
       frc::Rotation3d{0_rad, 0_rad, 0_deg}};
   static constexpr auto kBlockedTags = {1, 2, 3, 4, 5, 12, 13, 14, 15, 16};
 
-  // TalonFX ids for elevator motors
-  static constexpr int kElevatorMainMotorId = 18;
-  static constexpr int kElevatorSecondMotorId = 20;
-  static constexpr double kElevatorMetersPerRotation = 0.1366 / 12 * 2;
-
-  // Values is in meters per second
-  static constexpr double kElevatorCruiseVelocity =
-      2.1 / kElevatorMetersPerRotation;
-  // Value is in meters per second per second
-  static constexpr double kElevatorAcceleration =
-      8.0 / kElevatorMetersPerRotation;
-  // Value in meters per second per second per second
-  static constexpr double kElevatorJerk = 25.0 / kElevatorMetersPerRotation;
-  // P I D CruiseVelocity kV S(overcome static friction) A(output per unit
-  // of target acceleration)       Accel Jerk     kG
-  static constexpr std::tuple<double, double, double, double, double, double,
-                              double, double, double, double>
-      kElevatorMotorGains{5,
-                          0,
-                          0,
-                          kElevatorCruiseVelocity,
-                          0.05,
-                          0.01,
-                          0.01,
-                          kElevatorAcceleration,
-                          kElevatorJerk,
-                          0.2};
-  // Starting offset in meters
-  static constexpr double kElevatorHomePositionMeters = 0.0;
-  static constexpr double kElevatorHomePositionRotations =
-      kElevatorHomePositionMeters / kElevatorMetersPerRotation;
-  static constexpr double kElevatorL1PositionMeters = 0;
-  static constexpr double kElevatorL1PositionRotations =
-      kElevatorL1PositionMeters / kElevatorMetersPerRotation;
-  static constexpr double kElevatorL2PositionMeters = 0.323;
-  static constexpr double kElevatorL2PositionRotations =
-      kElevatorL2PositionMeters / kElevatorMetersPerRotation;
-  static constexpr double kElevatorL3PositionMeters = 0.729;
-  static constexpr double kElevatorL3PositionRotations =
-      kElevatorL3PositionMeters / kElevatorMetersPerRotation;
-  static constexpr double kElevatorL4PositionMeters = 1.32;
-  static constexpr double kElevatorL4PositionRotations =
-      kElevatorL4PositionMeters / kElevatorMetersPerRotation;
-  static constexpr double kElevatorAlgae1PositionMeters = 0.434;
-  static constexpr double kElevatorAlgae1PositionRotations =
-      kElevatorAlgae1PositionMeters / kElevatorMetersPerRotation;
-  static constexpr double kElevatorAlgae2PositionMeters = 0.83;
-  static constexpr double kElevatorAlgae2PositionRotations =
-      kElevatorAlgae2PositionMeters / kElevatorMetersPerRotation;
-  static constexpr double kElevatorAlgaeIntakingOffset =
-      0.03 / kElevatorMetersPerRotation;
-  static constexpr double kElevatorDefaultTolerance = 0.003;     // meters
-  static constexpr double kElevatorCollisionTripDistance = 0.05; // meters
-  static constexpr double kElevatorTipDistance = 0.5;            // meters
-  static constexpr int kElevatorHomeSensorId = 2;
-  static constexpr int kElevatorCurrentLimit = 40; // Amps
-
-  // Manipulator
-  static constexpr int kManipulatorCoralSolenoidIdForward = 14;
-  static constexpr int kManipulatorCoralSolenoidIdReverse = 13;
-  static constexpr int kManipulatorAlgaeSolenoidIdForward = 12;
-  static constexpr int kManipulatorAlgaeSolenoidIdReverse = 11;
-  static constexpr int kManipulatorFirstSensorId = 0;
-  static constexpr int kManipulatorSecondSensorId = 1;
-  static constexpr int kManipulatorElevatorBlockSensorId = 3;
-  static constexpr int kManipulatorCoralMotorId = 10;
-  static constexpr int kManipulatorAlgaeMotorId = 6;
-  static constexpr double kManipulatorCoralIntakeSpeed = 0.33;
-  static constexpr double kManipulatorCoralOutakeSpeed = 0.8;
-  static constexpr double kManipulatorCoralSpeedReverse = -0.2;
-  static constexpr double kManipulatorAlgaeManipulatorSpeed = 1.0;
-  static constexpr double kManipulatorAlgaeOutakeSpeed = -0.75;
-  static constexpr double kManipulatorAlgaeHoldSpeed = 0.4;
-  static constexpr short kManipulatorAssistID = 26;
-  static constexpr double kManipulatorAssistOutput =
-      0.425; // percentage of the coral neo output power for assisting intake (0
-             // = 0% 1=100%)
-  static constexpr double kManipulatorAssistReverseOutput =
-      -0.22; // power output of the neo when scoring L1 (same as one above)
-  static constexpr double kManipulatorCoralRerversingSpeed = -0.55;
 
   // Locations
   static constexpr double kReefWidth = 65.2 / kInchesPerMeter;
@@ -165,9 +85,7 @@ public:
   static constexpr double kStartOffsetY =
       kFieldWidth / 2 - (24 / kInchesPerMeter); // meters
   static constexpr double kStartOffsetX = 0;    // meters
-  // Pneumatics
-  static constexpr double kMinPressure = 100; // PSI
-  static constexpr double kMaxPressure = 120; // PSI
+
 
   // Path following
   static constexpr double kPathFollowingKp = 6.0;

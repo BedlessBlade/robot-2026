@@ -21,14 +21,13 @@
 
 // This gets called first. So, initialize everything here.
 Robot::Robot()
-    : m_compressor{frc::PneumaticsModuleType::REVPH},
-      m_alignControllers{
-          {Constants::kPathFollowingKp, Constants::kPathFollowingKi,
-           Constants::kPathFollowingKd},
-          {Constants::kPathFollowingKp, Constants::kPathFollowingKi,
-           Constants::kPathFollowingKd},
-          {Constants::kPathFollowingAngleKp, Constants::kPathFollowingAngleKi,
-           Constants::kPathFollowingAngleKd}} {
+  : m_alignControllers{
+      {Constants::kPathFollowingKp, Constants::kPathFollowingKi,
+       Constants::kPathFollowingKd},
+      {Constants::kPathFollowingKp, Constants::kPathFollowingKi,
+       Constants::kPathFollowingKd},
+      {Constants::kPathFollowingAngleKp, Constants::kPathFollowingAngleKi,
+       Constants::kPathFollowingAngleKd}} {
   m_startChooser.SetDefaultOption("1", 1);
   m_startChooser.AddOption("2", 2);
   m_startChooser.AddOption("3", 3);
@@ -49,10 +48,7 @@ Robot::Robot()
   Cameras::GetInstance();
   SwerveDrive::GetInstance();
   
-  // Start the compressor
-  m_compressor.EnableAnalog(
-      units::pounds_per_square_inch_t{Constants::kMinPressure},
-      units::pounds_per_square_inch_t{Constants::kMaxPressure});
+
 
   // This initializes the main looper. What you put here will run @200 Hz while
   // the robot is on.
