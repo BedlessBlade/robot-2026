@@ -153,34 +153,27 @@ void SwerveDrive::Update(Robot::Mode mode, double t) {
         &states, units::meters_per_second_t{Constants::kMaxV});
     auto [fl, fr, bl, br] = states;
 
-  // The CANcoder returns rotations in turns (0..1 == 0..360deg). Convert
-  // to radians when constructing Rotation2d so unit handling is correct.
-  // Use the static Optimize(desired, currentAngle) so we get a properly
-  // adjusted SwerveModuleState (it may flip speed sign to minimize rotation).
-  auto flCurrent = frc::Rotation2d{units::radian_t{m_encoders[0]
-                             .GetPosition()
-                             .GetValue() * 2 * M_PI}};
-  auto frCurrent = frc::Rotation2d{units::radian_t{m_encoders[1]
-                             .GetPosition()
-                             .GetValue() * 2 * M_PI}};
-  auto blCurrent = frc::Rotation2d{units::radian_t{m_encoders[2]
-                             .GetPosition()
-                             .GetValue() * 2 * M_PI}};
-  auto brCurrent = frc::Rotation2d{units::radian_t{m_encoders[3]
-                             .GetPosition()
-                             .GetValue() * 2 * M_PI}};
+    // Optimize the angle setpoints to make the wheels reach the correct angle
+    // as fast as possible (not go the long way around).
+    fl.Optimize(m_encoders[0].GetPosition().GetValue());
+    fr.Optimize(m_encoders[1].GetPosition().GetValue());
+    bl.Optimize(m_encoders[2].GetPosition().GetValue());
+    br.Optimize(m_encoders[3].GetPosition().GetValue());
 
-  fl = frc::SwerveModuleState::Optimize(fl, flCurrent);
-  fr = frc::SwerveModuleState::Optimize(fr, frCurrent);
-  bl = frc::SwerveModuleState::Optimize(bl, blCurrent);
-  br = frc::SwerveModuleState::Optimize(br, brCurrent);
-
-  // Decrease the speed of modules that aren't pointing in the correct
-  // direction (use the same Rotation2d current values as above).
-  fl.speed *= (fl.angle - flCurrent).Cos();
-  fr.speed *= (fr.angle - frCurrent).Cos();
-  bl.speed *= (bl.angle - blCurrent).Cos();
-  br.speed *= (br.angle - brCurrent).Cos();
+    // Decrease the speed of modules that aren't pointing in the correct
+    // direction.
+    fl.speed *= (fl.angle - frc::Rotation2d{units::radian_t{
+                                m_encoders[0].GetPosition().GetValue()}})
+                    .Cos();
+    fr.speed *= (fr.angle - frc::Rotation2d{units::radian_t{
+                                m_encoders[1].GetPosition().GetValue()}})
+                    .Cos();
+    bl.speed *= (bl.angle - frc::Rotation2d{units::radian_t{
+                                m_encoders[2].GetPosition().GetValue()}})
+                    .Cos();
+    br.speed *= (br.angle - frc::Rotation2d{units::radian_t{
+                                m_encoders[3].GetPosition().GetValue()}})
+                    .Cos();
 
     // Set the positions for the wheel angles
     m_steeringMotors[0].SetControl(controls::PositionVoltage{
