@@ -80,6 +80,13 @@ SwerveDrive::SwerveDrive()
   for (int i = 0; i < 4; i++) {
     // At the same time, go ahead and configure the remote sensor to be the
     // CANCoder.
+
+    bool inverted = true;
+
+    if (i == 0 || i == 3) {
+      inverted = false;
+    };
+
     m_encoders[i].GetConfigurator().Apply(
         configs::MagnetSensorConfigs{}
             .WithSensorDirection(
@@ -90,9 +97,13 @@ SwerveDrive::SwerveDrive()
             .WithSlot0(config)
             .WithFeedback(
                 configs::FeedbackConfigs{}.WithRemoteCANcoder(m_encoders[i]))
-            .WithMotorOutput(configs::MotorOutputConfigs{}.WithInverted(true)));
+            .WithMotorOutput(configs::MotorOutputConfigs{}.WithInverted(inverted)));
 
-    m_driveMotors[i].GetConfigurator().Apply(currentLimitConfig);
+    m_driveMotors[i].GetConfigurator().Apply(
+        configs::TalonFXConfiguration{}
+        .WithCurrentLimits(currentLimitConfig)
+        .WithMotorOutput(configs::MotorOutputConfigs{}.WithInverted(!inverted))
+    );
 
     // Steering motors should always be in coast mode because we are using
     // closed-loop control

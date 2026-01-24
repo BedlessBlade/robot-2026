@@ -14,28 +14,28 @@ public:
   static constexpr int kOperatorControllerId = 1;
 
   // Constants for the drivetrain
-  static constexpr int kPigeonCanId = 25;
+  static constexpr int kPigeonCanId = 13;
 
-  static constexpr auto kWheelBaseWidth = 24.375_in; //left to right
-  static constexpr auto kWheelBaseLength = 24.375_in; //front to back
+  static constexpr auto kWheelBaseWidth = 26.75_in; //left to right
+  static constexpr auto kWheelBaseLength = 15.75_in; //front to back
 
-  static constexpr int kFlSteeringMotorId = 14;
-  static constexpr int kFrSteeringMotorId = 12;
-  static constexpr int kBlSteeringMotorId = 11;
-  static constexpr int kBrSteeringMotorId = 17;
-  static constexpr int kFlDriveMotorId = 15;
-  static constexpr int kFrDriveMotorId = 16;
-  static constexpr int kBlDriveMotorId = 19;
-  static constexpr int kBrDriveMotorId = 13;
+  static constexpr int kFlSteeringMotorId = 6;
+  static constexpr int kFrSteeringMotorId = 5;
+  static constexpr int kBlSteeringMotorId = 7;
+  static constexpr int kBrSteeringMotorId = 8;
+  static constexpr int kFlDriveMotorId = 2;
+  static constexpr int kFrDriveMotorId = 1;
+  static constexpr int kBlDriveMotorId = 3;
+  static constexpr int kBrDriveMotorId = 4;
 
-  static constexpr int kFlEncoderId = 24;
-  static constexpr int kFrEncoderId = 23;
-  static constexpr int kBlEncoderId = 22;
-  static constexpr int kBrEncoderId = 21;
+  static constexpr int kFlEncoderId = 10;
+  static constexpr int kFrEncoderId = 9;
+  static constexpr int kBlEncoderId = 11;
+  static constexpr int kBrEncoderId = 12;
 
   static constexpr units::turn_t kEncoderOffsets[] = {
-      -0.14599609375_tr, 0.11474609375_tr, 0.040283203125_tr,
-      -0.080810546875_tr};
+      -0.149658203125_tr, -0.23193359375_tr, -0.056640625_tr,
+      -0.0888671875_tr};
 
   // kS, kV, kP, kI, kD
   static constexpr std::tuple<double, double, double, double, double>
