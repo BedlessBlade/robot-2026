@@ -102,7 +102,7 @@ SwerveDrive::SwerveDrive()
     m_driveMotors[i].GetConfigurator().Apply(
         configs::TalonFXConfiguration{}
         .WithCurrentLimits(currentLimitConfig)
-        .WithMotorOutput(configs::MotorOutputConfigs{}.WithInverted(!inverted))
+        .WithMotorOutput(configs::MotorOutputConfigs{}.WithInverted(inverted))
     );
 
     // Steering motors should always be in coast mode because we are using

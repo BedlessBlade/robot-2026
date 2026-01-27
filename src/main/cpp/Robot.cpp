@@ -155,7 +155,7 @@ Robot::Robot()
       // GetRightX() doesn't work in the Linux simulation for some reason
       double rightX =
           Controllers::GetInstance().GetDriverController().GetRightX();
-      double w = Util::Exp(rightX) * Constants::kDriveAngularControlMultiplier;
+      double w = Util::Exp(-rightX) * Constants::kDriveAngularControlMultiplier;
 
       // The auto will reset the pose to be facing towards the driver on the red
       // alliance so it needs to be corrected
