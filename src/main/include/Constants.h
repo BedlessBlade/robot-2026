@@ -74,17 +74,35 @@ public:
 
 
   // Locations
-  static constexpr double kReefWidth = 65.2 / kInchesPerMeter;
-  static constexpr double kReefOffset =
-      (144 / kInchesPerMeter) + kReefWidth / 2;
-  static constexpr double kFieldLength = 690.875 / kInchesPerMeter;
-  static constexpr double kFieldWidth = 317 / kInchesPerMeter;
-  static constexpr double kReefSpacing = 0.515; // meters
-  static constexpr double kCoralSpacing = 13 / kInchesPerMeter;
+  static constexpr double kFieldLength = 650.12 / kInchesPerMeter;
+  static constexpr double kFieldWidth = 316.64 / kInchesPerMeter;
+
+  //TODO: update probably
   static constexpr double kStartLineOffset = (25 * 12) / kInchesPerMeter;
   static constexpr double kStartOffsetY =
       kFieldWidth / 2 - (24 / kInchesPerMeter); // meters
-  static constexpr double kStartOffsetX = 0;    // meters
+  static constexpr double kStartOffsetX = 0;    // meters   
+
+  //field object positions/sizes
+  static constexpr double kHubWidth = 47.00 / kInchesPerMeter;
+  static constexpr double kBlueHubX = 158.32 / kInchesPerMeter;
+  static constexpr double kBlueHubY = 181.56 / kInchesPerMeter;
+  static constexpr double kRedHubX = 491.80 / kInchesPerMeter;
+  static constexpr double kRedHubY = 135.08 / kInchesPerMeter;
+
+  //assuming origin as bottom left corner of the arena, as per diagram on frc resources
+  static constexpr double kHubX = 158.84 / kInchesPerMeter;
+  static constexpr double kHubY = 182.11 / kInchesPerMeter;
+
+
+  static constexpr double kReefWidth = 65.2 / kInchesPerMeter;
+  static constexpr double kReefOffset =
+      (144 / kInchesPerMeter) + kReefWidth / 2;
+  
+  static constexpr double kReefSpacing = 0.515; // meters
+  static constexpr double kCoralSpacing = 13 / kInchesPerMeter;
+  
+  
 
 
   // Path following
