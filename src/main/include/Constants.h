@@ -35,7 +35,7 @@ public:
 
   static constexpr units::turn_t kEncoderOffsets[] = {
       -0.149658203125_tr, -0.23193359375_tr, -0.056640625_tr,
-      -0.0888671875_tr};
+      -0.26904296875_tr};
 
   // kS, kV, kP, kI, kD
   static constexpr std::tuple<double, double, double, double, double>
