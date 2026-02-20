@@ -16,7 +16,7 @@
 #include "systems/Cameras.h"
 #include "systems/SwerveDrive.h"
 #include "systems/QuestNav.h"
-
+#include "systems/LEDs.h"
 
 // This gets called first. So, initialize everything here.
 Robot::Robot()
@@ -46,26 +46,39 @@ Robot::Robot()
   // Call GetInstance() so the constructors get called
   Cameras::GetInstance();
   SwerveDrive::GetInstance();
-  
-
+  LEDs::GetInstance();
+  LEDs::GetInstance().LEDsInit();
 
   // This initializes the main looper. What you put here will run @200 Hz while
   // the robot is on.
   m_looper = Looper{[this] {
     Mode mode = kDisabled;
+    globalMode = "Disabled";
     if (IsEnabled()) {
       if (IsAutonomous()) {
         mode = kAuto;
+        globalMode = "Auto";
       } else if (IsTeleop()) {
         mode = kTeleop;
+        globalMode = "Teleop";
       }
     }
 
     double t = frc::Timer::GetFPGATimestamp().value();
+  
 
     if (mode == kAuto) {
       if (m_auto) {
         m_auto->Update(t);
+
+        auto alliance = frc::DriverStation::GetAlliance();
+        if (alliance.has_value() && alliance.value() == frc::DriverStation::Alliance::kRed) {
+          globalAlliance = "Red";
+        } else if (alliance.has_value() && alliance.value() == frc::DriverStation::Alliance::kBlue) {
+          globalAlliance = "Blue";
+        } else {
+          globalAlliance = "None";
+        }
       }
     } else if (mode == kTeleop) {
       if (m_braking) {
@@ -74,13 +87,10 @@ Robot::Robot()
       }
 
       m_field.SetRobotPose(SwerveDrive::GetInstance().GetPose2d());
-
-
-
+      
+      isXButtonPressed = Controllers::GetInstance().GetDriverController().GetXButtonPressed();
       // Check this before sending drive velocities
-      if (Controllers::GetInstance()
-              .GetDriverController()
-              .GetXButtonPressed()) {
+      if (Controllers::GetInstance().GetDriverController().GetXButtonPressed()) {
         // Left coral scoring location
         ResetAlignControllers();
         m_autoAlignSetpoint = NearestLeftCoral(
@@ -160,6 +170,15 @@ Robot::Robot()
       // The auto will reset the pose to be facing towards the driver on the red
       // alliance so it needs to be corrected
       auto alliance = frc::DriverStation::GetAlliance();
+
+      if (alliance.has_value() && alliance.value() == frc::DriverStation::Alliance::kRed) {
+        globalAlliance = "Red";
+      } else if (alliance.has_value() && alliance.value() == frc::DriverStation::Alliance::kBlue) {
+        globalAlliance = "Blue";
+      } else {
+        globalAlliance = "None";
+      }
+
       if (alliance.has_value() &&
           alliance.value() == frc::DriverStation::Alliance::kRed) {
         vx *= -1;
@@ -326,6 +345,10 @@ Robot::Robot()
 // Cleanup any resources (especially files) before the robot code gets
 // restarted.
 Robot::~Robot() {}
+
+void Robot::RobotPeriodic() {
+  LEDs::GetInstance().LEDCheck(globalMode, globalAlliance);
+}
 
 // Ensure this matches the declaration in Robot.h (typically: void DisabledInit();)
 void Robot::DisabledInit() {

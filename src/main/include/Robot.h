@@ -12,6 +12,11 @@
 #include "auto/Task.h"
 #include "control/PIDController.h"
 
+#include <frc/AddressableLED.h>
+#include <frc/LEDPattern.h>
+
+#include <units/time.h>
+
 class Robot : public frc::TimedRobot {
 public:
   // Enum to specify the robot's mode to the sub-systems
@@ -25,6 +30,11 @@ public:
   void DisabledInit() override;
   void DisabledExit() override;
   void TeleopInit() override;
+  void RobotPeriodic() override;
+
+  std::string globalMode;
+  std::string globalAlliance = "None";
+  bool isXButtonPressed = false;
 
 private:
 
