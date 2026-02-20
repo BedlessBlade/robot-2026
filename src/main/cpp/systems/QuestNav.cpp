@@ -1,39 +1,32 @@
-#include <networktables/NetworkTableInstance.h>
-#include <cmath>
-#include <iostream>
-#include <frc/geometry/Pose2d.h>
-#include <frc/geometry/Rotation2d.h>
-#include <units/angle.h>
-
 #include "systems/QuestNav.h"
+#include <networktables/NetworkTableInstance.h>
 
 QuestNav::QuestNav() {
+    auto table = nt::NetworkTableInstance::GetDefault().GetTable("questnav");
     
-};
-
-std::shared_ptr<nt::NetworkTable> QuestNav::table = nt::NetworkTableInstance::GetDefault().GetTable("questnav");
-frc::Pose2d m_offset = frc::Pose2d();
+    // 2025/2026 update: Use subscribers and DoubleArrays
+    m_posSub = table->GetDoubleArrayTopic("position").Subscribe({});
+    m_eulerSub = table->GetDoubleArrayTopic("eulerAngles").Subscribe({});
+}
 
 frc::Pose2d QuestNav::GetQuestPose() {
-    auto position = table->GetEntry("position").GetFloatArray({});
-    auto euler = table->GetEntry("eulerAngles").GetFloatArray({});
+    auto position = m_posSub.Get();
+    auto euler = m_eulerSub.Get();
 
-    if (position.size() < 2 || euler.size() < 1) {
+    // Check size: QuestNav now sends [x, y, z] and [roll, pitch, yaw]
+    if (position.size() < 3 || euler.size() < 3) {
         return frc::Pose2d();
     }
 
-    double x = position[0];
-    double y = position[2];
-    double theta = euler[1] * M_PI / 180.0;
-    
-    frc::Pose2d rawPose(
-        frc::Translation2d(units::meter_t{x}, units::meter_t{y}),
-        frc::Rotation2d(units::radian_t{theta})
+    // QuestNav 2026: position[0]=X, position[2]=Y (Quest Z), euler[1]=Yaw
+    // Use parentheses for single-argument construction to avoid brace-init ambiguity
+    return frc::Pose2d(
+        units::meter_t(position[0]),
+        units::meter_t(position[2]),
+        frc::Rotation2d(units::degree_t(euler[1]))
     );
-
-    return rawPose;
-};
+}
 
 void QuestNav::Calibrate() {
-    // not implemented
+    // Implement via the "resetPose" entry in the questnav table if needed
 }

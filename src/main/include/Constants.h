@@ -32,18 +32,11 @@ public:
   static constexpr int kFrEncoderId = 9;
   static constexpr int kBlEncoderId = 11;
   static constexpr int kBrEncoderId = 12;
-/*
+
   static constexpr units::turn_t kEncoderOffsets[] = {
-      -0.149658203125_tr, -0.23193359375_tr, -0.27685546875_tr,
-      -0.0888671875_tr};
-*/
-    static constexpr units::turn_t kEncoderOffsets[] = {
-      0.354248046875_tr, 0.2685546875_tr, 0.44189453125_tr,
-      0.234619140625_tr};
-//0.354248046875
-//0.2685546875
-//0.44189453125
-//0.234619140625
+      -0.149658203125_tr, -0.23193359375_tr, -0.056640625_tr,
+      -0.26904296875_tr};
+
   // kS, kV, kP, kI, kD
   static constexpr std::tuple<double, double, double, double, double>
       kSteeringMotorGains{0.0, 0.0, 30.0, 0.0, 0.0};
