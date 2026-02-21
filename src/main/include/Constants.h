@@ -120,4 +120,20 @@ public:
 
   static constexpr auto kFeederDistance = 0.515_m;
   static constexpr double kBrakeDistance = 0.25; // meters
+
+  static constexpr int kSpindexerMotorId = 0;
+  static constexpr int kKickerMotorId= 0;
+  static constexpr double kSpinSpeed = 0.25;
+  static constexpr double kKickSpeed = 0.25;
+
+  static constexpr int kAzimuthMotorId = 0;
+  static constexpr double kShooterAzimuthP = 0.0;
+  static constexpr double kShooterAzimuthI = 0.0;
+  static constexpr double kShooterAzimuthD = 0.0;
+  static constexpr double kMinAzimuthOutput = -0.1;
+  static constexpr double kMaxAzimuthOutput = 0.1;
+  static constexpr double kAzimuthMotorRevsToRevs = 212.5 / 1;
+
+  static constexpr int kIntakeMotorId = 0;
+
 };

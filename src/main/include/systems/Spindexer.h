@@ -16,6 +16,15 @@ public:
 
     void StopSpin();
 
+    void StartKick();
+
+    void StopKick();
+
+
+    bool IsSpinning;
+
+    bool IsKicking;
+
 private:
 
     rev::spark::SparkMax m_spinMotor{Constants::kSpindexerMotorId, rev::spark::SparkMax::MotorType::kBrushless};
