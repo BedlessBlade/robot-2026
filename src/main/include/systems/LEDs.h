@@ -9,7 +9,7 @@
 #include <frc/DriverStation.h>
 #include <units/time.h>
 
-class LEDs : public frc::TimedRobot {
+class LEDs : public System {
   //Sets the GetInstance() function (very important).
   public:
     static LEDs &GetInstance() {
@@ -144,7 +144,7 @@ class LEDs : public frc::TimedRobot {
     
     //Creates functions defined in LEDs.cpp
     void LEDsInit();
-    void LEDCheck(std::string mode, std::string alliance);
+    void Update(Robot::Mode mode, std::string alliance);
     void updateXButtonToggle();
     bool xButtonPressed = false;
 };

@@ -17,6 +17,8 @@
 #include "systems/SwerveDrive.h"
 #include "systems/QuestNav.h"
 #include "systems/LEDs.h"
+#include "systems/Indexer.h"
+#include "systems/Climber.h"
 
 // This gets called first. So, initialize everything here.
 Robot::Robot()
@@ -46,6 +48,8 @@ Robot::Robot()
   // Call GetInstance() so the constructors get called
   Cameras::GetInstance();
   SwerveDrive::GetInstance();
+  Indexer::GetInstance();
+  Climber::GetInstance();
   LEDs::GetInstance();
   LEDs::GetInstance().LEDsInit();
 
@@ -53,14 +57,11 @@ Robot::Robot()
   // the robot is on.
   m_looper = Looper{[this] {
     Mode mode = kDisabled;
-    globalMode = "Disabled";
     if (IsEnabled()) {
       if (IsAutonomous()) {
         mode = kAuto;
-        globalMode = "Auto";
       } else if (IsTeleop()) {
         mode = kTeleop;
-        globalMode = "Teleop";
       }
     }
 
@@ -338,6 +339,9 @@ Robot::Robot()
 
     Cameras::GetInstance().Update(mode, t);
     SwerveDrive::GetInstance().Update(mode, t);
+
+    LEDs::GetInstance().Update(mode, globalAlliance);
+    Indexer::GetInstance().Update(mode);
   }};
 }
 
@@ -345,10 +349,6 @@ Robot::Robot()
 // Cleanup any resources (especially files) before the robot code gets
 // restarted.
 Robot::~Robot() {}
-
-void Robot::RobotPeriodic() {
-  LEDs::GetInstance().LEDCheck(globalMode, globalAlliance);
-}
 
 // Ensure this matches the declaration in Robot.h (typically: void DisabledInit();)
 void Robot::DisabledInit() {

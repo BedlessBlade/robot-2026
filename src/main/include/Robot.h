@@ -30,9 +30,7 @@ public:
   void DisabledInit() override;
   void DisabledExit() override;
   void TeleopInit() override;
-  void RobotPeriodic() override;
 
-  std::string globalMode;
   std::string globalAlliance = "None";
   bool isXButtonPressed = false;
 
