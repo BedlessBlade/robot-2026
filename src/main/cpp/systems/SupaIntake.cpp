@@ -10,7 +10,6 @@
 //Motors are under spinCur (spin current)
 //Pistons are under pistLoc (piston location)
 
-
 SupaIntake::spinCur SupaIntake::GetMotorCase() {
     return motorState; // send motorState to Robot.cpp
 }

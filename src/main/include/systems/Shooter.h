@@ -2,10 +2,12 @@
 
 #include <rev/SparkMax.h>
 #include <rev/config/SparkMaxConfig.h>
+#include <ctre/phoenix6/TalonFX.hpp>
 
 #include "Constants.h"
+#include "System.h"
 
-class Shooter {
+class Shooter : public System {
 
 public:
     static Shooter &GetInstance() {
@@ -13,16 +15,32 @@ public:
         return instance;
     }
 
+    
+
+
     void SetAngle(double angle);
 
-    double GetAngle();
+    bool IsAtSetpoint();
+
+    void ToggleMotors(bool Toggle);
+
+    void ReverseMotors();
+
+    void ShootingMotor();
+
+    void ExtendMotor();
+
+    void Update(Robot::Mode mode, double t) override;
 
 private:
+    // change back to Turret motor for once done
+    rev::spark::SparkMax m_azimuthTurretMotor{Constants::kAzimuthMotorId, rev::spark::SparkMax::MotorType::kBrushless}; // get motor for turret rotation
+    rev::spark::SparkClosedLoopController m_azimuthController = m_azimuthTurretMotor.GetClosedLoopController(); // get controller for turret rotation
 
-    rev::spark::SparkMax m_azimuthMotor{Constants::kAzimuthMotorId, rev::spark::SparkMax::MotorType::kBrushless};
-    rev::spark::SparkClosedLoopController m_azimuthController = m_azimuthMotor.GetClosedLoopController();
+    ctre::phoenix6::hardware::TalonFX m_ShooterMotorTop{Constants::kShooterMotorTopId};
+    ctre::phoenix6::hardware::TalonFX m_ShooterMotorLow{Constants::kShooterMotorLowId};
 
-    rev::spark::SparkMaxConfig m_azimuthConfig;
+    rev::spark::SparkMaxConfig m_azimuthConfig; //configured in the cpp file
 
     Shooter();
 };

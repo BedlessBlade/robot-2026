@@ -102,9 +102,16 @@ public:
   static constexpr double kReefSpacing = 0.515; // meters
   static constexpr double kCoralSpacing = 13 / kInchesPerMeter;
   
-  
+    // Shooter Motor Constants
 
-  
+  // Ids for Shooter Motors
+  static constexpr int kShooterMotorTopId = -1;
+  static constexpr int kShooterMotorLowId = -1;  // the child is the follower for the parent motor
+
+  // Speed for Shooter Motors
+  static constexpr double kShooterRegularSpeed = 0.5;
+  static constexpr double kShooterReverseSpeed = -0.5;
+
   // Path following
   static constexpr double kPathFollowingKp = 6.0;
   static constexpr double kPathFollowingKi = 0.005;
@@ -151,7 +158,7 @@ public:
   static constexpr double kSpinSpeed = 0.25;
   static constexpr double kKickSpeed = 0.25;
 
-  static constexpr int kAzimuthMotorId = 0;
+  static constexpr int kAzimuthMotorId = 16;
   static constexpr double kShooterAzimuthP = 0.0;
   static constexpr double kShooterAzimuthI = 0.0;
   static constexpr double kShooterAzimuthD = 0.0;
