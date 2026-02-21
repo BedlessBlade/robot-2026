@@ -7,7 +7,6 @@
 
 class Constants {
 public:
-
   static constexpr double kInchesPerMeter = 39.37;
 
   // Driverstation constants
@@ -102,7 +101,8 @@ public:
   
   static constexpr double kReefSpacing = 0.515; // meters
   static constexpr double kCoralSpacing = 13 / kInchesPerMeter;
-
+  
+  
 
   // Path following
   static constexpr double kPathFollowingKp = 6.0;
@@ -114,10 +114,11 @@ public:
   static constexpr double kPathFollowingMaxV = 1.5;       // meters per second
   static constexpr double kPathFollowingMaxW = 0.5;       // radians per second
   static constexpr double kPathFollowingTolerance = 0.04; // meters
-  static constexpr double kPathFollowingVelocityTolerance = 0.1; // meters per second
+  static constexpr double kPathFollowingVelocityTolerance =
+      0.1; // meters per second
 
   static constexpr auto kFeederDistance = 0.515_m;
-  static constexpr double kBrakeDistance = 0.25; // meters  
+  static constexpr double kBrakeDistance = 0.25; // meters
 
   //Indexer
   static constexpr int kIndexerSpinMotorID = 14;
@@ -143,18 +144,32 @@ public:
   static constexpr double kClimberG = 0.0;
   static constexpr double kClimberCos = 0.0;
   static constexpr double kClimberCosRatio = 0.0;
+  
+  static constexpr int kSpindexerMotorId = 0;
+  static constexpr int kKickerMotorId= 0;
+  static constexpr double kSpinSpeed = 0.25;
+  static constexpr double kKickSpeed = 0.25;
 
-  //Shooter
   static constexpr int kAzimuthMotorId = 0;
   static constexpr double kShooterAzimuthP = 0.0;
   static constexpr double kShooterAzimuthI = 0.0;
   static constexpr double kShooterAzimuthD = 0.0;
-  static constexpr double kMinAzimuthOutput = -0.1;
-  static constexpr double kMaxAzimuthOutput = 0.1;
-  static constexpr double kAzimuthMotorRevsToRevs = 212.5 / 1;
+  static constexpr double kMinShooterAzimuth = 0.0;
+  static constexpr double kMaxShooterAzimuth = 0.0;
+  static constexpr double kShooterAzimuthS = 0.0;
+  static constexpr double kShooterAzimuthV = 0.0;
+  static constexpr double kShooterAzimuthA = 0.0;
+  static constexpr double kShooterAzimuthG = 0.0;
+  static constexpr double kShooterAzimuthCos = 0.0;
+  static constexpr double kShooterAzimuthCosRatio = 0;
+  static constexpr double kAzimuthMotorRevsToRevs = 212.5 / 1; //Rotations to motor to rotations of turret
+
+  //Shooter Motor ids
+  static constexpr int kShooterMotorId = -1;
   //Intake
   static constexpr int kIntakeMotorId = 0;
   static constexpr double kIntakeForward = 0.7;
   static constexpr double kIntakeReverse = -0.7;
   static constexpr int kp1IntakePneumId = 0;
+
 };
