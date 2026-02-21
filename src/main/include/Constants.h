@@ -126,10 +126,23 @@ public:
   static constexpr double kIndexerUpMotorSpeed = -0.5;
 
   //Climber
-  static constexpr int kClimbMotorID = 0;
+  static constexpr int kClimbMotorID = 19;
   static constexpr double kClimbStowed = 0.0;
-  static constexpr double kClimbRetracted = 0.0;
-  static constexpr double kClimbExtended = 0.0;
+  static constexpr double kClimbClimbed = 0.5;
+  static constexpr double kClimbExtended = 1.0;
+
+  static constexpr double kClimberP = 0.0;
+  static constexpr double kClimberI = 0.0;
+  static constexpr double kClimberD = 0.0;
+  static constexpr double kMinClimberOutput = -0.1;
+  static constexpr double kMaxClimberOutput = 0.1;
+  
+  static constexpr double kClimberS = 0.0;
+  static constexpr double kClimberV = 0.0;
+  static constexpr double kClimberA = 0.0;
+  static constexpr double kClimberG = 0.0;
+  static constexpr double kClimberCos = 0.0;
+  static constexpr double kClimberCosRatio = 0.0;
 
   //Shooter
   static constexpr int kAzimuthMotorId = 0;
@@ -144,6 +157,4 @@ public:
   static constexpr double kIntakeForward = 0.7;
   static constexpr double kIntakeReverse = -0.7;
   static constexpr int kp1IntakePneumId = 0;
-
-
 };

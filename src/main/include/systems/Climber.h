@@ -11,6 +11,7 @@
 #include <rev/SparkLowLevel.h>
 #include <rev/SparkMax.h>
 #include <rev/SparkClosedLoopController.h>
+#include <rev/config/SparkMaxConfig.h>
 
 class Climber : public System {
     public:
@@ -20,13 +21,13 @@ class Climber : public System {
     }
 
     rev::spark::SparkMax m_climbMotor{Constants::kClimbMotorID, rev::spark::SparkMax::MotorType::kBrushless};
-
     rev::spark::SparkClosedLoopController m_climberController = m_climbMotor.GetClosedLoopController();
+    rev::spark::SparkRelativeEncoder m_climberEncoder = m_climbMotor.GetEncoder();
+    rev::spark::SparkMaxConfig m_climberConfig;
 
+    void Update(Robot::Mode mode);
     void SetClimber(double position);
-    double GetClimber();
     double GetClimberPosition();
 
-    bool m_isClimberExtended = false;
     double m_climberExtension = 0.0;
 };
