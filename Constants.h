@@ -33,12 +33,9 @@ public:
   static constexpr int kBlEncoderId = 11;
   static constexpr int kBrEncoderId = 12;
 
-  static constexpr int kLfIntakeId = 4096;
-  static constexpr int kRtIntakeId = 8192;
-
   static constexpr units::turn_t kEncoderOffsets[] = {
       -0.149658203125_tr, -0.23193359375_tr, -0.056640625_tr,
-      -0.0888671875_tr};
+      -0.26904296875_tr};
 
   // kS, kV, kP, kI, kD
   static constexpr std::tuple<double, double, double, double, double>
@@ -124,30 +121,28 @@ public:
   static constexpr auto kFeederDistance = 0.515_m;
   static constexpr double kBrakeDistance = 0.25; // meters
 
-  //intake motor speeds
-  static constexpr double kIntakeForward = 0.7;
-  static constexpr double kIntakeReverse = -0.7;
+  static constexpr int kSpindexerMotorId = 0;
+  static constexpr int kKickerMotorId= 0;
+  static constexpr double kSpinSpeed = 0.25;
+  static constexpr double kKickSpeed = 0.25;
 
+  static constexpr int kAzimuthMotorId = 0;
+  static constexpr double kShooterAzimuthP = 0.0;
+  static constexpr double kShooterAzimuthI = 0.0;
+  static constexpr double kShooterAzimuthD = 0.0;
+  static constexpr double kMinShooterAzimuth = 0.0;
+  static constexpr double kMaxShooterAzimuth = 0.0;
+  static constexpr double kShooterAzimuthS = 0.0;
+  static constexpr double kShooterAzimuthV = 0.0;
+  static constexpr double kShooterAzimuthA = 0.0;
+  static constexpr double kShooterAzimuthG = 0.0;
+  static constexpr double kShooterAzimuthCos = 0.0;
+  static constexpr double kShooterAzimuthCosRatio = 0;
+  static constexpr double kAzimuthMotorRevsToRevs = 212.5 / 1; //Rotations to motor to rotations of turret
 
-  //intake motor ids
-  static constexpr int kIntakeMotorId = -1;
-//   static constexpr int kIntakeMotorId = 128; //set to real ids when gotten
+  //Shooter Motor ids
+  static constexpr int kShooterMotorId = -1;
 
-  //inake pneumatic ids
-  static constexpr int kp1IntakePneumId = -1;
-  static constexpr int kp2IntakePneumId = -1; //set to real ids when gotten
-  
-  //shooter motor ids and speed
-  static constexpr int kShooterMotorServo1Id = -1;
-  static constexpr int kShooterMotorServo2Id = -1;
+  static constexpr int kIntakeMotorId = 0;
 
-  static constexpr int kShooterMotorKraken1Id = -1;
-  static constexpr int kShooterMotorKraken2Id = -1;
-  //shooter motor speed
-  static constexpr double kShooterMotorSpd = 0.5; 
-  static constexpr double kShooterLength = 0;
-  
-  //shooter channels
-  static constexpr int kShooterChannel1 = -1;
-  static constexpr int kShooterChannel2 = -1;
 };
