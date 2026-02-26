@@ -22,7 +22,7 @@ public:
 
     bool IsAtSetpoint();
 
-    void ToggleMotors(bool Toggle);
+    void ToggleMotors(bool Toggle, double TopSpeed, double LowSpeed);
 
     void ReverseMotors();
 

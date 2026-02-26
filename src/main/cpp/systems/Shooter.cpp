@@ -1,5 +1,5 @@
 #include "Constants.h"
-#include "systems/Shooter.h"
+#include "Systems/Shooter.h"
 
 Shooter::Shooter() {
     m_azimuthConfig.closedLoop
@@ -15,7 +15,7 @@ Shooter::Shooter() {
     .kA(Constants::kShooterAzimuthA)
     .kG(Constants::kShooterAzimuthG)
     .kCos(Constants::kShooterAzimuthCos)
-    .kCosRatio(Constants::kShooterAzimuthCosRatio)
+    .kCosRatio(Constants::kShooterAzimuthCosRatio);
 };
 
 void Shooter::SetAngle(double angle) {
