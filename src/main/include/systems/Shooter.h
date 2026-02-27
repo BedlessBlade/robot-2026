@@ -15,22 +15,13 @@ public:
         return instance;
     }
 
-    
     void Align(frc::Pose2d pose);
 
     void SetAngle(double angle);
 
+    void SetShooterSpeed(units::angular_velocity::turns_per_second_t Speed);
+
     bool IsAtSetpoint();
-
-    void ToggleMotors(bool Toggle, double TopSpeed, double LowSpeed);
-
-    void ReverseMotors();
-
-    void ShootingMotor();
-
-    auto adjustMotorSpeed(double topSpeed, double lowSpeed);
-
-    void ExtendMotor();
 
     void Update(Robot::Mode mode, double t) override;
 
@@ -39,8 +30,12 @@ private:
     rev::spark::SparkMax m_azimuthTurretMotor{Constants::kAzimuthMotorId, rev::spark::SparkMax::MotorType::kBrushless}; // get motor for turret rotation
     rev::spark::SparkClosedLoopController m_azimuthController = m_azimuthTurretMotor.GetClosedLoopController(); // get controller for turret rotation
 
-    ctre::phoenix6::hardware::TalonFX m_ShooterMotorTop{Constants::kShooterMotorTopId};
-    ctre::phoenix6::hardware::TalonFX m_ShooterMotorLow{Constants::kShooterMotorLowId};
+    ctre::phoenix6::hardware::TalonFX m_shooterMotorRight{Constants::kShooterMotorRightId};
+    ctre::phoenix6::hardware::TalonFX m_shooterMotorLeft{Constants::kShooterMotorLeftId};
+
+    // control templates for velocity control on shooter motors
+    ctre::phoenix6::controls::VelocityVoltage m_rightVelocity;
+    ctre::phoenix6::controls::VelocityVoltage m_leftVelocity;
 
     rev::spark::SparkMaxConfig m_azimuthConfig; //configured in the cpp file
 

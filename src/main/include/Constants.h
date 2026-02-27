@@ -97,8 +97,12 @@ public:
     // Shooter Motor Constants
 
   // Ids for Shooter Motors
-  static constexpr int kShooterMotorTopId = -1;
-  static constexpr int kShooterMotorLowId = -1;  // the child is the follower for the parent motor
+  static constexpr int kShooterMotorRightId = -1;
+  static constexpr int kShooterMotorLeftId = -1;
+  static constexpr double kShooterMotorV = 0.0;
+  static constexpr double kShooterMotorP = 0.0;
+  static constexpr double kShooterMotorI = 0.0;
+  static constexpr double kShooterMotorD = 0.0;
 
   // Speed for Shooter Motors
   static constexpr double kShooterRegularSpeed = 0.8; // change if too fast
