@@ -162,6 +162,7 @@ public:
   static constexpr double kShooterAzimuthA = 0.0;
   static constexpr double kShooterAzimuthG = 0.0;
   static constexpr double kShooterAzimuthCos = 0.0;
+  static constexpr double kShooterAzimuthCosRatio = 0.0;
 
   //Intake
   static constexpr int kIntakeMotorId = 0;

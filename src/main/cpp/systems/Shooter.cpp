@@ -32,8 +32,6 @@ auto Shooter::adjustMotorSpeed(double topSpeed, double lowSpeed) {
     m_ShooterMotorTop.Set(topSpeed);
 }
 
-
-
 void Align(frc::Pose2d pose) {
     units::length::meter_t x = pose.X();
     units::length::meter_t y = pose.Y();
