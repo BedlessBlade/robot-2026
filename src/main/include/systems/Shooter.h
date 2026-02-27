@@ -16,7 +16,7 @@ public:
     }
 
     
-
+    void Align(frc::Pose2d pose);
 
     void SetAngle(double angle);
 
@@ -27,6 +27,8 @@ public:
     void ReverseMotors();
 
     void ShootingMotor();
+
+    auto adjustMotorSpeed(double topSpeed, double lowSpeed);
 
     void ExtendMotor();
 

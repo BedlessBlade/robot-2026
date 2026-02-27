@@ -19,6 +19,7 @@
 #include "systems/LEDs.h"
 #include "systems/Indexer.h"
 #include "systems/Climber.h"
+#include "systems/Shooter.h"
 
 // This gets called first. So, initialize everything here.
 Robot::Robot()
@@ -36,6 +37,9 @@ Robot::Robot()
 
   frc::SmartDashboard::PutBoolean("Calibrate Pose", false);
 
+  double rs_shooterTopSpeed = 0.0;
+  double rs_shooterLowSpeed = 0.0;
+        
   m_autoChooser.SetDefaultOption("Do Nothing", "DoNothing");
   //  m_autoChooser.AddOption("Cross the Line", "CrossLine");
   //  m_autoChooser.AddOption("One Coral", "OneCoral");
@@ -52,6 +56,9 @@ Robot::Robot()
   Climber::GetInstance();
   LEDs::GetInstance();
   LEDs::GetInstance().LEDsInit();
+  Shooter::GetInstance();
+
+  
 
   // This initializes the main looper. What you put here will run @200 Hz while
   // the robot is on.

@@ -94,14 +94,6 @@ public:
   static constexpr double kHubX = 158.84 / kInchesPerMeter;
   static constexpr double kHubY = 182.11 / kInchesPerMeter;
 
-
-  static constexpr double kReefWidth = 65.2 / kInchesPerMeter;
-  static constexpr double kReefOffset =
-      (144 / kInchesPerMeter) + kReefWidth / 2;
-  
-  static constexpr double kReefSpacing = 0.515; // meters
-  static constexpr double kCoralSpacing = 13 / kInchesPerMeter;
-  
     // Shooter Motor Constants
 
   // Ids for Shooter Motors
@@ -109,7 +101,7 @@ public:
   static constexpr int kShooterMotorLowId = -1;  // the child is the follower for the parent motor
 
   // Speed for Shooter Motors
-  static constexpr double kShooterRegularSpeed = 0.5;
+  static constexpr double kShooterRegularSpeed = 0.8; // change if too fast
   static constexpr double kShooterReverseSpeed = -0.5;
 
   // Path following
