@@ -6,8 +6,8 @@ Shooter::Shooter() {
     .P(Constants::kShooterAzimuthP)
     .I(Constants::kShooterAzimuthI)
     .D(Constants::kShooterAzimuthD)
-    .OutputRange(Constants::kMinShooterAzimuth,
-        Constants::kMaxShooterAzimuth)
+    .OutputRange(Constants::kMinAzimuthOutput,
+        Constants::kMaxAzimuthOutput)
 
     .feedForward  // config the const. from header
     .kS(Constants::kShooterAzimuthS)
