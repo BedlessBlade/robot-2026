@@ -8,8 +8,8 @@ Shooter::Shooter() {
     .P(Constants::kShooterAzimuthP)
     .I(Constants::kShooterAzimuthI)
     .D(Constants::kShooterAzimuthD)
-    .OutputRange(Constants::kMinShooterAzimuth,
-        Constants::kMaxShooterAzimuth)
+    .OutputRange(Constants::kMinAzimuthOutput,
+        Constants::kMaxAzimuthOutput)
 
     .feedForward  // config the const. from header
     .kS(Constants::kShooterAzimuthS)
@@ -36,6 +36,7 @@ Shooter::Shooter() {
 };
 
 void Shooter::SetAngle(double angle) {
+    double revs = Constants::kAzimuthMotorRevsToRevs * (angle / (2 * M_PI));
     double revs = Constants::kAzimuthMotorRevsToRevs * (angle / (2 * M_PI));
     m_azimuthController.SetSetpoint(revs, rev::spark::SparkBase::ControlType::kPosition);
 };
