@@ -103,6 +103,7 @@ public:
   // Speed for Shooter Motors
   static constexpr double kShooterRegularSpeed = 0.8; // change if too fast
   static constexpr double kShooterReverseSpeed = -0.5;
+  static constexpr double kShooterOffsetDist = 10.30776406;
 
   // Path following
   static constexpr double kPathFollowingKp = 6.0;

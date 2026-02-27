@@ -27,18 +27,7 @@ bool Shooter::IsAtSetpoint() {
     return m_azimuthController.IsAtSetpoint();
 };
 
-auto Shooter::adjustMotorSpeed(double topSpeed, double lowSpeed) {
+auto Shooter::SetMotorSpeed(double topSpeed, double lowSpeed) {
     m_ShooterMotorLow.Set(lowSpeed);
     m_ShooterMotorTop.Set(topSpeed);
-}
-
-
-
-void Align(frc::Pose2d pose) {
-    units::length::meter_t x = pose.X();
-    units::length::meter_t y = pose.Y();
-    frc::Rotation2d theta = pose.Rotation(); 
-
-    
-
 }

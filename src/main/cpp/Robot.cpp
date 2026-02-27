@@ -299,6 +299,13 @@ Robot::Robot()
       } else if (Controllers::GetInstance()
                      .GetOperatorController()
                      .GetRightTriggerAxis() > 0.5) {
+                      //add Align shoot and turret
+
+                      //remove this line later, add pose to top of code or whatever.
+                      auto robotPose = SwerveDrive::GetInstance().GetPose2d();
+                      int distToHub = sqrt(pow((Constants::kHubX - (robotPose.X() + (robotPose.Rotation().Cos() / Constants::kShooterOffsetDist))), 2) + 
+                                   pow((Constants::kHubY - (robotPose.Y() + (robotPose.Rotation().Sin() / Constants::kShooterOffsetDist))), 2));
+                      Shooter::GetInstance().SetMotorSpeed();
 
       } else if (Controllers::GetInstance()
                      .GetOperatorController()

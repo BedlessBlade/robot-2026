@@ -15,20 +15,15 @@ public:
         return instance;
     }
 
-    
-    void Align(frc::Pose2d pose);
-
     void SetAngle(double angle);
 
     bool IsAtSetpoint();
-
-    void ToggleMotors(bool Toggle, double TopSpeed, double LowSpeed);
 
     void ReverseMotors();
 
     void ShootingMotor();
 
-    auto adjustMotorSpeed(double topSpeed, double lowSpeed);
+    auto SetMotorSpeed(double speed);
 
     void ExtendMotor();
 
