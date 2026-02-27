@@ -169,4 +169,14 @@ public:
   static constexpr double kIntakeForward = 0.7;
   static constexpr double kIntakeReverse = -0.7;
   static constexpr int kp1IntakePneumId = 0;
+
+  //Shooter
+  static constexpr int kShooterMotorRightId = 0;
+  static constexpr int kShooterMotorLeftId = 0;
+
+  static constexpr double kShooterMotorP = 0.0;
+  static constexpr double kShooterMotorI = 0.0;
+  static constexpr double kShooterMotorD = 0.0;
+  static constexpr double kShooterMotorV = 0.0;
+  
 };
