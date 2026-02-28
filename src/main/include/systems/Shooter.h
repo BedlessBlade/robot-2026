@@ -3,6 +3,7 @@
 #include <rev/SparkMax.h>
 #include <rev/config/SparkMaxConfig.h>
 #include <ctre/phoenix6/TalonFX.hpp>
+#include <ctre/phoenix6/controls/VelocityVoltage.hpp>
 
 #include "Constants.h"
 #include "System.h"

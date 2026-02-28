@@ -1,4 +1,6 @@
-#include <ctre/phoenix6>
+#include <ctre/phoenix6/controls/VelocityVoltage.hpp>
+#include <ctre/phoenix6/configs/Slot0Configs.hpp>
+#include <cmath>
 
 #include "Constants.h"
 #include "systems/Shooter.h"
