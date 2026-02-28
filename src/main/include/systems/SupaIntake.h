@@ -43,6 +43,10 @@ public:
     bool ArmDown();    // get if the arm is down
     bool intakeSafe(); // sees if motor is completly down
 
+    void setIntake(bool setMode);
+
+    void SetState(bool state);
+
     //spin state enum
     enum class spinCur { IN, OUT, IDLE }; // What state is the motor in?
 
@@ -58,13 +62,15 @@ private:
     rev::spark::SparkMax m_sparkMotor{Constants::kIntakeMotorId, rev::spark::SparkMax::MotorType::kBrushless};
 
     // add 2 pistons
-    frc::DoubleSolenoid m_solenoid{frc::PneumaticsModuleType::REVPH, Constants::kp1IntakePneumId, -1};
+    frc::DoubleSolenoid m_solenoid{frc::PneumaticsModuleType::REVPH, Constants::kIntakePneumId, -1};
     //frc::DoubleSolenoid m_solenoid2{frc::PneumaticsModuleType::REVPH, Constants::kp2IntakePneumId, -1};
     //May need the second solenoid? PATRICK FIX
 
     //Make states usable in .cpp file
     spinCur motorState = spinCur::IDLE;
     pistLoc pnuemState = pistLoc::UP; 
+
+    bool intakeState;
 
     SupaIntake();
 };

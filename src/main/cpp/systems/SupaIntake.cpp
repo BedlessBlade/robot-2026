@@ -3,9 +3,10 @@
 // last update: 2/19/2026
 
 #include "systems/SupaIntake.h"
+#include "systems/System.h"
 
 #include "Constants.h"
-#include "systems/System.h"
+#include "Controllers.h"
 
 //Motors are under spinCur (spin current)
 //Pistons are under pistLoc (piston location)
@@ -13,6 +14,8 @@
 SupaIntake::spinCur SupaIntake::GetMotorCase() {
     return motorState; // send motorState to Robot.cpp
 }
+
+bool isOn = false;
 
 //  --in honor of patibs 2 hours wasted--
 
@@ -48,9 +51,39 @@ void SupaIntake::exitSystem() {
     SupaIntake::Retract();
 };
 
+void SupaIntake::SetState(bool state) {
+    intakeState = state;
+};
+
+//set intake properly
+void SupaIntake::setIntake(bool setMode){
+    if (setMode) {
+        SpinIn();
+        Extend();
+    }
+    else if (!setMode) {
+        SpinOut();
+        Retract();
+        SpinStop();
+    }
+}
+
+
 bool SupaIntake::ArmDown() {
     return pnuemState == pistLoc::UP;
 };
 
 //Misc IDK functions  NEED FIX
-void SupaIntake::Update(Robot::Mode mode, double t) {};
+void SupaIntake::Update(Robot::Mode mode, double t) {
+    if (mode == Robot::Mode::kTeleop) {
+        if (Controllers::GetInstance().GetOperatorController().GetLeftTriggerAxis() >= 0.5 && !isOn) {
+            setIntake(true);
+        };
+        if (Controllers::GetInstance().GetOperatorController().GetLeftTriggerAxis() < 0.5 && isOn) {
+            setIntake(false);
+        };
+    }
+    else if (mode == Robot::Mode::kAuto) {
+        //Auto code goes here 
+    }
+};

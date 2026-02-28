@@ -13,6 +13,7 @@
 #include "Locations.h"
 #include "Util.h"
 #include "auto/AutoDoNothing.h"
+#include "systems/SupaIntake.h"
 #include "systems/Cameras.h"
 #include "systems/SwerveDrive.h"
 #include "systems/QuestNav.h"
@@ -50,6 +51,7 @@ Robot::Robot()
   frc::SmartDashboard::PutData("QuestNav Field", &m_QuestNavField);
 
   // Call GetInstance() so the constructors get called
+  SupaIntake::GetInstance();
   Cameras::GetInstance();
   SwerveDrive::GetInstance();
   Indexer::GetInstance();
@@ -294,8 +296,12 @@ Robot::Robot()
         
       } else if (Controllers::GetInstance()
                      .GetOperatorController()
-                     .GetLeftTriggerAxis() > 0.5) {
-        
+                     .GetLeftTriggerAxis() > Constants::kStartIntakeThresh) {
+                      SupaIntake::GetInstance().SetState(true);
+      } else if (Controllers::GetInstance()
+                      .GetOperatorController()
+                      .GetLeftTriggerAxis() < Constants::kStartIntakeThresh) {
+                      SupaIntake::GetInstance().SetState(false);
       } else if (Controllers::GetInstance()
                      .GetOperatorController()
                      .GetRightTriggerAxis() > 0.5) {
@@ -353,9 +359,7 @@ Robot::Robot()
 
     Cameras::GetInstance().Update(mode, t);
     SwerveDrive::GetInstance().Update(mode, t);
-    Shooter::GetInstance().Update(mode, t);
-
-
+    SupaIntake::GetInstance().Update(mode, t);
     LEDs::GetInstance().Update(mode, globalAlliance);
     Indexer::GetInstance().Update(mode);
   }};
