@@ -39,7 +39,8 @@ private:
     ctre::phoenix6::controls::VelocityVoltage m_rightVelocity{0.0_rpm};
     ctre::phoenix6::controls::VelocityVoltage m_leftVelocity{0.0_rpm};
 
-    frc::Servo m_hoodServo{Constants::kHoodServoPort};
+    frc::Servo m_leftHoodServo{Constants::kLeftHoodServoPort};
+    frc::Servo m_rightHoodServo{Constants::kRightHoodServoPort}
 
     rev::spark::SparkMaxConfig m_azimuthConfig; //configured in the cpp file
 

@@ -193,6 +193,7 @@ public:
   static constexpr double kShooterAzimuthCos = 0.0;
   static constexpr double kShooterAzimuthCosRatio = 0.0;
 
-  static constexpr int kHoodServoPort = 0;
+  static constexpr int kLeftHoodServoPort = 0;
+  static constexpr int kRightHoodServoPort = 0;
 
 };

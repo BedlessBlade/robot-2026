@@ -326,6 +326,4 @@ void SwerveDrive::DisableRamp() { m_rampEnabled = false; }
 double SwerveDrive::VelocityMagnitude() {
   return std::sqrt(m_vx * m_vx + m_vy * m_vy);
 }
-
-7
   
