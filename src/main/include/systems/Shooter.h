@@ -36,8 +36,8 @@ private:
     ctre::phoenix6::hardware::TalonFX m_shooterMotorLeft{Constants::kShooterMotorLeftId};
 
     // control templates for velocity control on shooter motors
-    ctre::phoenix6::controls::VelocityVoltage m_rightVelocity;
-    ctre::phoenix6::controls::VelocityVoltage m_leftVelocity;
+    ctre::phoenix6::controls::VelocityVoltage m_rightVelocity{0.0_rpm};
+    ctre::phoenix6::controls::VelocityVoltage m_leftVelocity{0.0_rpm};
 
     frc::Servo m_hoodServo{Constants::kHoodServoPort};
 

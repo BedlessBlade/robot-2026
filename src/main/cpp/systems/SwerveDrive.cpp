@@ -3,6 +3,7 @@
 #include <frc/geometry/Translation2d.h>
 #include <frc/kinematics/SwerveDriveKinematics.h>
 #include <units/velocity.h>
+#include <frc/kinematics/ChassisSpeeds.h>
 
 #include "Constants.h"
 #include "Robot.h"
@@ -61,7 +62,9 @@ SwerveDrive::SwerveDrive()
                    M_PI * Constants::kWheelRadius * Constants::kDriveGearRatio},
                frc::Rotation2d{m_encoders[3].GetPosition().GetValue() * 2 *
                                M_PI}}},
-          frc::Pose2d{}} {
+          frc::Pose2d{}
+        } 
+      {
   // Configure the PID values for the position mode on the steering motors
   auto [kS, kV, kP, kI, kD] = Constants::kSteeringMotorGains;
   configs::Slot0Configs config;
@@ -70,6 +73,13 @@ SwerveDrive::SwerveDrive()
   config.kP = kP;
   config.kI = kI;
   config.kD = kD;
+
+
+
+
+
+
+
 
   // Create a current limit config to apply to the drive motors
   auto currentLimitConfig = configs::CurrentLimitsConfigs{}
@@ -112,6 +122,8 @@ SwerveDrive::SwerveDrive()
 
   // Default to coast mode
   Coast();
+
+  
 }
 
 // This function needs to be called by the looper to update the drive motors
@@ -163,6 +175,8 @@ void SwerveDrive::Update(Robot::Mode mode, double t) {
     frc::SwerveDriveKinematics<4>::DesaturateWheelSpeeds(
         &states, units::meters_per_second_t{Constants::kMaxV});
     auto [fl, fr, bl, br] = states;
+
+
 
     // Optimize the angle setpoints to make the wheels reach the correct angle
     // as fast as possible (not go the long way around).
@@ -257,3 +271,8 @@ void SwerveDrive::DisableRamp() { m_rampEnabled = false; }
 double SwerveDrive::VelocityMagnitude() {
   return std::sqrt(m_vx * m_vx + m_vy * m_vy);
 }
+
+inline frc::ChassisSpeeds GetRobotRelativeSpeed(){
+
+}
+  

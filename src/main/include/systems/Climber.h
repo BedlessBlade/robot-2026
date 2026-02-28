@@ -19,23 +19,22 @@ using namespace::rev::spark;
 
 class Climber : public System {
     public:
-    Climber();
+      static Climber &GetInstance() {
+        static Climber instance;
+        return instance;
+      }
 
-    static Climber &GetInstance() {
-      static Climber instance;
-      return instance;
-    }
+      rev::spark::SparkMax m_climbMotor{Constants::kClimbMotorID, rev::spark::SparkMax::MotorType::kBrushless};
+      rev::spark::SparkClosedLoopController m_climberController = m_climbMotor.GetClosedLoopController();
+      rev::spark::SparkMaxConfig m_climberConfig;
+      rev::spark::SparkRelativeEncoder m_climberEncoder = m_climbMotor.GetEncoder();
 
-    frc::Servo m_linearActuator{8};
+      void Update(Robot::Mode mode);
+      void SetClimber(double position, SparkBase::ControlType controlType);
+      double GetClimberPosition();
 
-    rev::spark::SparkMax m_climbMotor{Constants::kClimbMotorID, rev::spark::SparkMax::MotorType::kBrushless};
-    rev::spark::SparkClosedLoopController m_climberController = m_climbMotor.GetClosedLoopController();
-    rev::spark::SparkMaxConfig m_climberConfig;
-    rev::spark::SparkRelativeEncoder m_climberEncoder = m_climbMotor.GetEncoder();
+      double m_climberExtension = 0.0;
 
-    void Update(Robot::Mode mode);
-    void SetClimber(double position, SparkBase::ControlType controlType);
-    double GetClimberPosition();
-
-    double m_climberExtension = 0.0;
+    private:
+      Climber();
 };
