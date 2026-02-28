@@ -1,6 +1,7 @@
 #include <ctre/phoenix6/controls/VelocityVoltage.hpp>
 #include <ctre/phoenix6/configs/Slot0Configs.hpp>
 #include <cmath>
+#include <frc/Servo.h>
 
 #include "Constants.h"
 #include "systems/Shooter.h"
@@ -41,6 +42,10 @@ void Shooter::SetAngle(double angle) {
     m_azimuthSetpoint = angle;
 };
 
+void Shooter::SetHoodState(double state) {
+    m_hoodState = state;
+};
+
 bool Shooter::IsAtSetpoint() {
     return m_azimuthController.IsAtSetpoint();
 };
@@ -56,5 +61,6 @@ void Shooter::Update(Robot::Mode mode, double t) {
     double revs = Constants::kAzimuthMotorRevsToRevs * (m_azimuthSetpoint / (2 * M_PI));
     m_azimuthController.SetSetpoint(revs, rev::spark::SparkBase::ControlType::kPosition);
 
+    m_hoodServo.Set(m_hoodState);
 
 };
