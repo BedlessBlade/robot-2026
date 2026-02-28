@@ -11,6 +11,10 @@
 #include <units/velocity.h>
 #include <frc/kinematics/ChassisSpeeds.h>
 
+#include <pathplanner/lib/auto/AutoBuilder.h>
+#include <pathplanner/lib/config/RobotConfig.h>
+#include <pathplanner/lib/controllers/PPHolonomicDriveController.h>
+
 #include "Robot.h"
 #include "System.h"
 
@@ -34,7 +38,8 @@ public:
   void EnableRamp();
   void DisableRamp();
   double VelocityMagnitude();
-  inline frc::ChassisSpeeds GetRobotRelativeSpeed();
+  frc::ChassisSpeeds GetStates();
+
 
   //wpi::array<frc::SwerveModuleState, 4U> states;
 
@@ -79,6 +84,10 @@ private:
 
   bool m_rampEnabled = true;
   bool m_fastFilter = true;
+
+
+
+  //std::optional<pathplanner::RobotConfig> robotConfig;
 
   // Make the constructor private so that the GetInstance() function must be
   // used.

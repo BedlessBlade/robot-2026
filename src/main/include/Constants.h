@@ -64,6 +64,10 @@ public:
   static constexpr double kDefaultMaxV = 1.0; // meters per second
   static constexpr double kDefaultMaxW = 1.0; // radians per second
 
+//  static constexpr pathplanner::PIDConstants translationConstants{5.0,  0.0,  0.0};
+ // static constexpr pathplanner::PIDConstants rotationConstants{ 5.0,  0.0,  0.0};
+
+
   // Vision
   static constexpr frc::Transform3d kLeftCameraTransform{
       frc::Translation3d{-6.229_in, 12.359_in, 26.747_in},
