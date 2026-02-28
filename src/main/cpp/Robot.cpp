@@ -305,7 +305,7 @@ Robot::Robot()
                       auto robotPose = SwerveDrive::GetInstance().GetPose2d();
                       int distToHub = sqrt(pow((Constants::kHubX - (robotPose.X() + (robotPose.Rotation().Cos() / Constants::kShooterOffsetDist))), 2) + 
                                    pow((Constants::kHubY - (robotPose.Y() + (robotPose.Rotation().Sin() / Constants::kShooterOffsetDist))), 2));
-                      Shooter::GetInstance().SetMotorSpeed();
+                      // Shooter::GetInstance().SetMotorSpeed();
 
       } else if (Controllers::GetInstance()
                      .GetOperatorController()
