@@ -4,6 +4,11 @@
 #include <frc/kinematics/SwerveDriveKinematics.h>
 #include <units/velocity.h>
 #include <frc/kinematics/ChassisSpeeds.h>
+#include <frc/DriverStation.h>
+
+#include <pathplanner/lib/auto/AutoBuilder.h>
+#include <pathplanner/lib/config/RobotConfig.h>
+#include <pathplanner/lib/controllers/PPHolonomicDriveController.h>
 
 #include "Constants.h"
 #include "Robot.h"
@@ -124,6 +129,39 @@ SwerveDrive::SwerveDrive()
   Coast();
 
   
+  //pathplanner::RobotConfig config = pathplanner::RobotConfig::fromGUISettings();
+  /*
+  pathplanner::AutoBuilder::configure(
+    [this](){ return SwerveDrive::GetInstance().GetPose2d(); }, // Robot pose supplier
+    [this](frc::Pose2d pose){ SwerveDrive::GetInstance().ResetPose(pose); }, // Method to reset odometry (will be called if your auto has a starting pose)
+    [this](){ return SwerveDrive::GetInstance().GetStates(); }, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
+    [this](frc::ChassisSpeeds speeds, auto feedforwards){ DriveVelocity(speeds.vx, speeds.vy, speeds.w); }, // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds. Also optionally outputs individual module feedforwards
+    std::make_shared<pathplanner::PPHolonomicDriveController>( // PPHolonomicController is the built in path following controller for holonomic drive trains
+        Constants::translationConstants, // Translation PID constants
+        Constants::rotationConstants// Rotation PID constants
+    ),
+    config, // The robot configuration
+    []() {
+        // Boolean supplier that controls when the path will be mirrored for the red alliance
+        // This will flip the path being followed to the red side of the field.
+        // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
+
+        auto alliance = frc::DriverStation::GetAlliance();
+        if (alliance) {
+            return alliance.value() == frc::DriverStation::Alliance::kRed;
+        }
+        
+
+        return false;
+        
+    },
+    this // Reference to this subsystem to set requirements
+    
+);
+*/
+
+
+
 }
 
 // This function needs to be called by the looper to update the drive motors
@@ -166,15 +204,24 @@ void SwerveDrive::Update(Robot::Mode mode, double t) {
 
     // Use the WPILib kinematics class to determine the individual wheel
     // angles and velocities.
-    auto speeds = frc::ChassisSpeeds::FromFieldRelativeSpeeds(
+    frc::ChassisSpeeds speeds;
+    if(mode == Robot::kTeleop) {
+      speeds = frc::ChassisSpeeds::FromFieldRelativeSpeeds(
         units::meters_per_second_t{vx}, units::meters_per_second_t{vy},
         units::radians_per_second_t{w}, GetPose2d().Rotation());
+    } else if(mode == Robot::kAuto) {
+      speeds = frc::ChassisSpeeds::FromRobotRelativeSpeeds(
+        units::meters_per_second_t{vx}, units::meters_per_second_t{vy},
+        units::radians_per_second_t{w}, GetPose2d().Rotation());
+    }; 
     auto states = m_kinematics.ToSwerveModuleStates(speeds);
 
     // Prevent velocities from clipping
     frc::SwerveDriveKinematics<4>::DesaturateWheelSpeeds(
         &states, units::meters_per_second_t{Constants::kMaxV});
     auto [fl, fr, bl, br] = states;
+
+    
 
 
 
@@ -228,6 +275,14 @@ void SwerveDrive::Update(Robot::Mode mode, double t) {
   }
 }
 
+frc::ChassisSpeeds SwerveDrive::GetStates() {
+  auto speeds = frc::ChassisSpeeds::FromFieldRelativeSpeeds(
+        units::meters_per_second_t{SwerveDrive::m_vx}, units::meters_per_second_t{SwerveDrive::m_vy},
+        units::radians_per_second_t{SwerveDrive::m_w}, SwerveDrive::GetPose2d().Rotation());
+
+  return speeds;
+}
+
 frc::Rotation2d SwerveDrive::GetGyroRotation2d() const {
   return m_gyro.GetRotation2d();
 }
@@ -272,7 +327,5 @@ double SwerveDrive::VelocityMagnitude() {
   return std::sqrt(m_vx * m_vx + m_vy * m_vy);
 }
 
-inline frc::ChassisSpeeds GetRobotRelativeSpeed(){
-
-}
+7
   
