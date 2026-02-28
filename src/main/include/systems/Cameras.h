@@ -19,17 +19,17 @@ public:
   void Update(Robot::Mode mode, double t) override;
 
 private:
-  photon::PhotonCamera m_frontCamera{"Tag_Camera_02"};
-  photon::PhotonCamera m_backCamera{"Tag_Camera_01"};
+  photon::PhotonCamera m_leftCamera{"Tag_Camera_02"};
+  photon::PhotonCamera m_rightCamera{"Tag_Camera_01"};
 
-  photon::PhotonPoseEstimator m_frontPoseEstimator{
+  photon::PhotonPoseEstimator m_leftPoseEstimator{
       frc::AprilTagFieldLayout::LoadField(
           frc::AprilTagField::k2025ReefscapeWelded),
-      photon::MULTI_TAG_PNP_ON_COPROCESSOR, Constants::kFrontCameraTransform};
-  photon::PhotonPoseEstimator m_backPoseEstimator{
+      photon::MULTI_TAG_PNP_ON_COPROCESSOR, Constants::kLeftCameraTransform};
+  photon::PhotonPoseEstimator m_rightPoseEstimator{
       frc::AprilTagFieldLayout::LoadField(
           frc::AprilTagField::k2025ReefscapeWelded),
-      photon::MULTI_TAG_PNP_ON_COPROCESSOR, Constants::kBackCameraTransform};
+      photon::MULTI_TAG_PNP_ON_COPROCESSOR, Constants::kRightCameraTransform};
 
   AlgaeState m_algaeState;
 

@@ -8,10 +8,10 @@
 #include "systems/SwerveDrive.h"
 
 void Cameras::Update(Robot::Mode mode, double t) {
-  // Front camera
-  auto results = m_frontCamera.GetAllUnreadResults();
+  // Left camera
+  auto results = m_leftCamera.GetAllUnreadResults();
   if (results.size() > 0) {
-    auto pose = m_frontPoseEstimator.Update(results[0]);
+    auto pose = m_leftPoseEstimator.Update(results[0]);
 
     if (pose.has_value()) {
       SwerveDrive::GetInstance().VisionUpdate(
@@ -19,8 +19,8 @@ void Cameras::Update(Robot::Mode mode, double t) {
     }
   }
 
-  // Back camera
-  results = m_backCamera.GetAllUnreadResults();
+  // Right camera
+  results = m_rightCamera.GetAllUnreadResults();
   for (auto result : results) {
     bool blockedTag = false;
     for (auto target : result.GetTargets()) {
@@ -35,7 +35,7 @@ void Cameras::Update(Robot::Mode mode, double t) {
       continue;
     }
 
-    auto pose = m_backPoseEstimator.Update(result);
+    auto pose = m_rightPoseEstimator.Update(result);
 
     if (pose.has_value()) {
       SwerveDrive::GetInstance().VisionUpdate(

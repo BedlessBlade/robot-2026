@@ -65,12 +65,12 @@ public:
   static constexpr double kDefaultMaxW = 1.0; // radians per second
 
   // Vision
-  static constexpr frc::Transform3d kFrontCameraTransform{
-      frc::Translation3d{6.298_in, -10.622_in, 23_in},
-      frc::Rotation3d{0_rad, 20_deg, 20_deg}};
-  static constexpr frc::Transform3d kBackCameraTransform{
-      frc::Translation3d{4.75_in, -11.25_in, 32.75_in},
-      frc::Rotation3d{0_rad, 0_rad, 0_deg}};
+  static constexpr frc::Transform3d kLeftCameraTransform{
+      frc::Translation3d{-6.229_in, 12.359_in, 26.747_in},
+      frc::Rotation3d{0_rad, 0_rad, -35_deg}};
+  static constexpr frc::Transform3d kRightCameraTransform{
+      frc::Translation3d{4.75_in, -11.25_in, 26.747_in},
+      frc::Rotation3d{0_rad, 0_rad, 35_deg}};
   static constexpr auto kBlockedTags = {1, 2, 3, 4, 5, 12, 13, 14, 15, 16};
 
 
