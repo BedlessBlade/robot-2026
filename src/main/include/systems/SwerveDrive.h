@@ -9,6 +9,7 @@
 #include <frc/kinematics/SwerveDriveKinematics.h>
 #include <units/angular_velocity.h>
 #include <units/velocity.h>
+#include <frc/kinematics/ChassisSpeeds.h>
 
 #include "Robot.h"
 #include "System.h"
@@ -33,6 +34,11 @@ public:
   void EnableRamp();
   void DisableRamp();
   double VelocityMagnitude();
+  inline frc::ChassisSpeeds GetRobotRelativeSpeed();
+
+  //wpi::array<frc::SwerveModuleState, 4U> states;
+
+
 
 private:
   // The gyroscope keeps track of which direction the robot is facing.
