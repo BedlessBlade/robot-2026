@@ -87,3 +87,8 @@ void SupaIntake::Update(Robot::Mode mode, double t) {
         //Auto code goes here 
     }
 };
+
+
+SupaIntake::SupaIntake() {
+
+}

@@ -19,6 +19,8 @@ using namespace::rev::spark;
 
 class Climber : public System {
     public:
+    Climber();
+
     static Climber &GetInstance() {
       static Climber instance;
       return instance;
