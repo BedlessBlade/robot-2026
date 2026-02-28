@@ -55,12 +55,13 @@ void Shooter::SetShooterSpeed(units::angular_velocity::turns_per_second_t Speed)
  
 void Shooter::Update(Robot::Mode mode, double t) {
     m_shooterMotorRight.SetControl(m_rightVelocity.WithVelocity(m_shooterSpeed));
-    m_shooterMotorLeft.SetControl(m_leftVelocity.WithVelocity(m_shooterSpeed));
+    m_shooterMotorLeft.SetControl(m_leftVelocity.WithVelocity(-m_shooterSpeed));
      
     double revs = Constants::kAzimuthMotorRevsToRevs * (m_azimuthSetpoint / (2 * M_PI));
     m_azimuthController.SetSetpoint(revs, rev::spark::SparkBase::ControlType::kPosition);
  
-    m_hoodServo.Set(m_hoodState);
+    m_leftHoodServo.Set(m_hoodState);
+    m_rightHoodServo.Set(m_hoodState);
 
 };
 

@@ -38,9 +38,6 @@ Robot::Robot()
   frc::SmartDashboard::PutData("Start Location", &m_startChooser);
 
   frc::SmartDashboard::PutBoolean("Calibrate Pose", false);
-
-  double rs_shooterTopSpeed = 0.0;
-  double rs_shooterLowSpeed = 0.0;
         
   m_autoChooser.SetDefaultOption("Do Nothing", "DoNothing");
   //  m_autoChooser.AddOption("Cross the Line", "CrossLine");
@@ -306,17 +303,23 @@ Robot::Robot()
       } else if (Controllers::GetInstance()
                      .GetOperatorController()
                      .GetRightTriggerAxis() > 0.5) {
+                      Shooter::GetInstance().SetShooterSpeed(Constants::kManualShooterSpeed);
         // Align shoot and turret: sample implementation using raw doubles
-        auto robotPose = SwerveDrive::GetInstance().GetPose2d();
-        double dx = Constants::kHubX - (robotPose.Translation().X().value() + robotPose.Rotation().Cos() / Constants::kShooterOffsetDist);
-        double dy = Constants::kHubY - (robotPose.Translation().Y().value() + robotPose.Rotation().Sin() / Constants::kShooterOffsetDist);
-        double distToHub = std::sqrt(dx * dx + dy * dy);
+        //auto robotPose = SwerveDrive::GetInstance().GetPose2d();
+        //double dx = Constants::kHubX - (robotPose.Translation().X().value() + robotPose.Rotation().Cos() / Constants::kShooterOffsetDist);
+        //double dy = Constants::kHubY - (robotPose.Translation().Y().value() + robotPose.Rotation().Sin() / Constants::kShooterOffsetDist);
+        //double distToHub = std::sqrt(dx * dx + dy * dy);
 
         // use distToHub (double) or convert back to units if needed
         // e.g. Shooter::GetInstance().SetMotorSpeed(...);
       } else if (Controllers::GetInstance()
                      .GetOperatorController()
+                     .GetRightTriggerAxis() > 0.5) {
+                      Shooter::GetInstance().SetShooterSpeed(Constants::kManualShooterSpeed);
+      } else if (Controllers::GetInstance()
+                     .GetOperatorController()
                      .GetRightX() > 0.5) {
+                      Shooter::GetInstance().SetShooterSpeed(0_tps);
 
       } else if (Controllers::GetInstance()
                      .GetOperatorController()

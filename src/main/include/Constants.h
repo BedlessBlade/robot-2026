@@ -167,8 +167,8 @@ public:
   static constexpr double kStartIntakeThresh = 0.5;
 
   //Shooter
-  static constexpr int kShooterMotorRightId = 0;
-  static constexpr int kShooterMotorLeftId = 0;
+  static constexpr int kShooterMotorRightId = 17;
+  static constexpr int kShooterMotorLeftId = 18;
 
   static constexpr double kShooterMotorP = 0.0;
   static constexpr double kShooterMotorI = 0.0;
@@ -193,7 +193,9 @@ public:
   static constexpr double kShooterAzimuthCos = 0.0;
   static constexpr double kShooterAzimuthCosRatio = 0.0;
 
-  static constexpr int kLeftHoodServoPort = 0;
-  static constexpr int kRightHoodServoPort = 0;
+  static constexpr int kLeftHoodServoPort = 9;
+  static constexpr int kRightHoodServoPort = 8;
+
+  static constexpr units::angular_velocity::turns_per_second_t kManualShooterSpeed = 10.0_tps;
 
 };
