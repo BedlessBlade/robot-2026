@@ -6,8 +6,8 @@ Shooter::Shooter() {
     .P(Constants::kShooterAzimuthP)
     .I(Constants::kShooterAzimuthI)
     .D(Constants::kShooterAzimuthD)
-    .OutputRange(Constants::kMinShooterAzimuth,
-        Constants::kMaxShooterAzimuth)
+    .OutputRange(Constants::kMinAzimuthOutput,
+        Constants::kMaxAzimuthOutput)
 
     .feedForward  // config the const. from header
     .kS(Constants::kShooterAzimuthS)
@@ -27,7 +27,7 @@ bool Shooter::IsAtSetpoint() {
     return m_azimuthController.IsAtSetpoint();
 };
 
-auto Shooter::SetMotorSpeed(double topSpeed, double lowSpeed) {
-    m_ShooterMotorLow.Set(lowSpeed);
-    m_ShooterMotorTop.Set(topSpeed);
+auto Shooter::SetMotorSpeed(double speed) {
+    m_ShooterMotorLow.Set(speed);
+    m_ShooterMotorTop.Set(speed);
 }

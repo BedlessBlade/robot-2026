@@ -22,11 +22,11 @@ class Climber : public System {
 
     rev::spark::SparkMax m_climbMotor{Constants::kClimbMotorID, rev::spark::SparkMax::MotorType::kBrushless};
     rev::spark::SparkClosedLoopController m_climberController = m_climbMotor.GetClosedLoopController();
-    rev::spark::SparkRelativeEncoder m_climberEncoder = m_climbMotor.GetEncoder();
     rev::spark::SparkMaxConfig m_climberConfig;
+    rev::spark::SparkRelativeEncoder m_climberEncoder = m_climbMotor.GetEncoder();
 
     void Update(Robot::Mode mode);
-    void SetClimber(double position);
+    void SetClimber(double position, SparkBase::ControlType controlType);
     double GetClimberPosition();
 
     double m_climberExtension = 0.0;
