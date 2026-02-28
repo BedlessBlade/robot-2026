@@ -28,10 +28,13 @@ void Climber::Update(Robot::Mode mode) {
     if (mode == Robot::Mode::kTeleop) {
         if (Controllers::GetInstance().GetOperatorController().GetPOV() == 0) { //D-Pad Up
             Climber::SetClimber(Constants::kClimbExtended, SparkBase::ControlType::kMAXMotionPositionControl);
+            m_linearActuator.SetAngle(0.75);
         } else if (Controllers::GetInstance().GetOperatorController().GetPOV() == 270) { //D-Pad Left
             Climber::SetClimber(Constants::kClimbClimbed, SparkBase::ControlType::kMAXMotionPositionControl);
+            m_linearActuator.SetAngle(0.5);
         } else if (Controllers::GetInstance().GetOperatorController().GetPOV() == 180) { //D-Pad Down
             Climber::SetClimber(Constants::kClimbStowed, SparkBase::ControlType::kMAXMotionPositionControl);
+            m_linearActuator.SetAngle(0.0);
         }
     }
 }

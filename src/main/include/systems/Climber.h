@@ -13,12 +13,18 @@
 #include <rev/SparkClosedLoopController.h>
 #include <rev/config/SparkMaxConfig.h>
 
+#include <frc/Servo.h>
+
+using namespace::rev::spark;
+
 class Climber : public System {
     public:
     static Climber &GetInstance() {
       static Climber instance;
       return instance;
     }
+
+    frc::Servo m_linearActuator{8};
 
     rev::spark::SparkMax m_climbMotor{Constants::kClimbMotorID, rev::spark::SparkMax::MotorType::kBrushless};
     rev::spark::SparkClosedLoopController m_climberController = m_climbMotor.GetClosedLoopController();
