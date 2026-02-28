@@ -1,4 +1,5 @@
 #include "Robot.h"
+#include <cmath> 
 
 #include <frc/DriverStation.h>
 #include <frc/Timer.h>
@@ -13,6 +14,7 @@
 #include "Locations.h"
 #include "Util.h"
 #include "auto/AutoDoNothing.h"
+#include "systems/SupaIntake.h"
 #include "systems/Cameras.h"
 #include "systems/SwerveDrive.h"
 #include "systems/QuestNav.h"
@@ -50,6 +52,7 @@ Robot::Robot()
   frc::SmartDashboard::PutData("QuestNav Field", &m_QuestNavField);
 
   // Call GetInstance() so the constructors get called
+  SupaIntake::GetInstance();
   Cameras::GetInstance();
   SwerveDrive::GetInstance();
   Indexer::GetInstance();
@@ -294,19 +297,23 @@ Robot::Robot()
         
       } else if (Controllers::GetInstance()
                      .GetOperatorController()
-                     .GetLeftTriggerAxis() > 0.5) {
-        
+                     .GetLeftTriggerAxis() > Constants::kStartIntakeThresh) {
+                      SupaIntake::GetInstance().SetState(true);
+      } else if (Controllers::GetInstance()
+                      .GetOperatorController()
+                      .GetLeftTriggerAxis() < Constants::kStartIntakeThresh) {
+                      SupaIntake::GetInstance().SetState(false);
       } else if (Controllers::GetInstance()
                      .GetOperatorController()
                      .GetRightTriggerAxis() > 0.5) {
-                      //add Align shoot and turret
+        // Align shoot and turret: sample implementation using raw doubles
+        auto robotPose = SwerveDrive::GetInstance().GetPose2d();
+        double dx = Constants::kHubX - (robotPose.Translation().X().value() + robotPose.Rotation().Cos() / Constants::kShooterOffsetDist);
+        double dy = Constants::kHubY - (robotPose.Translation().Y().value() + robotPose.Rotation().Sin() / Constants::kShooterOffsetDist);
+        double distToHub = std::sqrt(dx * dx + dy * dy);
 
-                      //remove this line later, add pose to top of code or whatever.
-                      auto robotPose = SwerveDrive::GetInstance().GetPose2d();
-                      int distToHub = sqrt(pow((Constants::kHubX - (robotPose.X() + (robotPose.Rotation().Cos() / Constants::kShooterOffsetDist))), 2) + 
-                                   pow((Constants::kHubY - (robotPose.Y() + (robotPose.Rotation().Sin() / Constants::kShooterOffsetDist))), 2));
-                      // Shooter::GetInstance().SetMotorSpeed();
-
+        // use distToHub (double) or convert back to units if needed
+        // e.g. Shooter::GetInstance().SetMotorSpeed(...);
       } else if (Controllers::GetInstance()
                      .GetOperatorController()
                      .GetRightX() > 0.5) {
@@ -353,7 +360,7 @@ Robot::Robot()
 
     Cameras::GetInstance().Update(mode, t);
     SwerveDrive::GetInstance().Update(mode, t);
-
+    SupaIntake::GetInstance().Update(mode, t);
     LEDs::GetInstance().Update(mode, globalAlliance);
     Indexer::GetInstance().Update(mode);
   }};

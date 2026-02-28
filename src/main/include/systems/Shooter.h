@@ -4,6 +4,7 @@
 #include <rev/config/SparkMaxConfig.h>
 #include <ctre/phoenix6/TalonFX.hpp>
 #include <ctre/phoenix6/controls/VelocityVoltage.hpp>
+#include <frc/Servo.h>
 
 #include "Constants.h"
 #include "System.h"
@@ -22,9 +23,9 @@ public:
 
     bool IsAtSetpoint();
 
-    
-
     void Update(Robot::Mode mode, double t) override;
+
+    void SetHoodState(double state);
 
 private:
     // change back to Turret motor for once done
@@ -38,7 +39,15 @@ private:
     ctre::phoenix6::controls::VelocityVoltage m_rightVelocity{0.0_rpm};
     ctre::phoenix6::controls::VelocityVoltage m_leftVelocity{0.0_rpm};
 
+    frc::Servo m_hoodServo{Constants::kHoodServoPort};
+
     rev::spark::SparkMaxConfig m_azimuthConfig; //configured in the cpp file
+
+    units::angular_velocity::turns_per_second_t m_shooterSpeed;
+
+    double m_azimuthSetpoint;
+
+    double m_hoodState;
 
     Shooter();
 };

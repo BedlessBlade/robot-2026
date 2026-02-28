@@ -152,8 +152,28 @@ public:
   static constexpr double kClimberCruiseVel = 0.0;
   static constexpr double kClimberMaxAccel = 0.0;
   static constexpr double kClimberAllowedErr = 0.0;
+  
+
+  //Intake
+  static constexpr int kIntakeMotorId = 20;
+  static constexpr double kIntakeForward = 0.8; // 0.7 was too slow during testing, test 0.9 and adjust f
+  static constexpr double kIntakeReverse = -0.8;
+  static constexpr int kIntakePneumId = 0;
+
+  static constexpr double kStartIntakeThresh = 0.5;
 
   //Shooter
+  static constexpr int kShooterMotorRightId = 0;
+  static constexpr int kShooterMotorLeftId = 0;
+
+  static constexpr double kShooterMotorP = 0.0;
+  static constexpr double kShooterMotorI = 0.0;
+  static constexpr double kShooterMotorD = 0.0;
+  static constexpr double kShooterMotorV = 0.0;
+  
+  static constexpr double kMinShooterAzimuth = -0.5;
+  static constexpr double kMaxShooterAzimuth = 0.5;
+
   static constexpr int kAzimuthMotorId = 0;
   static constexpr double kShooterAzimuthP = 0.0;
   static constexpr double kShooterAzimuthI = 0.0;
@@ -169,22 +189,6 @@ public:
   static constexpr double kShooterAzimuthCos = 0.0;
   static constexpr double kShooterAzimuthCosRatio = 0.0;
 
-  //Intake
-  static constexpr int kIntakeMotorId = 0;
-  static constexpr double kIntakeForward = 0.7;
-  static constexpr double kIntakeReverse = -0.7;
-  static constexpr int kp1IntakePneumId = 0;
-
-  //Shooter
-  static constexpr int kShooterMotorRightId = 0;
-  static constexpr int kShooterMotorLeftId = 0;
-
-  static constexpr double kShooterMotorP = 0.0;
-  static constexpr double kShooterMotorI = 0.0;
-  static constexpr double kShooterMotorD = 0.0;
-  static constexpr double kShooterMotorV = 0.0;
-  
-  static constexpr double kMinShooterAzimuth = -0.5;
-  static constexpr double kMaxShooterAzimuth = 0.5;
+  static constexpr int kHoodServoPort = 0;
 
 };
