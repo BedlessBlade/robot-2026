@@ -21,15 +21,7 @@ public:
 
     bool IsAtSetpoint();
 
-    void ToggleMotors(bool Toggle, double TopSpeed, double LowSpeed);
-
-    void ReverseMotors();
-
-    void ShootingMotor();
-
-    auto adjustMotorSpeed(double topSpeed, double lowSpeed);
-
-    void ExtendMotor();
+    
 
     void Update(Robot::Mode mode, double t) override;
 

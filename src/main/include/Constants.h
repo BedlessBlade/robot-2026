@@ -184,4 +184,7 @@ public:
   static constexpr double kShooterMotorD = 0.0;
   static constexpr double kShooterMotorV = 0.0;
   
+  static constexpr double kMinShooterAzimuth = -0.5;
+  static constexpr double kMaxShooterAzimuth = 0.5;
+
 };
