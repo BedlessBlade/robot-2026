@@ -353,6 +353,8 @@ Robot::Robot()
 
     Cameras::GetInstance().Update(mode, t);
     SwerveDrive::GetInstance().Update(mode, t);
+    Shooter::GetInstance().Update(mode, t);
+
 
     LEDs::GetInstance().Update(mode, globalAlliance);
     Indexer::GetInstance().Update(mode);

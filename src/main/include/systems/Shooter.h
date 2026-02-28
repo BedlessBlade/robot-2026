@@ -22,8 +22,6 @@ public:
 
     bool IsAtSetpoint();
 
-    
-
     void Update(Robot::Mode mode, double t) override;
 
 private:
@@ -39,6 +37,10 @@ private:
     ctre::phoenix6::controls::VelocityVoltage m_leftVelocity;
 
     rev::spark::SparkMaxConfig m_azimuthConfig; //configured in the cpp file
+
+    units::angular_velocity::turns_per_second_t m_shooterSpeed;
+
+    double m_azimuthSetpoint;
 
     Shooter();
 };
