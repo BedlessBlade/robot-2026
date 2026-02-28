@@ -1,5 +1,7 @@
+#include <ctre/phoenix6>
+
 #include "Constants.h"
-#include "Systems/Shooter.h"
+#include "systems/Shooter.h"
 
 Shooter::Shooter() {
     m_azimuthConfig.closedLoop
@@ -16,9 +18,25 @@ Shooter::Shooter() {
     .kG(Constants::kShooterAzimuthG)
     .kCos(Constants::kShooterAzimuthCos)
     .kCosRatio(Constants::kShooterAzimuthCosRatio);
+
+    ctre::phoenix6::controls::VelocityVoltage m_rightVelocity(0_tps);
+    ctre::phoenix6::controls::VelocityVoltage m_leftVelocity(0_tps);
+
+    ctre::phoenix6::configs::Slot0Configs m_shootConfig;
+    m_shootConfig.kV = Constants::kShooterMotorV;
+    m_shootConfig.kP = Constants::kShooterMotorP;
+    m_shootConfig.kI = Constants::kShooterMotorI;
+    m_shootConfig.kD = Constants::kShooterMotorD;
+
+    m_shooterMotorRight.GetConfigurator().Apply(m_shootConfig, 50_ms);
+    m_shooterMotorLeft.GetConfigurator().Apply(m_shootConfig, 50_ms);
+
+    m_rightVelocity.Slot = 0;
+    m_leftVelocity.Slot = 0;
 };
 
 void Shooter::SetAngle(double angle) {
+    double revs = Constants::kAzimuthMotorRevsToRevs * (angle / (2 * M_PI));
     double revs = Constants::kAzimuthMotorRevsToRevs * (angle / (2 * M_PI));
     m_azimuthController.SetSetpoint(revs, rev::spark::SparkBase::ControlType::kPosition);
 };
@@ -27,16 +45,7 @@ bool Shooter::IsAtSetpoint() {
     return m_azimuthController.IsAtSetpoint();
 };
 
-auto Shooter::adjustMotorSpeed(double topSpeed, double lowSpeed) {
-    m_ShooterMotorLow.Set(lowSpeed);
-    m_ShooterMotorTop.Set(topSpeed);
-}
-
-void Align(frc::Pose2d pose) {
-    units::length::meter_t x = pose.X();
-    units::length::meter_t y = pose.Y();
-    frc::Rotation2d theta = pose.Rotation(); 
-
-    
-
-}
+void Shooter::SetShooterSpeed(units::angular_velocity::turns_per_second_t Speed) {
+    m_shooterMotorRight.SetControl(m_rightVelocity.WithVelocity(Speed));
+    m_shooterMotorLeft.SetControl(m_leftVelocity.WithVelocity(Speed));
+};
