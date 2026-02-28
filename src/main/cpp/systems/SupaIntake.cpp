@@ -14,7 +14,7 @@ SupaIntake::spinCur SupaIntake::GetMotorCase() {
     return motorState; // send motorState to Robot.cpp
 }
 
-//  --in honor of patricks 2 hours wasted--
+//  --in honor of patibs 2 hours wasted--
 
 //general single-command functions
 
