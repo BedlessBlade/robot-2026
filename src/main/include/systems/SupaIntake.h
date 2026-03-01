@@ -62,7 +62,10 @@ private:
     rev::spark::SparkMax m_sparkMotor{Constants::kIntakeMotorId, rev::spark::SparkMax::MotorType::kBrushless};
 
     // add 2 pistons
-    frc::DoubleSolenoid m_solenoid{frc::PneumaticsModuleType::REVPH, Constants::kIntakePneumId, -1};
+    frc::DoubleSolenoid m_solenoid{Constants::kIntakePneumCanId,
+         frc::PneumaticsModuleType::REVPH,
+         Constants::kIntakePneumId1,
+         Constants::kIntakePneumId2};
     //frc::DoubleSolenoid m_solenoid2{frc::PneumaticsModuleType::REVPH, Constants::kp2IntakePneumId, -1};
     //May need the second solenoid? PATRICK FIX
 

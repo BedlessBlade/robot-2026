@@ -162,7 +162,9 @@ public:
   static constexpr int kIntakeMotorId = 20;
   static constexpr double kIntakeForward = 0.8; // 0.7 was too slow during testing, test 0.9 and adjust f
   static constexpr double kIntakeReverse = -0.8;
-  static constexpr int kIntakePneumId = 0;
+  static constexpr int kIntakePneumCanId = 25;
+  static constexpr int kIntakePneumId1 = 2;
+  static constexpr int kIntakePneumId2 = 3;
 
   static constexpr double kStartIntakeThresh = 0.5;
 
