@@ -18,7 +18,7 @@ class LEDs : public System {
     }
     //Initializes the LEDs object.
     static constexpr int kLength = 300;
-    frc::AddressableLED m_led{9};
+    frc::AddressableLED m_led{7};
     std::array<frc::AddressableLED::LEDData, kLength> m_ledBuffer;
     units::meter_t kLedSpacing{1 / 60.0};
 
