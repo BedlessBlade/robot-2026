@@ -302,8 +302,9 @@ Robot::Robot()
                       SupaIntake::GetInstance().SetState(false);
       } else if (Controllers::GetInstance()
                      .GetOperatorController()
-                     .GetRightTriggerAxis() > 0.5) {
-                      Shooter::GetInstance().SetShooterSpeed(Constants::kManualShooterSpeed);
+                     .GetLeftTriggerAxis() > 0.5) {
+                      SupaIntake::GetInstance().SpinIn();
+                      //Shooter::GetInstance().SetShooterSpeed(Constants::kManualShooterSpeed);
         // Align shoot and turret: sample implementation using raw doubles
         //auto robotPose = SwerveDrive::GetInstance().GetPose2d();
         //double dx = Constants::kHubX - (robotPose.Translation().X().value() + robotPose.Rotation().Cos() / Constants::kShooterOffsetDist);
@@ -314,12 +315,13 @@ Robot::Robot()
         // e.g. Shooter::GetInstance().SetMotorSpeed(...);
       } else if (Controllers::GetInstance()
                      .GetOperatorController()
-                     .GetRightTriggerAxis() > 0.5) {
-                      Shooter::GetInstance().SetShooterSpeed(Constants::kManualShooterSpeed);
-      } else if (Controllers::GetInstance()
+                     .GetLeftTriggerAxis() < 0.5) {
+                      //Shooter::GetInstance().SetShooterSpeed(0_tps);
+                      SupaIntake::GetInstance().SpinStop();
+                      
+                    } else if (Controllers::GetInstance()
                      .GetOperatorController()
                      .GetRightX() > 0.5) {
-                      Shooter::GetInstance().SetShooterSpeed(0_tps);
 
       } else if (Controllers::GetInstance()
                      .GetOperatorController()

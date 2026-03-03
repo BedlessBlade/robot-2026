@@ -160,8 +160,8 @@ public:
 
   //Intake
   static constexpr int kIntakeMotorId = 20;
-  static constexpr double kIntakeForward = 0.8; // 0.7 was too slow during testing, test 0.9 and adjust f
-  static constexpr double kIntakeReverse = -0.8;
+  static constexpr double kIntakeForward = 0.75; // 0.7 was too slow during testing, test 0.9 and adjust f
+  static constexpr double kIntakeReverse = -0.75;
   static constexpr int kIntakePneumCanId = 25;
   static constexpr int kIntakePneumId1 = 2;
   static constexpr int kIntakePneumId2 = 3;
@@ -198,6 +198,6 @@ public:
   static constexpr int kLeftHoodServoPort = 9;
   static constexpr int kRightHoodServoPort = 8;
 
-  static constexpr units::angular_velocity::turns_per_second_t kManualShooterSpeed = 10.0_tps;
+  static constexpr units::angular_velocity::turns_per_second_t kManualShooterSpeed = 35.0_tps;
 
 };
