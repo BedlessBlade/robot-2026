@@ -17,22 +17,22 @@ void ShotCalculator::CalculateShotParams(frc::Translation2d robotPosition, frc::
     frc::Translation2d toGoalNormalized = toGoal.operator/(distanceToGoal.value());                                 // Normalize toGoal vector
 
     // Use LUT to find baseline (i.e., 0 robot velocity) shot params
-    double timeOfFlight = dist2tofTable.get(distanceToGoal);                                                        // Use lookup table to find time of flight
-    double baselineShotVelocity = distanceToGoal.value() / timeOfFlight;                                            // Shot velocity (m/s)
+    //double timeOfFlight = dist2tofTable.get(distanceToGoal);                                                        // Use lookup table to find time of flight
+    //double baselineShotVelocity = distanceToGoal.value() / timeOfFlight;                                            // Shot velocity (m/s)
 
     // Get target velocity vector
-    frc::Translation2d targetVelocity = toGoalNormalized.operator*(baselineShotVelocity);                           // target velocity vector (m/s)
+    //frc::Translation2d targetVelocity = toGoalNormalized.operator*(baselineShotVelocity);                           // target velocity vector (m/s)
 
     // Get shot velocity vector
-    frc::Translation2d shotVelocity = targetVelocity.operator-(robotVelocity);
+    //frc::Translation2d shotVelocity = targetVelocity.operator-(robotVelocity);
 
     // Extract shooter params
-    m_turretAngle = shotVelocity.Angle().Degrees().value();
-    double requiredVelocity = shotVelocity.Norm().value();
+    //m_turretAngle = shotVelocity.Angle().Degrees().value();
+    //double requiredVelocity = shotVelocity.Norm().value();
 
     // use LUT to find the shooter RPS
-    double effectiveDistance = vel2distTable.get(requiredVelocity);
-    m_shooterVelocity = dist2RpsTable.get(effectiveDistance);
+    //double effectiveDistance = vel2distTable.get(requiredVelocity);
+    //m_shooterVelocity = dist2RpsTable.get(effectiveDistance);
 }
 
 // Shooter wheel velocity getter (RPS or Rev/s)
