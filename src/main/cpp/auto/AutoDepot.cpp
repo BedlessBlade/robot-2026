@@ -12,19 +12,19 @@ AutoDepot::AutoDepot(frc::DriverStation::Alliance alliance) {
           Locations::GetInstance().GetDepotPosition(alliance),
       false, false));
     m.tasks.push_back(std::make_shared<Intakestart>());
-    m.tasks.push_back(std::make_shared<Wait>(1.0)); // should be tested and changed
+    m.tasks.push_back(std::make_shared<Delay>(1.0)); // should be tested and changed
     m_tasks.push_back(std::make_shared<FollowPath>(
       std::vector<frc::Pose2d>{
           Locations::GetInstance().GetShootPosition(alliance), // just so we can have a set point for when we want to shoot
       false, false));
-    m.tasks.push_back(std::make_shared<shoot>));
+    m.tasks.push_back(std::make_shared<shoot>());
     m_tasks.push_back(std::make_shared<FollowPath>(
       std::vector<frc::Pose2d>{
           Locations::GetInstance().GetClimbPosition(alliance),
       false, false));
-    m.tasks.push_back(std::make_shared<climberextend()>));
-    m.tasks.push_back(std::make_shared<wait(1)>));
-    m.tasks.push_back(std::make_shared<climberclimb()>));
+    m.tasks.push_back(std::make_shared<climberextend>());
+    m.tasks.push_back(std::make_shared<Delay(1.0)>));
+    m.tasks.push_back(std::make_shared<climberclimb>());
 */
 
 }
