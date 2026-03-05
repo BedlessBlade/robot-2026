@@ -89,6 +89,4 @@ void SupaIntake::Update(Robot::Mode mode, double t) {
 };
 
 
-SupaIntake::SupaIntake() {
-
-}
+SupaIntake::SupaIntake() {}
