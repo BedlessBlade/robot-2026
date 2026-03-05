@@ -30,6 +30,7 @@ void SupaIntake::SpinOut () {
     m_sparkMotor.Set(Constants::kIntakeReverse); // negitives set speed as same, but oppisite direction
     motorState = spinCur::OUT;
 };
+
 void SupaIntake::SpinStop () {
     m_sparkMotor.Set(0.0); //stops motor
     motorState = spinCur::IDLE; //sets enums for comparisons in Robot.cpp
@@ -78,9 +79,11 @@ void SupaIntake::Update(Robot::Mode mode, double t) {
     if (mode == Robot::Mode::kTeleop) {
         if (Controllers::GetInstance().GetOperatorController().GetLeftTriggerAxis() >= 0.5 && !isOn) {
             setIntake(true);
+            isOn = true;
         };
         if (Controllers::GetInstance().GetOperatorController().GetLeftTriggerAxis() < 0.5 && isOn) {
             setIntake(false);
+            isOn = false;
         };
     }
     else if (mode == Robot::Mode::kAuto) {
