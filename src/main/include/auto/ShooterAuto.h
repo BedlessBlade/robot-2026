@@ -4,10 +4,10 @@
 #include <cmath>
 #include <units/angular_velocity.h>
 
-class AutoStationaryShoot : public Task {
+class ShooterAuto : public Task {
 public:
   void ShooterOff();
-  void ShooterOn(units::angular_velocity::turns_per_second_t speed, double angle);
+  void ShooterOn(units::angular_velocity::turns_per_second_t speed, double hoodAngle, double turretAngle);
 
   void Start(double t) override;
   void Update(double t) override;
@@ -15,5 +15,5 @@ public:
 
   bool IsDone() const override;
 
-  AutoStationaryShoot();
+  ShooterAuto();
 };
