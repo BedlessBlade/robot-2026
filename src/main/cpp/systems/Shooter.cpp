@@ -47,6 +47,7 @@ void Shooter::SetAngle(double angle) {
  
 bool Shooter::IsAtSetpoint() {
      return m_azimuthController.IsAtSetpoint();
+     
  };
  
 void Shooter::SetShooterSpeed(units::angular_velocity::turns_per_second_t Speed) {

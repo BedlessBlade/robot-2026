@@ -1,5 +1,6 @@
 #include "systems/Indexer.h"
 #include "Controllers.h"
+#include "systems/Shooter.h"
 
 using namespace rev::spark;
 
@@ -34,10 +35,10 @@ void Indexer::StopIndexing() {
 }
 
 bool Indexer::IndexerSafe() const {
-    //if (turrent in correct spot) {
+    if (Shooter::GetInstance().IsAtSetpoint()) {
     //  if (shooter at target speed)
     //      return true;
     //  }
-    //}
+    }
     return true;
 }

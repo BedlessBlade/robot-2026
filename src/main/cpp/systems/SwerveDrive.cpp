@@ -6,10 +6,6 @@
 #include <frc/kinematics/ChassisSpeeds.h>
 #include <frc/DriverStation.h>
 
-#include <pathplanner/lib/auto/AutoBuilder.h>
-#include <pathplanner/lib/config/RobotConfig.h>
-#include <pathplanner/lib/controllers/PPHolonomicDriveController.h>
-
 #include "Constants.h"
 #include "Robot.h"
 #include "frc/filter/SlewRateLimiter.h"
@@ -79,13 +75,6 @@ SwerveDrive::SwerveDrive()
   config.kI = kI;
   config.kD = kD;
 
-
-
-
-
-
-
-
   // Create a current limit config to apply to the drive motors
   auto currentLimitConfig = configs::CurrentLimitsConfigs{}
                                 .WithSupplyCurrentLimitEnable(true)
@@ -127,41 +116,6 @@ SwerveDrive::SwerveDrive()
 
   // Default to coast mode
   Coast();
-
-  
-  //pathplanner::RobotConfig config = pathplanner::RobotConfig::fromGUISettings();
-  /*
-  pathplanner::AutoBuilder::configure(
-    [this](){ return SwerveDrive::GetInstance().GetPose2d(); }, // Robot pose supplier
-    [this](frc::Pose2d pose){ SwerveDrive::GetInstance().ResetPose(pose); }, // Method to reset odometry (will be called if your auto has a starting pose)
-    [this](){ return SwerveDrive::GetInstance().GetStates(); }, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
-    [this](frc::ChassisSpeeds speeds, auto feedforwards){ DriveVelocity(speeds.vx, speeds.vy, speeds.w); }, // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds. Also optionally outputs individual module feedforwards
-    std::make_shared<pathplanner::PPHolonomicDriveController>( // PPHolonomicController is the built in path following controller for holonomic drive trains
-        Constants::translationConstants, // Translation PID constants
-        Constants::rotationConstants// Rotation PID constants
-    ),
-    config, // The robot configuration
-    []() {
-        // Boolean supplier that controls when the path will be mirrored for the red alliance
-        // This will flip the path being followed to the red side of the field.
-        // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
-
-        auto alliance = frc::DriverStation::GetAlliance();
-        if (alliance) {
-            return alliance.value() == frc::DriverStation::Alliance::kRed;
-        }
-        
-
-        return false;
-        
-    },
-    this // Reference to this subsystem to set requirements
-    
-);
-*/
-
-
-
 }
 
 // This function needs to be called by the looper to update the drive motors
