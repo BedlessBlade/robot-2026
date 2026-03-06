@@ -1,6 +1,7 @@
 #pragma once
 
 #include <frc/geometry/Transform3d.h>
+#include <frc/geometry/Pose2d.h>
 #include <units/angular_velocity.h>
 #include <units/length.h>
 #include <units/velocity.h>
@@ -99,20 +100,6 @@ public:
   static constexpr double kHubX = 158.84 / kInchesPerMeter;
   static constexpr double kHubY = 182.11 / kInchesPerMeter;
 
-
-  static constexpr double kReefWidth = 65.2 / kInchesPerMeter;
-  static constexpr double kReefOffset =
-      (144 / kInchesPerMeter) + kReefWidth / 2;
-  
-  static constexpr double kReefSpacing = 0.515; // meters
-  static constexpr double kCoralSpacing = 13 / kInchesPerMeter;
-
-  // Speed for Shooter Motors
-  static constexpr double kShooterRegularSpeed = 0.8; // change if too fast
-  static constexpr double kShooterReverseSpeed = -0.5;
-  static constexpr double kShooterOffsetDist = 10.30776406;
-
-
   // Path following
   static constexpr double kPathFollowingKp = 6.0;
   static constexpr double kPathFollowingKi = 0.005;
@@ -197,6 +184,8 @@ public:
 
   static constexpr int kLeftHoodServoPort = 9;
   static constexpr int kRightHoodServoPort = 8;
+
+  static constexpr frc::Pose2d turretOffset = {9.5_m, 4_m, 0_deg};
 
   static constexpr units::angular_velocity::turns_per_second_t kManualShooterSpeed = 35.0_tps;
 
