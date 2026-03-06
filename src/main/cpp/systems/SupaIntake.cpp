@@ -56,6 +56,10 @@ void SupaIntake::SetState(bool state) {
     intakeState = state;
 };
 
+void SupaIntake::SetVelocity() {
+    m_sparkMotor.Set(1.0);
+};
+
 //set intake properly
 void SupaIntake::setIntake(bool setMode){
     if (setMode) {
@@ -64,10 +68,11 @@ void SupaIntake::setIntake(bool setMode){
     }
     else if (!setMode) {
         SpinOut();
+
         Retract();
         SpinStop();
     }
-}
+};
 
 
 bool SupaIntake::ArmDown() {
@@ -77,14 +82,12 @@ bool SupaIntake::ArmDown() {
 //Misc IDK functions  NEED FIX
 void SupaIntake::Update(Robot::Mode mode, double t) {
     if (mode == Robot::Mode::kTeleop) {
-        if (Controllers::GetInstance().GetOperatorController().GetLeftTriggerAxis() >= 0.5 && !isOn) {
-            setIntake(true);
-            isOn = true;
-        };
-        if (Controllers::GetInstance().GetOperatorController().GetLeftTriggerAxis() < 0.5 && isOn) {
-            setIntake(false);
-            isOn = false;
-        };
+        if (Controllers::GetInstance().GetOperatorController().GetLeftTriggerAxis() > 0.25){
+            SpinIn();
+        }
+        else {
+            SpinStop();        
+        }
     }
     else if (mode == Robot::Mode::kAuto) {
         //Auto code goes here 
@@ -92,4 +95,7 @@ void SupaIntake::Update(Robot::Mode mode, double t) {
 };
 
 
-SupaIntake::SupaIntake() {}
+SupaIntake::SupaIntake() {
+    SupaIntake::motorState = spinCur::IDLE;
+    SupaIntake::pnuemState = pistLoc::UP; 
+}

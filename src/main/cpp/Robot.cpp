@@ -294,15 +294,7 @@ Robot::Robot()
         
       } else if (Controllers::GetInstance()
                      .GetOperatorController()
-                     .GetLeftTriggerAxis() > Constants::kStartIntakeThresh) {
-                      SupaIntake::GetInstance().SetState(true);
-      } else if (Controllers::GetInstance()
-                      .GetOperatorController()
-                      .GetLeftTriggerAxis() < Constants::kStartIntakeThresh) {
-                      SupaIntake::GetInstance().SetState(false);
-      } else if (Controllers::GetInstance()
-                     .GetOperatorController()
-                     .GetLeftTriggerAxis() > 0.5) {
+                     .GetLeftTriggerAxis() > 0.25) {
                       SupaIntake::GetInstance().SpinIn();
                       //Shooter::GetInstance().SetShooterSpeed(Constants::kManualShooterSpeed);
         // Align shoot and turret: sample implementation using raw doubles
@@ -315,13 +307,14 @@ Robot::Robot()
         // e.g. Shooter::GetInstance().SetMotorSpeed(...);
       } else if (Controllers::GetInstance()
                      .GetOperatorController()
-                     .GetLeftTriggerAxis() < 0.5) {
+                     .GetLeftTriggerAxis() < -0.5) {
                       //Shooter::GetInstance().SetShooterSpeed(0_tps);
                       SupaIntake::GetInstance().SpinStop();
                       
                     } else if (Controllers::GetInstance()
                      .GetOperatorController()
                      .GetRightX() > 0.5) {
+                      SupaIntake::GetInstance().SpinIn();
 
       } else if (Controllers::GetInstance()
                      .GetOperatorController()

@@ -47,6 +47,9 @@ public:
 
     void SetState(bool state);
 
+
+    void SetVelocity();
+
     //spin state enum
     enum class spinCur { IN, OUT, IDLE }; // What state is the motor in?
 
@@ -66,8 +69,7 @@ private:
          frc::PneumaticsModuleType::REVPH,
          Constants::kIntakePneumId1,
          Constants::kIntakePneumId2};
-    //frc::DoubleSolenoid m_solenoid2{frc::PneumaticsModuleType::REVPH, Constants::kp2IntakePneumId, -1};
-    //May need the second solenoid? PATRICK FIX
+    // Create the 2 solenoids
 
     //Make states usable in .cpp file
     spinCur motorState = spinCur::IDLE;
