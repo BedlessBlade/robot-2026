@@ -2,10 +2,11 @@
 
 #include <frc/DriverStation.h>
 #include <frc/geometry/Pose2d.h>
-//#include <frc/geometry/translation2d.h>
+#include <frc/geometry/translation2d.h>
 #include <wpi/interpolating_map.h>
 #include <vector>
 #include "Robot.h"
+#include <wpi/interpolating_map.h>
 
 // Shot calculator class
 class ShotCalculator {
@@ -17,7 +18,7 @@ public:
     }
 
     //shooter getters for turret Azimuth angle (degrees) and shooter angular velocity (Rev/s)
-    void CalculateShotParams(frc::Translation2d robotPosition, frc::Translation2d robotVelocity, frc::Translation2d goalPosition, double latency);
+    void CalculateShotParams(frc::Pose2d robotPosition, frc::Translation2d robotVelocity, frc::Translation2d goalPosition, double latency);
     double GetTurretAngle();
     double GetShooterVelocity();
   
