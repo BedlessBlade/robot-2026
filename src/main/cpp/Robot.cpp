@@ -244,13 +244,9 @@ Robot::Robot()
        } else if (Controllers::GetInstance().GetOperatorController().GetLeftTriggerAxis() < Constants::kStartIntakeThresh){ 
 
       } else if (Controllers::GetInstance().GetOperatorController().GetLeftTriggerAxis() > 0.5) {
-
-
-
+        Shooter::GetInstance().StartShooting();
       } else if (Controllers::GetInstance().GetOperatorController().GetLeftTriggerAxis() < 0.5) {
-
-
-                      
+        Shooter::GetInstance().StopShooting();
        } else if (Controllers::GetInstance().GetOperatorController().GetRightX() > 0.5) {
 
        } else if (Controllers::GetInstance().GetOperatorController().GetRightY() > 0.5) {
