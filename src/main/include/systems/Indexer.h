@@ -23,8 +23,8 @@ class Indexer : public System {
         void Update(Robot::Mode mode);
         void StartIndexing();
         void StopIndexing();
-        bool IndexerSafe() const;
 
         bool m_indexerState = false; //Tracks if the indexer is activated.
+        
 
 };

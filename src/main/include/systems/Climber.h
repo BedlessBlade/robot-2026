@@ -19,6 +19,7 @@ using namespace::rev::spark;
 
 class Climber : public System {
     public:
+      enum climberlevel {STOWED , CLIMBED , EXTENDED};
       static Climber &GetInstance() {
         static Climber instance;
         return instance;
@@ -30,11 +31,12 @@ class Climber : public System {
       rev::spark::SparkRelativeEncoder m_climberEncoder = m_climbMotor.GetEncoder();
 
       void Update(Robot::Mode mode);
-      void SetClimber(double position, SparkBase::ControlType controlType);
+      void SetClimber(double level);
       double GetClimberPosition();
 
-      double m_climberExtension = 0.0;
+
 
     private:
+      climberlevel m_climberlevel;
       Climber();
 };
