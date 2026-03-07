@@ -19,7 +19,6 @@ void AutoStationaryShoot::ShooterOn(units::angular_velocity::turns_per_second_t 
     Shooter::GetInstance().SetShooterSpeed(speed);
 }
 
-
 void AutoStationaryShoot::Update(double t) {}
 
 void AutoStationaryShoot::Stop() {}
