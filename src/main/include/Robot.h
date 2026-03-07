@@ -52,6 +52,7 @@ private:
   PIDController m_alignControllers[3];
 
   bool m_braking = false;
+  bool m_intaking = false;
 
   inline void ResetAlignControllers() {
     for (int i = 0; i < 3; i++) {
