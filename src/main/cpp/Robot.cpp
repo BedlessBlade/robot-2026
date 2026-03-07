@@ -224,41 +224,38 @@ Robot::Robot()
         // Shooter::GetInstance().SetShooterSpeed(shooterSetpoint);
         // std::cout << "calling setter";
         
-      // } else if (Controllers::GetInstance().GetOperatorController().GetBButtonPressed()) {
+       } else if (Controllers::GetInstance().GetOperatorController().GetBButtonPressed()) {
         
-      // } else if (Controllers::GetInstance().GetOperatorController().GetXButtonPressed()) {
+       } else if (Controllers::GetInstance().GetOperatorController().GetXButtonPressed()) {
         
-      // } else if (Controllers::GetInstance().GetOperatorController().GetYButtonPressed()) {
+       } else if (Controllers::GetInstance().GetOperatorController().GetYButtonPressed()) {
         
-      // } else if (Controllers::GetInstance().GetOperatorController().GetPOV() == 180) {
+       } else if (Controllers::GetInstance().GetOperatorController().GetPOV() == 180) {
         
-      // } else if (Controllers::GetInstance().GetOperatorController().GetPOV() == 0) {
-        
-      // } else if (Controllers::GetInstance().GetOperatorController().GetPOV() == 270) {
-                  
-      // } else if (Controllers::GetInstance().GetOperatorController().GetPOV() == 90) {
-        
-      // } else if (Controllers::GetInstance().GetOperatorController().GetLeftTriggerAxis() > Constants::kStartIntakeThresh) {
-      //                 SupaIntake::GetInstance().SetState(true);
+       } else if (Controllers::GetInstance().GetOperatorController().GetPOV() == 0) {
+        Climber::GetInstance().SetClimber(2);
+       } else if (Controllers::GetInstance().GetOperatorController().GetPOV() == 270) {
+        Climber::GetInstance().SetClimber(1);
+       } else if (Controllers::GetInstance().GetOperatorController().GetPOV() == 90) {
+        Climber::GetInstance().SetClimber(0);
+       } else if (Controllers::GetInstance().GetOperatorController().GetLeftTriggerAxis() > Constants::kStartIntakeThresh) {
+                      
 
-      // } else if (Controllers::GetInstance().GetOperatorController().GetLeftTriggerAxis() < Constants::kStartIntakeThresh) {
-      //                 SupaIntake::GetInstance().SetState(false);
+       } else if (Controllers::GetInstance().GetOperatorController().GetLeftTriggerAxis() < Constants::kStartIntakeThresh){ 
 
       } else if (Controllers::GetInstance().GetOperatorController().GetLeftTriggerAxis() > 0.5) {
-                      //SupaIntake::GetInstance().SpinIn();
-                      //Shooter::GetInstance().SetShooterSpeed(Constants::kManualShooterSpeed);
-        Shooter::GetInstance().StartShooting();
+
+
 
       } else if (Controllers::GetInstance().GetOperatorController().GetLeftTriggerAxis() < 0.5) {
-                      //Shooter::GetInstance().SetShooterSpeed(0_tps);
-                      //SupaIntake::GetInstance().SpinStop();
-        Shooter::GetInstance().StopShooting();
-                      
-      // } else if (Controllers::GetInstance().GetOperatorController().GetRightX() > 0.5) {
 
-      // } else if (Controllers::GetInstance().GetOperatorController().GetRightY() > 0.5) {
+
+                      
+       } else if (Controllers::GetInstance().GetOperatorController().GetRightX() > 0.5) {
+
+       } else if (Controllers::GetInstance().GetOperatorController().GetRightY() > 0.5) {
         
-      // } else if (Controllers::GetInstance().GetOperatorController().GetRightY() < -0.5) {
+       } else if (Controllers::GetInstance().GetOperatorController().GetRightY() < -0.5) {
         
       } else {
         //Shooter::GetInstance().SetShooterSpeed(0.0_tps);
@@ -299,11 +296,11 @@ Robot::Robot()
     Cameras::GetInstance().Update(mode, t);
     SwerveDrive::GetInstance().Update(mode, t);
     Shooter::GetInstance().Update(mode, t);
-    //SupaIntake::GetInstance().Update(mode, t);
-    //LEDs::GetInstance().Update(mode, globalAlliance);
-    //Indexer::GetInstance().Update(mode);
+    SupaIntake::GetInstance().Update(mode, t);
+    LEDs::GetInstance().Update(mode, globalAlliance);
+    Indexer::GetInstance().Update(mode);
   }};
-}
+};
 
 // This destructor gets called when the robot program shuts down.
 // Cleanup any resources (especially files) before the robot code gets
