@@ -202,5 +202,10 @@ public:
   static constexpr int kLeftHoodServoPort = 9;
   static constexpr int kRightHoodServoPort = 8;
 
+  //Compressor
+
+  static constexpr double kMinPressure = 100;
+  static constexpr double kMaxPressure = 120;
+
   // Hood limits
 };

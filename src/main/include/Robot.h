@@ -1,5 +1,6 @@
 #pragma once
 
+#include <frc/Compressor.h>
 #include <cameraserver/CameraServer.h>
 #include <frc/TimedRobot.h>
 #include <frc/geometry/Pose2d.h>
@@ -35,6 +36,8 @@ public:
   bool isXButtonPressed = false;
 
 private:
+
+  frc::Compressor m_compressor;
 
   Looper m_looper;
 
