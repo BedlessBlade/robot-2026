@@ -37,11 +37,11 @@ void Climber::Update(Robot::Mode mode) {
 }
 
 void Climber::SetClimber(double level) {
-    if(level == 0 ) {
+    if(level == 0) {
         m_climberlevel = climberlevel::STOWED;
-    }  else if(level == 1) {
+    } else if(level == 1) {
         m_climberlevel = climberlevel::CLIMBED;
-    }  else if(level == 2) {
+    } else if(level == 2) {
         m_climberlevel = climberlevel::EXTENDED;
     }
 }
