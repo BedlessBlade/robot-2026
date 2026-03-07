@@ -5,6 +5,12 @@
 #include <units/length.h>
 #include <units/velocity.h>
 
+// Fix stupid windows compiler issue
+#include <numbers>
+#ifndef M_PI
+# define M_PI std::numbers::pi
+#endif
+
 class Constants {
 public:
 

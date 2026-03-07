@@ -35,10 +35,10 @@ void Indexer::StopIndexing() {
 }
 
 bool Indexer::IndexerSafe() const {
-    if (Shooter::GetInstance().IsAtSetpoint()) {
-    //  if (shooter at target speed)
-    //      return true;
-    //  }
-    }
+    // if (Shooter::GetInstance().IsAtSetpoint()) {
+    // //  if (shooter at target speed)
+    // //      return true;
+    // //  }
+    // }
     return true;
 }
