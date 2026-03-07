@@ -14,7 +14,7 @@
 #include "Locations.h"
 #include "Util.h"
 #include "auto/AutoDoNothing.h"
-#include "systems/SupaIntake.h"
+#include "systems/Intake.h"
 #include "systems/Cameras.h"
 #include "systems/SwerveDrive.h"
 #include "systems/QuestNav.h"
@@ -228,9 +228,9 @@ Robot::Robot()
        } else if (Controllers::GetInstance().GetOperatorController().GetBButtonPressed()) {
         
        } else if (Controllers::GetInstance().GetOperatorController().GetXButtonPressed()) {
-        
+        Intake::GetInstance().SetIntakeSpeed(Constants::kIntakeForward);
        } else if (Controllers::GetInstance().GetOperatorController().GetYButtonPressed()) {
-        
+        Intake::GetInstance().SetIntakeSpeed(0.0);        
        } else if (Controllers::GetInstance().GetOperatorController().GetPOV() == 180) {
         Shooter::GetInstance().StopShooting();
         
