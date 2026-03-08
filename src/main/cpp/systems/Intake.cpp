@@ -16,10 +16,10 @@ void Intake::SetExtensionState(bool State) {
 
 
 void Intake::Update(Robot::Mode mode, double t) {
-    m_intakeMotor.Set(m_speed);
+    m_intakeMotor.Set(m_speed); // Set speed
     //std::cout << "called" << std::endl;
 
-
+    // Set pistons
     if (m_state) { 
         m_solenoid.Set(frc::DoubleSolenoid::kForward);
     } else {
