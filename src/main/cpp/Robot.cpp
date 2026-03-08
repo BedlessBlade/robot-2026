@@ -100,11 +100,49 @@ Robot::Robot()
         m_braking = false;
       }
 
+      // The auto will reset the pose to be facing towards the driver on the red
+      // alliance so it needs to be corrected
+      auto alliance = frc::DriverStation::GetAlliance();
+
       m_field.SetRobotPose(SwerveDrive::GetInstance().GetPose2d());
       
       m_autoAlignMode = kNone;
 
-      // Find shooter setpoint
+      // setting shooter setpoint
+      frc::Pose2d shooterSetpoint;
+      frc::Pose2d robotPose = SwerveDrive::GetInstance().GetPose2d();
+      auto Robotx = robotPose.X();
+      auto Roboty = robotPose.Y();
+      if(alliance == frc::DriverStation::Alliance::kRed) {
+        if(Robotx >= 492.33_in) {
+          shooterSetpoint.X() = 492.33_in;
+          shooterSetpoint.Y() = 158.32_in;
+
+        } else if (Roboty <= 158.32_in) { 
+          shooterSetpoint.X() = 640.12_in - 60_in;
+          shooterSetpoint.Y() = 60_in;
+        } else if (Roboty >= 158.32_in) { 
+          shooterSetpoint.X() = 640.12_in - 60_in;
+          shooterSetpoint.Y() = 316.64_in - 60_in;
+        }
+        
+      } else if (alliance == frc::DriverStation::Alliance::kBlue) {
+        if(Robotx <= 157.79_in) {
+          shooterSetpoint.X() = 180.08_in;
+          shooterSetpoint.Y() = 158.32_in;
+
+        } else if (Roboty <= 158.32_in) { 
+          shooterSetpoint.X() = 60_in;
+          shooterSetpoint.Y() = 60_in;
+        } else if (Roboty >= 158.32_in) { 
+          shooterSetpoint.X() = 60_in;
+          shooterSetpoint.Y() = 316.64_in - 60_in;
+        }
+
+      }
+
+
+
 
       // Get the inputs from the controller during teleop mode. Note this uses
       // the split setup where the left joystick controls velocity, and the
@@ -123,9 +161,7 @@ Robot::Robot()
           Controllers::GetInstance().GetDriverController().GetRightX();
       double w = Util::Exp(-rightX) * Constants::kDriveAngularControlMultiplier;
 
-      // The auto will reset the pose to be facing towards the driver on the red
-      // alliance so it needs to be corrected
-      auto alliance = frc::DriverStation::GetAlliance();
+      
 
       if (alliance.has_value() && alliance.value() == frc::DriverStation::Alliance::kRed) {
         globalAlliance = "Red";
