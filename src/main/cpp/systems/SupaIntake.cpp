@@ -8,21 +8,14 @@ SupaIntake::SupaIntake() {}
 
 // Single-use functions
 void SupaIntake::SetMotors(double Speed) {
-    // Only update if new speed is not 0 or motor speed is not 0
-    // Prevents useless updates from happening over and over
-    // But not stopping the fast-paced updating
-    // if (spd != 0.0 or s_motorSpeed != 0.0) {
-    //     s_motorSpeed = spd;     
-    // }
-    m_motorSpeed = Speed;
+    if (m_pneumState){
+        m_motorSpeed = Speed;
+    } else {
+        m_motorSpeed = 0.0;
+    }
 }
 
 void SupaIntake::SetPneums() {
-    // Stops overwriting the bool
-    // unless the overwrite changes
-    // if (set != s_pneumState) {
-    //     s_pneumState = set;
-    // }
     if (m_pneumState) {
 
           m_pneumState = false;
