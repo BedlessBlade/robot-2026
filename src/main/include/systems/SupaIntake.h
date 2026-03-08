@@ -16,7 +16,7 @@ public:
     }
 
     void SetMotors(double Speed);   // Motors Function
-    void SetPneums(bool set);   // Pnuematics Function
+    void SetPneums();   // Pnuematics Function
 
     void StartAll();    // Enable and Disable all motors associated with the intake system 
     void EndAll();      // only allow use during auto & is not usable during teleop
@@ -26,7 +26,7 @@ public:
 private:
     rev::spark::SparkMax m_intakeSupaMotor{Constants::kIntakeMotorId, rev::spark::SparkMax::MotorType::kBrushless};
 
-    frc::DoubleSolenoid m_intakeSolenoid{25,
+    frc::DoubleSolenoid m_intakeSolenoid{Constants::kIntakePneumCanId,
         frc::PneumaticsModuleType::REVPH,
         Constants::kIntakePneumId1,
         Constants::kIntakePneumId2};

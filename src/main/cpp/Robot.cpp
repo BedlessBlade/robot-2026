@@ -110,9 +110,8 @@ Robot::Robot()
       
       m_autoAlignMode = kNone;
 
-      bool LastPosPiston;
+      bool LastPosPiston = false;
 
-      bool LastPosPiston;
 
       // setting shooter setpoint
       frc::Pose2d shooterSetpoint;
@@ -259,13 +258,8 @@ Robot::Robot()
       // operator controls elseif statement hell
       //some controls missing cuz i was getting rid of unnecessary lines
       if (Controllers::GetInstance().GetOperatorController().GetXButtonPressed()) {
-        if (LastPosPiston) {
-          SupaIntake::GetInstance().SetPneums(false);
-          LastPosPiston = false;
-        } else {
-          SupaIntake::GetInstance().SetPneums(true);
-          LastPosPiston = true;
-        }
+          SupaIntake::GetInstance().SetPneums();
+        
       } else if (Controllers::GetInstance().GetOperatorController().GetXButtonReleased()) {
 
       //Dpad up - Extend climb

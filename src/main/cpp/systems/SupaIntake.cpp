@@ -17,13 +17,20 @@ void SupaIntake::SetMotors(double Speed) {
     m_motorSpeed = Speed;
 }
 
-void SupaIntake::SetPneums(bool set) {
+void SupaIntake::SetPneums() {
     // Stops overwriting the bool
     // unless the overwrite changes
     // if (set != s_pneumState) {
     //     s_pneumState = set;
     // }
-    m_pneumState = set;
+    if (m_pneumState) {
+
+          m_pneumState = false;
+        } else {
+
+          m_pneumState = true;
+        }
+    
 }
 
 // deploy updates to the hardware
@@ -32,8 +39,10 @@ void SupaIntake::Update(Robot::Mode mode, double t) {
 
     // cases so we can use bool to control pneumatics
     if (m_pneumState) {
+        m_intakeSolenoid.Set(frc::DoubleSolenoid::kOff);
         m_intakeSolenoid.Set(frc::DoubleSolenoid::kForward);
     } else {
+        m_intakeSolenoid.Set(frc::DoubleSolenoid::kOff);
         m_intakeSolenoid.Set(frc::DoubleSolenoid::kReverse);
     }
 
