@@ -219,9 +219,9 @@ Robot::Robot()
       // operator controls elseif statement hell
       //some controls missing cuz i was getting rid of unnecessary lines
       if (Controllers::GetInstance().GetOperatorController().GetXButtonPressed()) {
-        //SupaIntake::GetInstance().SetMotors(0.75);
+        SupaIntake::GetInstance().SetPneums(true);
       } else if (Controllers::GetInstance().GetOperatorController().GetXButtonReleased()) {
-        //SupaIntake::GetInstance().SetMotors(0.0);
+        SupaIntake::GetInstance().SetPneums(false);
 
       //Dpad up - Extend climb
       } else if (Controllers::GetInstance().GetOperatorController().GetPOV() == 0) {

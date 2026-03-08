@@ -26,7 +26,7 @@ public:
 private:
     rev::spark::SparkMax m_intakeSupaMotor{25, rev::spark::SparkMax::MotorType::kBrushless};
 
-    frc::DoubleSolenoid m_intakeSolenoid{Constants::kIntakePneumCanId,
+    frc::DoubleSolenoid m_intakeSolenoid{25,
         frc::PneumaticsModuleType::REVPH,
         Constants::kIntakePneumId1,
         Constants::kIntakePneumId2};
