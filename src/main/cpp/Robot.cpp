@@ -219,8 +219,9 @@ Robot::Robot()
       // operator controls elseif statement hell
       //some controls missing cuz i was getting rid of unnecessary lines
       if (Controllers::GetInstance().GetOperatorController().GetXButtonPressed()) {
+        //SupaIntake::GetInstance().SetMotors(0.75);
       } else if (Controllers::GetInstance().GetOperatorController().GetXButtonReleased()) {
-
+        //SupaIntake::GetInstance().SetMotors(0.0);
 
       //Dpad up - Extend climb
       } else if (Controllers::GetInstance().GetOperatorController().GetPOV() == 0) {
@@ -234,22 +235,17 @@ Robot::Robot()
       } else if (Controllers::GetInstance().GetOperatorController().GetPOV() == 270) {
         Climber::GetInstance().SetClimber(1);
 
-      } else if (Controllers::GetInstance().GetOperatorController().GetRightTriggerAxis() > 0.5) {
+      } else if (Controllers::GetInstance().GetOperatorController().GetLeftTriggerAxis() > 0.5) {
+        SupaIntake::GetInstance().SetMotors(0.75);
+      } else if (Controllers::GetInstance().GetOperatorController().GetLeftTriggerAxis() < 0.5) {
+        SupaIntake::GetInstance().SetMotors(0.0);
+      } if (Controllers::GetInstance().GetOperatorController().GetRightTriggerAxis() > 0.5) {
         //todo: update shooter speed & angle alignment
         Shooter::GetInstance().StartShooting();
 
       } else if (Controllers::GetInstance().GetOperatorController().GetRightTriggerAxis() < 0.5) {
         Indexer::GetInstance().StopIndexing();
         Shooter::GetInstance().SetShooterSpeed(0.0_tps);
-      
-      } else if (Controllers::GetInstance().GetOperatorController().GetLeftTriggerAxis() < 0.5) {
-        m_intaking = true;
-        SupaIntake::GetInstance().SetMotors(0.0);
-        //Intake::GetInstance().SetIntakeSpeed(0.0);
-      } else if (Controllers::GetInstance().GetOperatorController().GetLeftTriggerAxis() > 0.5) {
-        m_intaking = true;
-        SupaIntake::GetInstance().SetMotors(Constants::kIntakeForce);
-        //Intake::GetInstance().SetIntakeSpeed(Constants::kIntakeForward);
       } else { std::cout << "hello\n"; }
 
     } else if (mode == kDisabled) {

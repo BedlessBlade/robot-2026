@@ -14,23 +14,24 @@ void SupaIntake::SetMotors(double Speed) {
     // if (spd != 0.0 or s_motorSpeed != 0.0) {
     //     s_motorSpeed = spd;     
     // }
-    s_motorSpeed = Speed;
+    m_motorSpeed = Speed;
 }
 
 void SupaIntake::SetPneums(bool set) {
     // Stops overwriting the bool
     // unless the overwrite changes
-    if (set != s_pneumState) {
-        s_pneumState = set;
-    }
+    // if (set != s_pneumState) {
+    //     s_pneumState = set;
+    // }
+    m_pneumState = set;
 }
 
 // deploy updates to the hardware
 void SupaIntake::Update(Robot::Mode mode, double t) {
-    m_intakeSupaMotor.Set(s_motorSpeed);
+    m_intakeSupaMotor.Set(m_motorSpeed);
 
     // cases so we can use bool to control pneumatics
-    if (s_pneumState) {
+    if (m_pneumState) {
         m_intakeSolenoid.Set(frc::DoubleSolenoid::kForward);
     } else {
         m_intakeSolenoid.Set(frc::DoubleSolenoid::kReverse);
@@ -38,22 +39,22 @@ void SupaIntake::Update(Robot::Mode mode, double t) {
 
     // Assign if teleop is on to a local bool
     if (mode == Robot::Mode::kTeleop) {
-        s_easilyUse = false;
+        m_easilyUse = false;
     } else {
-        s_easilyUse = true;
+        m_easilyUse = true;
     }
 }
 
 // general logic functions (can be used in auto modes for ease of use)
-void SupaIntake::StartAll() {
-    if (s_easilyUse) {
-        s_motorSpeed = Constants::kIntakeForce;
-        s_pneumState = true;
-    }
-}
-void SupaIntake::EndAll() {
-    if (s_easilyUse) {
-        s_motorSpeed = 0.0;
-        s_pneumState = false;
-    }
-}
+// void SupaIntake::StartAll() {
+//     if (m_easilyUse) {
+//         m_motorSpeed = Constants::kIntakeForce;
+//         m_pneumState = true;
+//     }
+// }
+// void SupaIntake::EndAll() {
+//     if (s_easilyUse) {
+//         s_motorSpeed = 0.0;
+//         s_pneumState = false;
+//     }
+// }
