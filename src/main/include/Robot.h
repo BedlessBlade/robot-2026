@@ -1,5 +1,6 @@
 #pragma once
 
+#include <frc/Compressor.h>
 #include <cameraserver/CameraServer.h>
 #include <frc/TimedRobot.h>
 #include <frc/geometry/Pose2d.h>
@@ -36,6 +37,8 @@ public:
 
 private:
 
+  frc::Compressor m_compressor;
+
   Looper m_looper;
 
   frc::SendableChooser<int> m_startChooser;
@@ -52,6 +55,7 @@ private:
   PIDController m_alignControllers[3];
 
   bool m_braking = false;
+  bool m_intaking = false;
 
   inline void ResetAlignControllers() {
     for (int i = 0; i < 3; i++) {

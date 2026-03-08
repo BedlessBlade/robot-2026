@@ -25,7 +25,8 @@
 
 // This gets called first. So, initialize everything here.
 Robot::Robot()
-  : m_alignControllers{
+  : m_compressor{frc::PneumaticsModuleType::REVPH},
+    m_alignControllers{
       {Constants::kPathFollowingKp, Constants::kPathFollowingKi,
        Constants::kPathFollowingKd},
       {Constants::kPathFollowingKp, Constants::kPathFollowingKi,
@@ -41,8 +42,6 @@ Robot::Robot()
         
   m_autoChooser.SetDefaultOption("Do Nothing", "DoNothing");
   //  m_autoChooser.AddOption("Cross the Line", "CrossLine");
-  //  m_autoChooser.AddOption("One Coral", "OneCoral");
-  //  m_autoChooser.AddOption("Two Coral", "TwoCoral");
   frc::SmartDashboard::PutData("Auto", &m_autoChooser);
 
   frc::SmartDashboard::PutData("Field", &m_field);
@@ -58,8 +57,13 @@ Robot::Robot()
   LEDs::GetInstance().LEDsInit();
   Shooter::GetInstance();
 
-  
 
+  m_compressor.EnableAnalog(
+    units::pounds_per_square_inch_t{Constants::kMinPressure},
+    units::pounds_per_square_inch_t{Constants::kMaxPressure}
+  );
+
+  
   // This initializes the main looper. What you put here will run @200 Hz while
   // the robot is on.
   m_looper = Looper{[this] {
@@ -74,19 +78,20 @@ Robot::Robot()
 
     double t = frc::Timer::GetFPGATimestamp().value();
   
+    if (mode != kDisabled) {
+      auto alliance = frc::DriverStation::GetAlliance();
+      if (alliance.has_value() && alliance.value() == frc::DriverStation::Alliance::kRed) {
+        globalAlliance = "Red";
+      } else if (alliance.has_value() && alliance.value() == frc::DriverStation::Alliance::kBlue) {
+        globalAlliance = "Blue";
+      } else {
+        globalAlliance = "None";
+      }
+    }
 
     if (mode == kAuto) {
       if (m_auto) {
         m_auto->Update(t);
-
-        auto alliance = frc::DriverStation::GetAlliance();
-        if (alliance.has_value() && alliance.value() == frc::DriverStation::Alliance::kRed) {
-          globalAlliance = "Red";
-        } else if (alliance.has_value() && alliance.value() == frc::DriverStation::Alliance::kBlue) {
-          globalAlliance = "Blue";
-        } else {
-          globalAlliance = "None";
-        }
       }
     } else if (mode == kTeleop) {
       if (m_braking) {
@@ -96,20 +101,7 @@ Robot::Robot()
 
       m_field.SetRobotPose(SwerveDrive::GetInstance().GetPose2d());
       
-      // isXButtonPressed = Controllers::GetInstance().GetDriverController().GetXButtonPressed();
-      // // Check this before sending drive velocities
-      // if (Controllers::GetInstance().GetDriverController().GetXButtonPressed()) {
-      //   // Left coral scoring location
-      //   ResetAlignControllers();
-      //   m_autoAlignSetpoint = NearestLeftCoral(
-      //       SwerveDrive::GetInstance().GetPose2d(), &m_autoAlignSetpointIndex);
-      //   m_autoAlignMode = kPosition;
-      // } else if (Controllers::GetInstance()
-      //                .GetDriverController()
-      //                .GetAButtonReleased()) {
-      //   m_autoAlignMode = kNone;
-      //   SwerveDrive::GetInstance().EnableRamp();
-      // }
+      m_autoAlignMode = kNone;
 
       // Get the inputs from the controller during teleop mode. Note this uses
       // the split setup where the left joystick controls velocity, and the
@@ -146,119 +138,115 @@ Robot::Robot()
         vy *= -1;
       }
 
-      // // Reset robot pose
-      // if (Controllers::GetInstance().GetDriverController().GetRawButton(9) &&
-      //     Controllers::GetInstance().GetDriverController().GetRawButton(10)) {
-      //   if (leftX >= 0.5 && rightX <= -0.5) {
-      //     if (alliance.has_value() &&
-      //         alliance.value() == frc::DriverStation::Alliance::kRed) {
-      //       SwerveDrive::GetInstance().ResetPose(frc::Pose2d{
-      //           frc::Translation2d{}, frc::Rotation2d{units::radian_t{M_PI}}});
-      //     } else {
-      //       SwerveDrive::GetInstance().ResetPose(frc::Pose2d{});
-      //     }
-      //   }
+      // Reset robot pose
+      if (Controllers::GetInstance().GetDriverController().GetRawButton(9) &&
+          Controllers::GetInstance().GetDriverController().GetRawButton(10)) {
+        if (leftX >= 0.5 && rightX <= -0.5) {
+          if (alliance.has_value() &&
+              alliance.value() == frc::DriverStation::Alliance::kRed) {
+            SwerveDrive::GetInstance().ResetPose(frc::Pose2d{
+                frc::Translation2d{}, frc::Rotation2d{units::radian_t{M_PI}}});
+          } else {
+            SwerveDrive::GetInstance().ResetPose(frc::Pose2d{});
+          }
+        }
 
-      //   SwerveDrive::GetInstance().DriveVelocity(0, 0, 0);
-      // } else {
-      //   if (m_autoAlignMode != kNone) {
-      //     auto robotPose = SwerveDrive::GetInstance().GetPose2d();
-
-      //     if (m_autoAlignMode != kNoPosition) {
-      //       vx = m_alignControllers[0].Update(
-      //           robotPose.Translation().X().value(),
-      //           m_autoAlignSetpoint.Translation().X().value());
-      //       if (vx < -Constants::kPathFollowingMaxV) {
-      //         vx = -Constants::kPathFollowingMaxV;
-      //       }
-      //       if (vx > Constants::kPathFollowingMaxV) {
-      //         vx = Constants::kPathFollowingMaxV;
-      //       }
-
-      //       vy = m_alignControllers[1].Update(
-      //           robotPose.Translation().Y().value(),
-      //           m_autoAlignSetpoint.Translation().Y().value());
-      //       if (vy < -Constants::kPathFollowingMaxV) {
-      //         vy = -Constants::kPathFollowingMaxV;
-      //       }
-      //       if (vy > Constants::kPathFollowingMaxV) {
-      //         vy = Constants::kPathFollowingMaxV;
-      //       }
-
-      //       if (robotPose
-      //        .Translation()
-      //        .Distance(m_autoAlignSetpoint.Translation())
-      //        .value() < Constants::kPathFollowingTolerance && SwerveDrive::GetInstance().VelocityMagnitude() <
-      //        Constants::kPathFollowingVelocityTolerance) {
-      //           Controllers::GetInstance().GetDriverController().SetRumble(frc::GenericHID::RumbleType::kBothRumble, 1.0);
-      //           Controllers::GetInstance().GetOperatorController().SetRumble(frc::GenericHID::RumbleType::kBothRumble, 1.0);
-      //        }
-      //     }
-
-      //     double angleSetpoint =
-      //         m_autoAlignSetpoint.Rotation().Radians().value();
-      //     if (angleSetpoint < -Constants::kPathFollowingMaxV) {
-      //       angleSetpoint = -Constants::kPathFollowingMaxW;
-      //     }
-      //     if (vx > Constants::kPathFollowingMaxV) {
-      //       angleSetpoint = Constants::kPathFollowingMaxW;
-      //     }
-      //     double currentAngle = robotPose.Rotation().Radians().value();
-      //     double angleError = angleSetpoint - currentAngle;
-      //     if (angleError > M_PI) {
-      //       angleSetpoint -= 2 * M_PI;
-      //     }
-
-      //     w = m_alignControllers[2].Update(currentAngle, angleSetpoint);
-      //   } else {
-      //     Controllers::GetInstance().GetDriverController().SetRumble(frc::GenericHID::RumbleType::kBothRumble, 0);
-      //     Controllers::GetInstance().GetOperatorController().SetRumble(frc::GenericHID::RumbleType::kBothRumble, 0);
-      //   }
-
-      //   SwerveDrive::GetInstance().DriveVelocity(vx, vy, w);
-      // }
-
-      // operator controls elseif statement hell
-      if (Controllers::GetInstance().GetOperatorController().GetAButtonPressed()) {
-        // units::turns_per_second_t shooterSetpoint = 50.0_tps; 
-        // Shooter::GetInstance().SetShooterSpeed(shooterSetpoint);
-        // std::cout << "calling setter";
-        
-       } else if (Controllers::GetInstance().GetOperatorController().GetBButtonPressed()) {
-        
-       } else if (Controllers::GetInstance().GetOperatorController().GetXButtonPressed()) {
-        Intake::GetInstance().SetIntakeSpeed(Constants::kIntakeForward);
-       } else if (Controllers::GetInstance().GetOperatorController().GetYButtonPressed()) {
-        Intake::GetInstance().SetIntakeSpeed(0.0);        
-       } else if (Controllers::GetInstance().GetOperatorController().GetPOV() == 180) {
-        
-       } else if (Controllers::GetInstance().GetOperatorController().GetPOV() == 0) {
-        Climber::GetInstance().SetClimber(2);
-       } else if (Controllers::GetInstance().GetOperatorController().GetPOV() == 270) {
-        Climber::GetInstance().SetClimber(1);
-       } else if (Controllers::GetInstance().GetOperatorController().GetPOV() == 90) {
-        Climber::GetInstance().SetClimber(0);
-       } else if (Controllers::GetInstance().GetOperatorController().GetLeftTriggerAxis() > Constants::kStartIntakeThresh) {
-                      
-
-       } else if (Controllers::GetInstance().GetOperatorController().GetLeftTriggerAxis() < Constants::kStartIntakeThresh){ 
-
-      } else if (Controllers::GetInstance().GetOperatorController().GetRightTriggerAxis() > 0.5) {
-        Shooter::GetInstance().StartShooting();
-      } else if (Controllers::GetInstance().GetOperatorController().GetRightTriggerAxis() < 0.5) {
-        Shooter::GetInstance().StopShooting();
-       } else if (Controllers::GetInstance().GetOperatorController().GetRightX() > 0.5) {
-
-       } else if (Controllers::GetInstance().GetOperatorController().GetRightY() > 0.5) {
-        
-       } else if (Controllers::GetInstance().GetOperatorController().GetRightY() < -0.5) {
-        
+        SwerveDrive::GetInstance().DriveVelocity(0, 0, 0);
       } else {
-        //Shooter::GetInstance().SetShooterSpeed(0.0_tps);
-        //std::cout << "shooter idle";
-        
+        if (m_autoAlignMode != kNone) {
+          auto robotPose = SwerveDrive::GetInstance().GetPose2d();
+
+          if (m_autoAlignMode != kNoPosition) {
+            vx = m_alignControllers[0].Update(
+                robotPose.Translation().X().value(),
+                m_autoAlignSetpoint.Translation().X().value());
+            if (vx < -Constants::kPathFollowingMaxV) {
+              vx = -Constants::kPathFollowingMaxV;
+            }
+            if (vx > Constants::kPathFollowingMaxV) {
+              vx = Constants::kPathFollowingMaxV;
+            }
+
+            vy = m_alignControllers[1].Update(
+                robotPose.Translation().Y().value(),
+                m_autoAlignSetpoint.Translation().Y().value());
+            if (vy < -Constants::kPathFollowingMaxV) {
+              vy = -Constants::kPathFollowingMaxV;
+            }
+            if (vy > Constants::kPathFollowingMaxV) {
+              vy = Constants::kPathFollowingMaxV;
+            }
+
+            if (robotPose
+             .Translation()
+             .Distance(m_autoAlignSetpoint.Translation())
+             .value() < Constants::kPathFollowingTolerance && SwerveDrive::GetInstance().VelocityMagnitude() <
+             Constants::kPathFollowingVelocityTolerance) {
+                Controllers::GetInstance().GetDriverController().SetRumble(frc::GenericHID::RumbleType::kBothRumble, 1.0);
+                Controllers::GetInstance().GetOperatorController().SetRumble(frc::GenericHID::RumbleType::kBothRumble, 1.0);
+             }
+          }
+
+          double angleSetpoint =
+              m_autoAlignSetpoint.Rotation().Radians().value();
+          if (angleSetpoint < -Constants::kPathFollowingMaxV) {
+            angleSetpoint = -Constants::kPathFollowingMaxW;
+          }
+          if (vx > Constants::kPathFollowingMaxV) {
+            angleSetpoint = Constants::kPathFollowingMaxW;
+          }
+          double currentAngle = robotPose.Rotation().Radians().value();
+          double angleError = angleSetpoint - currentAngle;
+          if (angleError > M_PI) {
+            angleSetpoint -= 2 * M_PI;
+          }
+
+          w = m_alignControllers[2].Update(currentAngle, angleSetpoint);
+        } else {
+          Controllers::GetInstance().GetDriverController().SetRumble(frc::GenericHID::RumbleType::kBothRumble, 0);
+          Controllers::GetInstance().GetOperatorController().SetRumble(frc::GenericHID::RumbleType::kBothRumble, 0);
+        }
+
+        //makes swerve work
+        SwerveDrive::GetInstance().DriveVelocity(vx, vy, w);
       }
 
+      // operator controls elseif statement hell
+      //some controls missing cuz i was getting rid of unnecessary lines
+      if (Controllers::GetInstance().GetOperatorController().GetXButtonPressed()) {
+        m_intaking = true;
+        Intake::GetInstance().SetIntakeSpeed(Constants::kIntakeForward);
+
+      } else if (Controllers::GetInstance().GetOperatorController().GetXButtonReleased()) {
+        m_intaking = false;
+        Intake::GetInstance().SetIntakeSpeed(0.0);
+
+      //Dpad up - Extend climb
+      } else if (Controllers::GetInstance().GetOperatorController().GetPOV() == 0) {
+        Climber::GetInstance().SetClimber(2);
+
+      //Dpad down - Stow climb
+      } else if (Controllers::GetInstance().GetOperatorController().GetPOV() == 180) {
+        Climber::GetInstance().SetClimber(0);
+
+      //Dpad left - Climb
+      } else if (Controllers::GetInstance().GetOperatorController().GetPOV() == 270) {
+        Climber::GetInstance().SetClimber(1);
+
+      } else if (Controllers::GetInstance().GetOperatorController().GetRightTriggerAxis() > 0.5) {
+        //todo: update shooter speed & angle alignment
+        units::turns_per_second_t shooterSetpoint = 0.0_tps; 
+        units::degree_t angleSetpoint = 0_deg; 
+
+        Shooter::GetInstance().SetShooterSpeed(shooterSetpoint);
+        Shooter::GetInstance().SetTurretAngle(angleSetpoint);
+        Indexer::GetInstance().StartIndexing();
+
+      } else if (Controllers::GetInstance().GetOperatorController().GetRightTriggerAxis() < 0.5) {
+        Indexer::GetInstance().StopIndexing();
+        Shooter::GetInstance().SetShooterSpeed(0.0_tps);
+
+      } else { std::cout << "hello\n"; }
 
     } else if (mode == kDisabled) {
       if (std::abs(
@@ -332,100 +320,28 @@ void Robot::TeleopInit() {
   SwerveDrive::GetInstance().EnableRamp();
 }
 
-// frc::Pose2d Robot::NearestLeftCoral(frc::Pose2d robotPose, int *i) {
-//   frc::Pose2d nearest = Locations::GetInstance().GetCoralPositions()[0];
-//   auto minDistance = robotPose.Translation().Distance(nearest.Translation());
-//   if (i) {
-//     *i = 0;
-//   }
+frc::Pose2d Robot::NearestLeftCoral(frc::Pose2d robotPose, int *i) {
+  frc::Pose2d nearest = Locations::GetInstance().GetCoralPositions()[0];
+  auto minDistance = robotPose.Translation().Distance(nearest.Translation());
+  if (i) {
+    *i = 0;
+  }
 
-//   for (int j = 2; j < 12; j += 2) {
-//     auto distance = robotPose.Translation().Distance(
-//         Locations::GetInstance().GetCoralPositions()[j].Translation());
-//     if (distance < minDistance) {
-//       nearest = Locations::GetInstance().GetCoralPositions()[j];
-//       minDistance = distance;
+  for (int j = 2; j < 12; j += 2) {
+    auto distance = robotPose.Translation().Distance(
+        Locations::GetInstance().GetCoralPositions()[j].Translation());
+    if (distance < minDistance) {
+      nearest = Locations::GetInstance().GetCoralPositions()[j];
+      minDistance = distance;
 
-//       if (i) {
-//         *i = j;
-//       }
-//     }
-//   }
+      if (i) {
+        *i = j;
+      }
+    }
+  }
 
-//   return nearest;
-// }
-
-// frc::Pose2d Robot::NearestRightCoral(frc::Pose2d robotPose, int *i) {
-//   frc::Pose2d nearest = Locations::GetInstance().GetCoralPositions()[1];
-//   auto minDistance = robotPose.Translation().Distance(nearest.Translation());
-//   if (i) {
-//     *i = 1;
-//   }
-
-//   for (int j = 3; j < 12; j += 2) {
-//     auto distance = robotPose.Translation().Distance(
-//         Locations::GetInstance().GetCoralPositions()[j].Translation());
-//     if (distance < minDistance) {
-//       nearest = Locations::GetInstance().GetCoralPositions()[j];
-//       minDistance = distance;
-
-//       if (i) {
-//         *i = j;
-//       }
-//     }
-//   }
-
-//   return nearest;
-// }
-
-// frc::Pose2d Robot::NearestAlgae(frc::Pose2d robotPose, int *i) {
-//   frc::Pose2d nearest = Locations::GetInstance().GetAlgaePositions()[0];
-//   auto minDistance = robotPose.Translation().Distance(nearest.Translation());
-//   if (i) {
-//     *i = 0;
-//   }
-
-//   for (int j = 1; j < 6; j++) {
-//     auto distance = robotPose.Translation().Distance(
-//         Locations::GetInstance().GetAlgaePositions()[j].Translation());
-//     if (distance < minDistance) {
-//       nearest = Locations::GetInstance().GetAlgaePositions()[j];
-//       minDistance = distance;
-
-//       if (i) {
-//         *i = j;
-//       }
-//     }
-//   }
-
-//   return nearest;
-// }
-
-// frc::Pose2d Robot::NearestFeeder(frc::Pose2d robotPose, int *i) {
-//   frc::Pose2d nearest = Locations::GetInstance().GetFeederPositions()[0];
-//   auto minDistance = robotPose.Translation().Distance(nearest.Translation());
-//   if (i) {
-//     *i = 0;
-//   }
-
-//   for (int j = 1; j < 6; j++) {
-//     auto distance = robotPose.Translation().Distance(
-//         Locations::GetInstance().GetFeederPositions()[j].Translation());
-//     if (distance < minDistance) {
-//       nearest = Locations::GetInstance().GetFeederPositions()[j];
-//       minDistance = distance;
-
-//       if (i) {
-//         *i = j;
-//       }
-//     }
-//   }
-
-//   return nearest;
-// }
-
-
-
+  return nearest;
+}
 
 #ifndef RUNNING_FRC_TESTS
 int main(int argc, char **argv) { frc::StartRobot<Robot>(); }

@@ -105,20 +105,6 @@ public:
   static constexpr double kHubX = 158.84 / kInchesPerMeter;
   static constexpr double kHubY = 182.11 / kInchesPerMeter;
 
-
-  static constexpr double kReefWidth = 65.2 / kInchesPerMeter;
-  static constexpr double kReefOffset =
-      (144 / kInchesPerMeter) + kReefWidth / 2;
-  
-  static constexpr double kReefSpacing = 0.515; // meters
-  static constexpr double kCoralSpacing = 13 / kInchesPerMeter;
-
-  // Speed for Shooter Motors
-  static constexpr double kShooterRegularSpeed = 0.8; // change if too fast
-  static constexpr double kShooterReverseSpeed = -0.5;
-  static constexpr double kShooterOffsetDist = 10.30776406;
-
-
   // Path following
   static constexpr double kPathFollowingKp = 6.0;
   static constexpr double kPathFollowingKi = 0.005;
@@ -134,14 +120,14 @@ public:
   static constexpr auto kFeederDistance = 0.515_m;
   static constexpr double kBrakeDistance = 0.25; // meters  
 
-  //Indexer
+  //Indexer ------------------------------------------------------
   static constexpr int kIndexerSpinMotorID = 14;
   static constexpr int kIndexerUpMotorID = 15;
   static constexpr double kIndexerSpinMotorSpeed = 0.3;
   static constexpr double kIndexerUpMotorSpeed = -0.5;
 
-  //Climber
-  static constexpr int kClimbMotorID = 19;
+  //Climber ------------------------------------------------------
+  static constexpr int kClimbMotorID = 24;
   static constexpr double kClimbStowed = 0.0;
   static constexpr double kClimbClimbed = 0.5;
   static constexpr double kClimbExtended = 1.0;
@@ -164,8 +150,8 @@ public:
   static constexpr double kClimberAllowedErr = 0.0;
   
 
-  //Intake
-  static constexpr int kIntakeMotorId = 20;
+  //Intake ------------------------------------------------------
+  static constexpr int kIntakeMotorId = 25;
   static constexpr double kIntakeForward = 0.75; // 0.7 was too slow during testing, test 0.9 and adjust f
   static constexpr double kIntakeReverse = -0.75;
   static constexpr int kIntakePneumCanId = 25;
@@ -174,25 +160,31 @@ public:
 
   static constexpr double kStartIntakeThresh = 0.5;
 
-  //Shooter
+  //Shooter ------------------------------------------------------
+  // Shooter motor CANIDs
   static constexpr int kShooterMotorRightId = 17;
   static constexpr int kShooterMotorLeftId = 18;
 
-  static constexpr double kShooterMotorP = 0.0;
+  // Shooter motor PID/ FF gains
+  static constexpr double kShooterMotorP = 10.0;
   static constexpr double kShooterMotorI = 0.0;
   static constexpr double kShooterMotorD = 0.0;
-  static constexpr double kShooterMotorV = 0.0;
-  
-  static constexpr double kMinShooterAzimuth = -0.5;
-  static constexpr double kMaxShooterAzimuth = 0.5;
+  static constexpr double kShooterMotorV = 0.12;
+  static constexpr double kShooterMotorS = 0.1;
 
+  // Shooter limits and misc
+  static constexpr double velErrorTol = 10;
+  static constexpr double azimuthErrorTol = 10;
+  
+  // Turret Motor CANID
   static constexpr int kAzimuthMotorId = 0;
+  
+  // Turret motor PID/ FF gains
   static constexpr double kShooterAzimuthP = 0.0;
   static constexpr double kShooterAzimuthI = 0.0;
   static constexpr double kShooterAzimuthD = 0.0;
   static constexpr double kMinAzimuthOutput = -0.1;
   static constexpr double kMaxAzimuthOutput = 0.1;
-  static constexpr double kAzimuthMotorRevsToRevs = 212.5 / 1;
 
   static constexpr double kShooterAzimuthS = 0.0;
   static constexpr double kShooterAzimuthV = 0.0;
@@ -201,9 +193,19 @@ public:
   static constexpr double kShooterAzimuthCos = 0.0;
   static constexpr double kShooterAzimuthCosRatio = 0.0;
 
+  // Turret limits and misc
+  static constexpr double kMinShooterAzimuth = 0.0;
+  static constexpr double kMaxShooterAzimuth = 270.0;
+  static constexpr double kAzimuthMotorRevsToRevs = 212.5 / 1;
+  
+  // Hood linear actuator ports
   static constexpr int kLeftHoodServoPort = 9;
   static constexpr int kRightHoodServoPort = 8;
 
-  static constexpr units::angular_velocity::turns_per_second_t kManualShooterSpeed = 35.0_tps;
+  //Compressor
 
+  static constexpr double kMinPressure = 100;
+  static constexpr double kMaxPressure = 120;
+
+  // Hood limits
 };
