@@ -14,7 +14,8 @@
 #include "Locations.h"
 #include "Util.h"
 #include "auto/AutoDoNothing.h"
-#include "systems/Intake.h"
+//#include "systems/Intake.h" -- Not removing any just commenting for SupaIntake testing
+#include "systems/SupaIntake.h"
 #include "systems/Cameras.h"
 #include "systems/SwerveDrive.h"
 #include "systems/QuestNav.h"
@@ -49,7 +50,8 @@ Robot::Robot()
   frc::SmartDashboard::PutData("QuestNav Field", &m_QuestNavField);
 
   // Call GetInstance() so the constructors get called
-  Intake::GetInstance();
+  //Intake::GetInstance();
+  SupaIntake::GetInstance();
   Cameras::GetInstance();
   SwerveDrive::GetInstance();
   Indexer::GetInstance();
@@ -107,6 +109,10 @@ Robot::Robot()
       m_field.SetRobotPose(SwerveDrive::GetInstance().GetPose2d());
       
       m_autoAlignMode = kNone;
+
+      bool LastPosPiston;
+
+      bool LastPosPiston;
 
       // setting shooter setpoint
       frc::Pose2d shooterSetpoint;
@@ -253,11 +259,14 @@ Robot::Robot()
       // operator controls elseif statement hell
       //some controls missing cuz i was getting rid of unnecessary lines
       if (Controllers::GetInstance().GetOperatorController().GetXButtonPressed()) {
-        m_intaking = true;
-        Intake::GetInstance().SetIntakeSpeed(Constants::kIntakeForward);
-
+        if (LastPosPiston) {
+          SupaIntake::GetInstance().SetPneums(false);
+          LastPosPiston = false;
+        } else {
+          SupaIntake::GetInstance().SetPneums(true);
+          LastPosPiston = true;
+        }
       } else if (Controllers::GetInstance().GetOperatorController().GetXButtonReleased()) {
-
 
       //Dpad up - Extend climb
       } else if (Controllers::GetInstance().GetOperatorController().GetPOV() == 0) {
@@ -271,21 +280,17 @@ Robot::Robot()
       } else if (Controllers::GetInstance().GetOperatorController().GetPOV() == 270) {
         Climber::GetInstance().SetClimber(1);
 
-      } else if (Controllers::GetInstance().GetOperatorController().GetRightTriggerAxis() > 0.5) {
+      } else if (Controllers::GetInstance().GetOperatorController().GetLeftTriggerAxis() > 0.5) {
+        SupaIntake::GetInstance().SetMotors(0.75);
+      } else if (Controllers::GetInstance().GetOperatorController().GetLeftTriggerAxis() < 0.5) {
+        SupaIntake::GetInstance().SetMotors(0.0);
+      } if (Controllers::GetInstance().GetOperatorController().GetRightTriggerAxis() > 0.5) {
         //todo: update shooter speed & angle alignment
         Shooter::GetInstance().StartShooting();
 
       } else if (Controllers::GetInstance().GetOperatorController().GetRightTriggerAxis() < 0.5) {
-        Shooter::GetInstance().StopShooting();
-
-      } else if (Controllers::GetInstance().GetOperatorController().GetLeftTriggerAxis() > 0.5) {
-        m_intaking = true;
-        Intake::GetInstance().SetIntakeSpeed(Constants::kIntakeForward);
-
-      } else if (Controllers::GetInstance().GetOperatorController().GetLeftTriggerAxis() < 0.5) {
-        m_intaking = false;
-        Intake::GetInstance().SetIntakeSpeed(0.0);
-
+        Indexer::GetInstance().StopIndexing();
+        Shooter::GetInstance().SetShooterSpeed(0.0_tps);
       } else { std::cout << "hello\n"; }
 
     } else if (mode == kDisabled) {
@@ -320,7 +325,8 @@ Robot::Robot()
     Cameras::GetInstance().Update(mode, t);
     SwerveDrive::GetInstance().Update(mode, t);
     Shooter::GetInstance().Update(mode, t);
-    Intake::GetInstance().Update(mode, t);
+    //Intake::GetInstance().Update(mode, t);
+    SupaIntake::GetInstance().Update(mode, t);
     LEDs::GetInstance().Update(mode, globalAlliance);
     Indexer::GetInstance().Update(mode);
   }};

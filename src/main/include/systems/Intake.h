@@ -9,6 +9,7 @@
 class Intake : public System {
 
 public:
+
     static Intake &GetInstance() {
         static Intake instance;
         return instance;

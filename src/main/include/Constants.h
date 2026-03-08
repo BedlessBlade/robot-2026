@@ -152,11 +152,14 @@ public:
 
   //Intake ------------------------------------------------------
   static constexpr int kIntakeMotorId = 25;
+    static constexpr int kIntakePneumaticId = 0;
   static constexpr double kIntakeForward = 0.75; // 0.7 was too slow during testing, test 0.9 and adjust f
   static constexpr double kIntakeReverse = -0.75;
   static constexpr int kIntakePneumCanId = 25;
-  static constexpr int kIntakePneumId1 = 2;
-  static constexpr int kIntakePneumId2 = 3;
+  static constexpr int kIntakePneumId1 = 1;
+  static constexpr int kIntakePneumId2 = 2;
+
+  static constexpr double kIntakeForce = 0.75;
 
   static constexpr double kStartIntakeThresh = 0.5;
 
