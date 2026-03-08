@@ -158,6 +158,8 @@ public:
   static constexpr int kIntakePneumId1 = 2;
   static constexpr int kIntakePneumId2 = 3;
 
+  static constexpr double kIntakeForce = 0.75;
+
   static constexpr double kStartIntakeThresh = 0.5;
 
   //Shooter ------------------------------------------------------
