@@ -106,6 +106,8 @@ Robot::Robot()
       
       m_autoAlignMode = kNone;
 
+      bool LastPosPiston;
+
       // Find shooter setpoint
 
       // Get the inputs from the controller during teleop mode. Note this uses
@@ -219,9 +221,14 @@ Robot::Robot()
       // operator controls elseif statement hell
       //some controls missing cuz i was getting rid of unnecessary lines
       if (Controllers::GetInstance().GetOperatorController().GetXButtonPressed()) {
-        SupaIntake::GetInstance().SetPneums(true);
+        if (LastPosPiston) {
+          SupaIntake::GetInstance().SetPneums(false);
+          LastPosPiston = false;
+        } else {
+          SupaIntake::GetInstance().SetPneums(true);
+          LastPosPiston = true;
+        }
       } else if (Controllers::GetInstance().GetOperatorController().GetXButtonReleased()) {
-        SupaIntake::GetInstance().SetPneums(false);
 
       //Dpad up - Extend climb
       } else if (Controllers::GetInstance().GetOperatorController().GetPOV() == 0) {
