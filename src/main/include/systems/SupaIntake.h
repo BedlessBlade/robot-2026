@@ -24,7 +24,7 @@ public:
     void Update(Robot::Mode mode, double t) override;   // Set Values to hardware
 
 private:
-    rev::spark::SparkMax m_intakeMotor{Constants::kIntakeMotorId, rev::spark::SparkMax::MotorType::kBrushless};
+    rev::spark::SparkMax m_intakeSupaMotor{Constants::kIntakeMotorId, rev::spark::SparkMax::MotorType::kBrushless};
 
     frc::DoubleSolenoid m_intakeSolenoid{Constants::kIntakePneumCanId,
         frc::PneumaticsModuleType::REVPH,

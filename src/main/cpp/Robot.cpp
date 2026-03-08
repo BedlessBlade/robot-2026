@@ -242,11 +242,11 @@ Robot::Robot()
         Indexer::GetInstance().StopIndexing();
         Shooter::GetInstance().SetShooterSpeed(0.0_tps);
       
-      } else if (Controllers::GetInstance().GetOperatorController().GetLeftTriggerAxis() > 0.5) {
-        m_intaking = false;
+      } else if (Controllers::GetInstance().GetOperatorController().GetLeftTriggerAxis() < 0.5) {
+        m_intaking = true;
         SupaIntake::GetInstance().SetMotors(0.0);
         //Intake::GetInstance().SetIntakeSpeed(0.0);
-      } else if (Controllers::GetInstance().GetOperatorController().GetLeftTriggerAxis() < 0.5) {
+      } else if (Controllers::GetInstance().GetOperatorController().GetLeftTriggerAxis() > 0.5) {
         m_intaking = true;
         SupaIntake::GetInstance().SetMotors(Constants::kIntakeForce);
         //Intake::GetInstance().SetIntakeSpeed(Constants::kIntakeForward);

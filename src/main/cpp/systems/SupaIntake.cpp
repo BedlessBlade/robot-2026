@@ -7,13 +7,14 @@
 SupaIntake::SupaIntake() {}
 
 // Single-use functions
-void SupaIntake::SetMotors(double spd) {
+void SupaIntake::SetMotors(double Speed) {
     // Only update if new speed is not 0 or motor speed is not 0
     // Prevents useless updates from happening over and over
     // But not stopping the fast-paced updating
-    if (spd != 0.0 or s_motorSpeed != 0.0) {
-        s_motorSpeed = spd;     
-    }
+    // if (spd != 0.0 or s_motorSpeed != 0.0) {
+    //     s_motorSpeed = spd;     
+    // }
+    s_motorSpeed = Speed;
 }
 
 void SupaIntake::SetPneums(bool set) {
@@ -26,7 +27,7 @@ void SupaIntake::SetPneums(bool set) {
 
 // deploy updates to the hardware
 void SupaIntake::Update(Robot::Mode mode, double t) {
-    m_intakeMotor.Set(s_motorSpeed);
+    m_intakeSupaMotor.Set(s_motorSpeed);
 
     // cases so we can use bool to control pneumatics
     if (s_pneumState) {
@@ -36,7 +37,7 @@ void SupaIntake::Update(Robot::Mode mode, double t) {
     }
 
     // Assign if teleop is on to a local bool
-    if (mode = Robot::Mode::kTeleop) {
+    if (mode == Robot::Mode::kTeleop) {
         s_easilyUse = false;
     } else {
         s_easilyUse = true;
