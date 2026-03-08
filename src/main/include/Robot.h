@@ -54,6 +54,8 @@ private:
   int m_autoAlignSetpointIndex = 0;
   PIDController m_alignControllers[3];
 
+  frc::Translation2d goalPosition;
+
   bool m_braking = false;
   bool m_intaking = false;
 

@@ -23,6 +23,7 @@
 #include "systems/Indexer.h"
 #include "systems/Climber.h"
 #include "systems/Shooter.h"
+#include "systems/ShotCalculator.h"
 
 // This gets called first. So, initialize everything here.
 Robot::Robot()
@@ -104,6 +105,8 @@ Robot::Robot()
       m_field.SetRobotPose(SwerveDrive::GetInstance().GetPose2d());
       
       m_autoAlignMode = kNone;
+
+      // Find shooter setpoint
 
       // Get the inputs from the controller during teleop mode. Note this uses
       // the split setup where the left joystick controls velocity, and the
@@ -217,6 +220,8 @@ Robot::Robot()
       //some controls missing cuz i was getting rid of unnecessary lines
       if (Controllers::GetInstance().GetOperatorController().GetXButtonPressed()) {
       } else if (Controllers::GetInstance().GetOperatorController().GetXButtonReleased()) {
+
+
       //Dpad up - Extend climb
       } else if (Controllers::GetInstance().GetOperatorController().GetPOV() == 0) {
         Climber::GetInstance().SetClimber(2);
@@ -231,12 +236,7 @@ Robot::Robot()
 
       } else if (Controllers::GetInstance().GetOperatorController().GetRightTriggerAxis() > 0.5) {
         //todo: update shooter speed & angle alignment
-        units::turns_per_second_t shooterSetpoint = 0.0_tps; 
-        units::degree_t angleSetpoint = 0_deg; 
-
-        Shooter::GetInstance().SetShooterSpeed(shooterSetpoint);
-        Shooter::GetInstance().SetTurretAngle(angleSetpoint);
-        Indexer::GetInstance().StartIndexing();
+        Shooter::GetInstance().StartShooting();
 
       } else if (Controllers::GetInstance().GetOperatorController().GetRightTriggerAxis() < 0.5) {
         Indexer::GetInstance().StopIndexing();
@@ -325,28 +325,28 @@ void Robot::TeleopInit() {
   SwerveDrive::GetInstance().EnableRamp();
 }
 
-frc::Pose2d Robot::NearestLeftCoral(frc::Pose2d robotPose, int *i) {
-  frc::Pose2d nearest = Locations::GetInstance().GetCoralPositions()[0];
-  auto minDistance = robotPose.Translation().Distance(nearest.Translation());
-  if (i) {
-    *i = 0;
-  }
+// frc::Pose2d Robot::NearestLeftCoral(frc::Pose2d robotPose, int *i) {
+//   frc::Pose2d nearest = Locations::GetInstance().GetCoralPositions()[0];
+//   auto minDistance = robotPose.Translation().Distance(nearest.Translation());
+//   if (i) {
+//     *i = 0;
+//   }
 
-  for (int j = 2; j < 12; j += 2) {
-    auto distance = robotPose.Translation().Distance(
-        Locations::GetInstance().GetCoralPositions()[j].Translation());
-    if (distance < minDistance) {
-      nearest = Locations::GetInstance().GetCoralPositions()[j];
-      minDistance = distance;
+//   for (int j = 2; j < 12; j += 2) {
+//     auto distance = robotPose.Translation().Distance(
+//         Locations::GetInstance().GetCoralPositions()[j].Translation());
+//     if (distance < minDistance) {
+//       nearest = Locations::GetInstance().GetCoralPositions()[j];
+//       minDistance = distance;
 
-      if (i) {
-        *i = j;
-      }
-    }
-  }
+//       if (i) {
+//         *i = j;
+//       }
+//     }
+//   }
 
-  return nearest;
-}
+//   return nearest;
+// }
 
 #ifndef RUNNING_FRC_TESTS
 int main(int argc, char **argv) { frc::StartRobot<Robot>(); }
