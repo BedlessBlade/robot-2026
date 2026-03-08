@@ -123,8 +123,8 @@ public:
   //Indexer ------------------------------------------------------
   static constexpr int kIndexerSpinMotorID = 14;
   static constexpr int kIndexerUpMotorID = 15;
-  static constexpr double kIndexerSpinMotorSpeed = 0.3;
-  static constexpr double kIndexerUpMotorSpeed = -0.5;
+  static constexpr double kIndexerSpinMotorSpeed = 0.75;
+  static constexpr double kIndexerUpMotorSpeed = -1;
 
   //Climber ------------------------------------------------------
   static constexpr int kClimbMotorID = 24;
@@ -166,7 +166,7 @@ public:
   static constexpr int kShooterMotorLeftId = 18;
 
   // Shooter motor PID/ FF gains
-  static constexpr double kShooterMotorP = 10.0;
+  static constexpr double kShooterMotorP = 0.0;
   static constexpr double kShooterMotorI = 0.0;
   static constexpr double kShooterMotorD = 0.0;
   static constexpr double kShooterMotorV = 0.12;
@@ -174,20 +174,20 @@ public:
 
   // Shooter limits and misc
   static constexpr double velErrorTol = 10;
-  static constexpr double azimuthErrorTol = 10;
+  static constexpr double azimuthErrorTol = 1;
   
   // Turret Motor CANID
-  static constexpr int kAzimuthMotorId = 0;
+  static constexpr int kAzimuthMotorId = 0; // This needs to be updated
   
   // Turret motor PID/ FF gains
-  static constexpr double kShooterAzimuthP = 0.0;
+  static constexpr double kShooterAzimuthP = 0.35;
   static constexpr double kShooterAzimuthI = 0.0;
-  static constexpr double kShooterAzimuthD = 0.0;
-  static constexpr double kMinAzimuthOutput = -0.1;
-  static constexpr double kMaxAzimuthOutput = 0.1;
+  static constexpr double kShooterAzimuthD = 0.45;
+  static constexpr double kMinAzimuthOutput = -1;
+  static constexpr double kMaxAzimuthOutput = 1;
 
   static constexpr double kShooterAzimuthS = 0.0;
-  static constexpr double kShooterAzimuthV = 0.0;
+  static constexpr double kShooterAzimuthV = 0.0942;
   static constexpr double kShooterAzimuthA = 0.0;
   static constexpr double kShooterAzimuthG = 0.0;
   static constexpr double kShooterAzimuthCos = 0.0;
@@ -196,14 +196,14 @@ public:
   // Turret limits and misc
   static constexpr double kMinShooterAzimuth = 0.0;
   static constexpr double kMaxShooterAzimuth = 270.0;
-  static constexpr double kAzimuthMotorRevsToRevs = 212.5 / 1;
+  static constexpr double kAzimuthMotorRevsToRevs = 214.5 / 1;
+  static constexpr frc::Translation2d kTurretOffset{-4_in, -9.5_in}; // turret is 4" back in x, 9.5" over
   
   // Hood linear actuator ports
   static constexpr int kLeftHoodServoPort = 9;
   static constexpr int kRightHoodServoPort = 8;
 
   //Compressor
-
   static constexpr double kMinPressure = 100;
   static constexpr double kMaxPressure = 120;
 
