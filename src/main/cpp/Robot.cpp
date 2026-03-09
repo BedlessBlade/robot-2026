@@ -14,6 +14,9 @@
 #include "Locations.h"
 #include "Util.h"
 #include "auto/AutoDoNothing.h"
+#include "auto/AutoDepot.h"
+#include "auto/AutoNeutral.h"
+#include "auto/AutoShootClimb.h"
 #include "systems/Intake.h"
 #include "systems/Cameras.h"
 #include "systems/SwerveDrive.h"
@@ -32,17 +35,21 @@ Robot::Robot()
        Constants::kPathFollowingKd},
       {Constants::kPathFollowingAngleKp, Constants::kPathFollowingAngleKi,
        Constants::kPathFollowingAngleKd}} {
+
+  //configure options
   m_startChooser.SetDefaultOption("1", 1);
   m_startChooser.AddOption("2", 2);
   m_startChooser.AddOption("3", 3);
-  frc::SmartDashboard::PutData("Start Location", &m_startChooser);
-
-  frc::SmartDashboard::PutBoolean("Calibrate Pose", false);
-        
+  
   m_autoChooser.SetDefaultOption("Do Nothing", "DoNothing");
-  //  m_autoChooser.AddOption("Cross the Line", "CrossLine");
-  frc::SmartDashboard::PutData("Auto", &m_autoChooser);
+  m_autoChooser.AddOption("To Depot", "Depot");
+  m_autoChooser.AddOption("To Neutral Zone", "Neutral");
+  m_autoChooser.AddOption("Shoot & Climb", "ShootClimb");
 
+  //Add data to dashboard
+  frc::SmartDashboard::PutData("Start Location", &m_startChooser);
+  frc::SmartDashboard::PutBoolean("Calibrate Pose", false);
+  frc::SmartDashboard::PutData("Auto", &m_autoChooser);
   frc::SmartDashboard::PutData("Field", &m_field);
   frc::SmartDashboard::PutData("QuestNav Field", &m_QuestNavField);
 
@@ -57,9 +64,10 @@ Robot::Robot()
   Shooter::GetInstance();
 
   
-  // This initializes the main looper. What you put here will run @200 Hz while
-  // the robot is on.
+  // This initializes the main looper. What you put here will run @200 Hz while the robot is on.
   m_looper = Looper{[this] {
+
+    //Set mode
     Mode mode = kDisabled;
     if (IsEnabled()) {
       if (IsAutonomous()) {
@@ -69,8 +77,10 @@ Robot::Robot()
       }
     }
 
+    //Timestamp
     double t = frc::Timer::GetFPGATimestamp().value();
   
+    //Set alliance
     if (mode != kDisabled) {
       auto alliance = frc::DriverStation::GetAlliance();
       if (alliance.has_value() && alliance.value() == frc::DriverStation::Alliance::kRed) {
@@ -83,23 +93,27 @@ Robot::Robot()
     }
 
     if (mode == kAuto) {
+    //Update auto tasks
       if (m_auto) {
         m_auto->Update(t);
       }
+
     } else if (mode == kTeleop) {
+      //not sure
       if (m_braking) {
         SwerveDrive::GetInstance().Coast();
         m_braking = false;
       }
 
+      //Set estimated robot pose on field
       m_field.SetRobotPose(SwerveDrive::GetInstance().GetPose2d());
       
+      //todo: add auto alignment
       m_autoAlignMode = kNone;
 
-      // Get the inputs from the controller during teleop mode. Note this uses
-      // the split setup where the left joystick controls velocity, and the
-      // right joystick controls the rotation. The Util::exp() function squares
-      // the input while keeping the sign.
+      // Get the inputs from the controller during teleop mode
+      // left stick - velocity, right stick - rotation. 
+      // Util::exp() function squares the input while keeping the sign.
       double leftY =
           Controllers::GetInstance().GetDriverController().GetLeftY();
       double vx = Util::Exp(-leftY) * Constants::kDriveControlMultipler;
@@ -113,29 +127,17 @@ Robot::Robot()
           Controllers::GetInstance().GetDriverController().GetRightX();
       double w = Util::Exp(-rightX) * Constants::kDriveAngularControlMultiplier;
 
-      // The auto will reset the pose to be facing towards the driver on the red
-      // alliance so it needs to be corrected
-      auto alliance = frc::DriverStation::GetAlliance();
-
-      if (alliance.has_value() && alliance.value() == frc::DriverStation::Alliance::kRed) {
-        globalAlliance = "Red";
-      } else if (alliance.has_value() && alliance.value() == frc::DriverStation::Alliance::kBlue) {
-        globalAlliance = "Blue";
-      } else {
-        globalAlliance = "None";
-      }
-
-      if (alliance.has_value() && alliance.value() == frc::DriverStation::Alliance::kRed) {
+      //Invert velocities if on opposite team
+      if (globalAlliance == "Red") {
         vx *= -1;
         vy *= -1;
       }
 
       // Reset robot pose
-      if (Controllers::GetInstance().GetDriverController().GetRawButton(9) &&
-          Controllers::GetInstance().GetDriverController().GetRawButton(10)) {
+      if (Controllers::GetInstance().GetDriverController().GetLeftStickButtonPressed() &&
+          Controllers::GetInstance().GetDriverController().GetRightStickButtonPressed()) {
         if (leftX >= 0.5 && rightX <= -0.5) {
-          if (alliance.has_value() &&
-              alliance.value() == frc::DriverStation::Alliance::kRed) {
+          if (globalAlliance == "Red") {
             SwerveDrive::GetInstance().ResetPose(frc::Pose2d{
                 frc::Translation2d{}, frc::Rotation2d{units::radian_t{M_PI}}});
           } else {
@@ -242,6 +244,7 @@ Robot::Robot()
       } else { std::cout << "hello\n"; }
 
     } else if (mode == kDisabled) {
+      //not sure
       if (std::abs(
               SwerveDrive::GetInstance().GetPose2d().Translation().X().value() -
               Constants::kFieldLength / 2) <= Constants::kBrakeDistance &&
@@ -265,8 +268,7 @@ Robot::Robot()
 };
 
 // This destructor gets called when the robot program shuts down.
-// Cleanup any resources (especially files) before the robot code gets
-// restarted.
+// Cleanup any resources (especially files) before the robot code gets restarted.
 Robot::~Robot() { std::cout << "goodbye :)\n"; };
 
 // Ensure this matches the declaration in Robot.h (typically: void DisabledInit();)
@@ -297,24 +299,24 @@ void Robot::TeleopInit() {
 }
 
 //left for example purposes
-frc::Pose2d Robot::NearestLeftCoral(frc::Pose2d robotPose, int *i) {
-  frc::Pose2d nearest = Locations::GetInstance().GetCoralPositions()[0];
-  auto minDistance = robotPose.Translation().Distance(nearest.Translation());
-  if (i) { *i = 0; }
+// frc::Pose2d Robot::NearestLeftCoral(frc::Pose2d robotPose, int *i) {
+//   frc::Pose2d nearest = Locations::GetInstance().GetCoralPositions()[0];
+//   auto minDistance = robotPose.Translation().Distance(nearest.Translation());
+//   if (i) { *i = 0; }
 
-  for (int j = 2; j < 12; j += 2) {
-    auto distance = robotPose.Translation().Distance(
-        Locations::GetInstance().GetCoralPositions()[j].Translation());
-    if (distance < minDistance) {
-      nearest = Locations::GetInstance().GetCoralPositions()[j];
-      minDistance = distance;
+//   for (int j = 2; j < 12; j += 2) {
+//     auto distance = robotPose.Translation().Distance(
+//         Locations::GetInstance().GetCoralPositions()[j].Translation());
+//     if (distance < minDistance) {
+//       nearest = Locations::GetInstance().GetCoralPositions()[j];
+//       minDistance = distance;
 
-      if (i) { *i = j; }
-    }
-  }
+//       if (i) { *i = j; }
+//     }
+//   }
 
-  return nearest;
-}
+//   return nearest;
+// }
 
 #ifndef RUNNING_FRC_TESTS
 int main(int argc, char **argv) { frc::StartRobot<Robot>(); }

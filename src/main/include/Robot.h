@@ -32,7 +32,6 @@ public:
   void TeleopInit() override;
 
   std::string globalAlliance = "None";
-  bool isXButtonPressed = false;
 
 private:
 
