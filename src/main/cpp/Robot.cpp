@@ -125,8 +125,7 @@ Robot::Robot()
         globalAlliance = "None";
       }
 
-      if (alliance.has_value() &&
-          alliance.value() == frc::DriverStation::Alliance::kRed) {
+      if (alliance.has_value() && alliance.value() == frc::DriverStation::Alliance::kRed) {
         vx *= -1;
         vy *= -1;
       }
@@ -180,8 +179,7 @@ Robot::Robot()
              }
           }
 
-          double angleSetpoint =
-              m_autoAlignSetpoint.Rotation().Radians().value();
+          double angleSetpoint = m_autoAlignSetpoint.Rotation().Radians().value();
           if (angleSetpoint < -Constants::kPathFollowingMaxV) {
             angleSetpoint = -Constants::kPathFollowingMaxW;
           }
@@ -204,12 +202,12 @@ Robot::Robot()
         SwerveDrive::GetInstance().DriveVelocity(vx, vy, w);
       }
 
-      // operator controls elseif statement hell
-      //some controls missing cuz i was getting rid of unnecessary lines
+      //X pressed - start intaking
       if (Controllers::GetInstance().GetOperatorController().GetXButtonPressed()) {
         m_intaking = true;
         Intake::GetInstance().SetIntakeSpeed(Constants::kIntakeForward);
 
+      //X released - stop intaking
       } else if (Controllers::GetInstance().GetOperatorController().GetXButtonReleased()) {
         m_intaking = false;
         Intake::GetInstance().SetIntakeSpeed(0.0);
@@ -225,7 +223,8 @@ Robot::Robot()
       //Dpad left - Climb
       } else if (Controllers::GetInstance().GetOperatorController().GetPOV() == 270) {
         Climber::GetInstance().SetClimber(1);
-
+      
+      //Right trigger pressed - align turret, start shooter & indexer
       } else if (Controllers::GetInstance().GetOperatorController().GetRightTriggerAxis() > 0.5) {
         //todo: update shooter speed & angle alignment
         units::turns_per_second_t shooterSetpoint = 0.0_tps; 
@@ -235,6 +234,7 @@ Robot::Robot()
         Shooter::GetInstance().SetTurretAngle(angleSetpoint);
         Indexer::GetInstance().StartIndexing();
 
+      //Right trigger released - stop shooter & indexer
       } else if (Controllers::GetInstance().GetOperatorController().GetRightTriggerAxis() < 0.5) {
         Indexer::GetInstance().StopIndexing();
         Shooter::GetInstance().SetShooterSpeed(0.0_tps);
@@ -254,21 +254,6 @@ Robot::Robot()
       }
     }
 
-    // QuestNav nav;
-    // frc::Pose2d QuestPose = nav.GetQuestPose();
-    // if (frc::SmartDashboard::GetBoolean("Calibrate Pose", false)) {
-    //   nav.Calibrate();
-    //   frc::SmartDashboard::PutBoolean("Calibrate Pose", false);
-    //   std::cout << "Recalibrated" << std::endl;
-    // };
-    
-    // m_QuestNavField.SetRobotPose(QuestPose);
-    // std::cout << "X:Y:Pitch : " << QuestPose.X().value() << ", "
-    //                             << QuestPose.Y().value() << ", "
-    //                             << QuestPose.Rotation().Degrees().value()
-    //                             << std::endl;
-
-
     // Call update functions for subsystems instances
     Cameras::GetInstance().Update(mode, t);
     SwerveDrive::GetInstance().Update(mode, t);
@@ -282,11 +267,10 @@ Robot::Robot()
 // This destructor gets called when the robot program shuts down.
 // Cleanup any resources (especially files) before the robot code gets
 // restarted.
-Robot::~Robot() {}
+Robot::~Robot() { std::cout << "goodbye :)\n"; };
 
 // Ensure this matches the declaration in Robot.h (typically: void DisabledInit();)
-void Robot::DisabledInit() {
-}
+void Robot::DisabledInit() {};
 
 void Robot::DisabledExit() {
   SwerveDrive::GetInstance().Coast();
@@ -308,17 +292,15 @@ void Robot::DisabledExit() {
 }
 
 void Robot::TeleopInit() {
-  // Make sure that ramping is enabled for the driver motors even if auto is
-  // incomplete
+  // Make sure that ramping is enabled for the driver motors even if it already is in auto
   SwerveDrive::GetInstance().EnableRamp();
 }
 
+//left for example purposes
 frc::Pose2d Robot::NearestLeftCoral(frc::Pose2d robotPose, int *i) {
   frc::Pose2d nearest = Locations::GetInstance().GetCoralPositions()[0];
   auto minDistance = robotPose.Translation().Distance(nearest.Translation());
-  if (i) {
-    *i = 0;
-  }
+  if (i) { *i = 0; }
 
   for (int j = 2; j < 12; j += 2) {
     auto distance = robotPose.Translation().Distance(
@@ -327,9 +309,7 @@ frc::Pose2d Robot::NearestLeftCoral(frc::Pose2d robotPose, int *i) {
       nearest = Locations::GetInstance().GetCoralPositions()[j];
       minDistance = distance;
 
-      if (i) {
-        *i = j;
-      }
+      if (i) { *i = j; }
     }
   }
 
