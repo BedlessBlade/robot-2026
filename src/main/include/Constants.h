@@ -152,8 +152,8 @@ public:
 
   //Intake ------------------------------------------------------
   static constexpr int kIntakeMotorId = 25;
-  static constexpr double kIntakeForward = 0.75; // 0.7 was too slow during testing, test 0.9 and adjust f
-  static constexpr double kIntakeReverse = -0.75;
+  static constexpr double kIntakeForward = 0.85; // 0.7 was too slow during testing, test 0.9 and adjust f
+  static constexpr double kIntakeReverse = -0.85;
   static constexpr int kIntakePneumCanId = 22;
   static constexpr int kIntakePneumId1 = 3;
   static constexpr int kIntakePneumId2 = 4;
@@ -168,23 +168,23 @@ public:
   static constexpr int kShooterMotorLeftId = 18;
 
   // Shooter motor PID/ FF gains
-  static constexpr double kShooterMotorP = 0.0;
+  static constexpr double kShooterMotorP = 0.05;
   static constexpr double kShooterMotorI = 0.0;
   static constexpr double kShooterMotorD = 0.0;
   static constexpr double kShooterMotorV = 0.12;
   static constexpr double kShooterMotorS = 0.1;
 
   // Shooter limits and misc
-  static constexpr double velErrorTol = 10;
+  static constexpr double velErrorTol = 50;
   static constexpr double azimuthErrorTol = 1;
   
   // Turret Motor CANID
-  static constexpr int kAzimuthMotorId = 0; // This needs to be updated
+  static constexpr int kAzimuthMotorId = 16; // This needs to be updated
   
   // Turret motor PID/ FF gains
   static constexpr double kShooterAzimuthP = 0.35;
   static constexpr double kShooterAzimuthI = 0.0;
-  static constexpr double kShooterAzimuthD = 0.45;
+  static constexpr double kShooterAzimuthD = 0.9;
   static constexpr double kMinAzimuthOutput = -1;
   static constexpr double kMaxAzimuthOutput = 1;
 
@@ -198,7 +198,7 @@ public:
   // Turret limits and misc
   static constexpr double kMinShooterAzimuth = 0.0;
   static constexpr double kMaxShooterAzimuth = 270.0;
-  static constexpr double kAzimuthMotorRevsToRevs = 214.5 / 1;
+  static constexpr double kAzimuthMotorRevsToRevs = 233.5 / 1;
   static constexpr frc::Translation2d kTurretOffset{-4_in, -9.5_in}; // turret is 4" back in x, 9.5" over
   
   // Hood linear actuator ports
@@ -208,6 +208,8 @@ public:
   //Compressor
   static constexpr double kMinPressure = 100;
   static constexpr double kMaxPressure = 120;
+  static constexpr int kPneumaticCanId = 22;
+
 
   // Hood limits
 };

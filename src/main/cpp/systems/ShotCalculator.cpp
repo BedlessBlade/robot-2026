@@ -6,6 +6,7 @@
 #include <units/time.h>
 #include <vector>
 #include <wpi/interpolating_map.h>
+#include <iostream>
 
 
 // Call to calculate shot parameters
@@ -19,16 +20,18 @@ void ShotCalculator::CalculateShotParams(frc::Translation2d robotPosition,
     // latency compensation
     frc::Translation2d futurePosition = robotPosition.operator+(robotVelocity.operator*(latency.value()));
     frc::Rotation2d futureHeading = {robotHeading.operator+(robotAngVelocity * latency)};
+    //std::cout << "TurretPos: " << futurePosition.X().value() << "," << futurePosition.Y().value() << std::endl;
     
     // Turret Position
-    frc::Translation2d turretPosition = futurePosition.operator+(Constants::kTurretOffset.RotateAround(futurePosition, futureHeading));
+    frc::Translation2d turretPosition = futurePosition.operator+(Constants::kTurretOffset.RotateBy(futureHeading));
+    //std::cout << "TurretPos: " << turretPosition.X().value() << "," << turretPosition.Y().value() << std::endl;
     
     // Turret Velocity
     frc::Translation2d turretVelocityAng = {-robotAngVelocity.value() * Constants::kTurretOffset.X(), robotAngVelocity.value() * Constants::kTurretOffset.Y()}; // Cross product Omega X turretOffset
     frc::Translation2d turretVelocity = robotVelocity.operator+(turretVelocityAng);
 
     // Get target vector
-    frc::Translation2d toGoal = goalPosition.operator-(turretPosition);
+    frc::Translation2d toGoal = turretPosition.operator-(goalPosition);
     units::length::meter_t distanceToGoal = toGoal.Norm();
     frc::Translation2d toGoalNormalized = toGoal.operator/(distanceToGoal.value());
 
@@ -40,10 +43,10 @@ void ShotCalculator::CalculateShotParams(frc::Translation2d robotPosition,
     frc::Translation2d targetVelocity = toGoalNormalized.operator*(baselineShotVelocity.value()); // target velocity vector (m/s)
 
     // Get shot velocity vector
-    frc::Translation2d shotVelocity = targetVelocity.operator-(turretVelocity);
+    frc::Translation2d shotVelocity = turretVelocity.operator-(targetVelocity);
 
     // Extract shooter params
-    m_turretAngle = shotVelocity.Angle().Degrees();
+    m_turretAngle = shotVelocity.Angle().Degrees() + robotHeading.Degrees();
     units::meters_per_second_t requiredVelocity = units::meters_per_second_t{shotVelocity.Norm().value()};
 
     // use LUT to find the shooter RPS

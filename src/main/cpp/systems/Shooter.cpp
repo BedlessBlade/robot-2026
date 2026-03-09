@@ -92,6 +92,11 @@ double Shooter::GetTurretAngle() {
     return 360 * m_azimuthTurretMotor.GetEncoder().GetPosition() / Constants::kAzimuthMotorRevsToRevs; // gets current turret angle (deg)
 };
 
+Shooter::shooterStates Shooter::GetShooterState() {
+    return m_shooterState;
+};
+
+
 // Define readytofire
 bool Shooter::ReadyToFire() {
     double velocityError = std::abs(m_velocitySetpoint.value() - GetShooterSpeed());
@@ -127,7 +132,8 @@ void Shooter::Update(Robot::Mode mode, double t) {
             // SetHoodPosition(0.2);
 
             // If at setpoint, transition to fire
-            if (ReadyToFire()) {
+            if (ReadyToFire() == true) {
+                Indexer::GetInstance().StartIndexing();
                 m_shooterState = shooterStates::FIRE;
             }
         
@@ -137,10 +143,10 @@ void Shooter::Update(Robot::Mode mode, double t) {
             SetTurretAngle(ShotCalculator::GetInstance().GetTurretAngle());
             // SetHoodPosition(0.2);
 
-            if (ReadyToFire()) {
-                Indexer::GetInstance().StartIndexing();
-            } else {
+            // If not at setpoint, transition to PREFIRE
+            if (ReadyToFire() == false) {
                 Indexer::GetInstance().StopIndexing();
+                m_shooterState = shooterStates::PREFIRE;
             }
         }
         

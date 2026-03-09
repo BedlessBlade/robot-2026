@@ -27,7 +27,7 @@
 
 // This gets called first. So, initialize everything here.
 Robot::Robot()
-  : m_compressor{frc::PneumaticsModuleType::REVPH},
+  : m_compressor{Constants::kPneumaticCanId , frc::PneumaticsModuleType::REVPH},
     m_alignControllers{
       {Constants::kPathFollowingKp, Constants::kPathFollowingKi,
        Constants::kPathFollowingKd},
@@ -112,42 +112,22 @@ Robot::Robot()
 
       bool LastPosPiston = false;
 
+      // FOR SHOOTER TESTING DO NOT UNCOMMENT
+      // SwerveDrive::GetInstance().ResetPose(frc::Pose2d{frc::Translation2d{492.33_in + 45_in, 158.32_in}, frc::Rotation2d{180_deg}});
 
-      // setting shooter setpoint
-      frc::Pose2d shooterSetpoint;
-      frc::Pose2d robotPose = SwerveDrive::GetInstance().GetPose2d();
-      auto Robotx = robotPose.X();
-      auto Roboty = robotPose.Y();
-      if(alliance == frc::DriverStation::Alliance::kRed) {
-        if(Robotx >= 492.33_in) {
-          shooterSetpoint.X() = 492.33_in;
-          shooterSetpoint.Y() = 158.32_in;
+      // frc::Pose2d robotPose = SwerveDrive::GetInstance().GetPose2d();
+      // std::cout << "X:Y:Pitch : " << robotPose.X().value() << ", "
+      //                             << robotPose.Y().value() << ", "
+      //                             << robotPose.Rotation().Degrees().value()
+      //                             << std::endl;
 
-        } else if (Roboty <= 158.32_in) { 
-          shooterSetpoint.X() = 640.12_in - 60_in;
-          shooterSetpoint.Y() = 60_in;
-        } else if (Roboty >= 158.32_in) { 
-          shooterSetpoint.X() = 640.12_in - 60_in;
-          shooterSetpoint.Y() = 316.64_in - 60_in;
-        }
-        
-      } else if (alliance == frc::DriverStation::Alliance::kBlue) {
-        if(Robotx <= 157.79_in) {
-          shooterSetpoint.X() = 180.08_in;
-          shooterSetpoint.Y() = 158.32_in;
-
-        } else if (Roboty <= 158.32_in) { 
-          shooterSetpoint.X() = 60_in;
-          shooterSetpoint.Y() = 60_in;
-        } else if (Roboty >= 158.32_in) { 
-          shooterSetpoint.X() = 60_in;
-          shooterSetpoint.Y() = 316.64_in - 60_in;
-        }
-
-      }
-
-
-
+      // ShotCalculator::GetInstance().CalculateShotParams(robotPose.Translation(), 
+      //                                                   frc::Translation2d{0_m, 1_m}, 
+      //                                                   frc::Translation2d{492.33_in, 158.32_in}, 
+      //                                                   robotPose.Rotation(), 
+      //                                                   0_deg_per_s, 
+      //                                                   0.1_s);
+      // std::cout << ShotCalculator::GetInstance().GetTurretAngle().value() << std::endl;
 
       // Get the inputs from the controller during teleop mode. Note this uses
       // the split setup where the left joystick controls velocity, and the
@@ -255,6 +235,78 @@ Robot::Robot()
         SwerveDrive::GetInstance().DriveVelocity(vx, vy, w);
       }
 
+      // Auto Aim
+      m_currentPose = SwerveDrive::GetInstance().GetPose2d();
+      //m_currentVelocity = SwerveDrive::GetInstance().getVelocity();
+      //m_currentAngularVelocity = SwerveDrive::GetInstance().getAngularVelocity();
+
+      // update goal position
+      if(alliance == frc::DriverStation::Alliance::kRed) {
+        if(m_currentPose.X() >= 492.33_in) {
+          // red side hub
+          m_goalPosition.X() = 492.33_in;
+          m_goalPosition.Y() = 158.32_in;
+
+        } else {
+          if (m_currentPose.Y() <= 158.32_in) { 
+          // pass location 1
+          m_goalPosition.X() = 640.12_in - 60_in;
+          m_goalPosition.Y() = 60_in;
+
+          } else {
+          // pass location 2 
+          m_goalPosition.X() = 640.12_in - 60_in;
+          m_goalPosition.Y() = 316.64_in - 60_in;
+          }
+        }
+        
+      } else if (alliance == frc::DriverStation::Alliance::kBlue) {
+        if(m_currentPose.X() <= 157.79_in) {
+          // blue side hub
+          m_goalPosition.X() = 180.08_in;
+          m_goalPosition.Y() = 158.32_in;
+
+        } else {  
+
+          if (m_currentPose.Y() <= 158.32_in) {
+          // pass location 1
+          m_goalPosition.X() = 60_in;
+          m_goalPosition.Y() = 60_in;
+
+          } else {
+          // pass location 2
+          m_goalPosition.X() = 60_in;
+          m_goalPosition.Y() = 316.64_in - 60_in;
+          }
+        }
+      }
+
+      // Calculate shot at current state
+      // ShotCalculator::GetInstance().CalculateShotParams(m_currentPose.Translation(), 
+      //                                                    frc::Translation2d{0_m, 0_m}, 
+      //                                                    m_goalPosition, 
+      //                                                    m_currentPose.Rotation(), 
+      //                                                    0_deg_per_s,
+      //                                                    0.1_s);
+
+      ShotCalculator::GetInstance().SetShooterVelocity(45_tps);
+      ShotCalculator::GetInstance().SetTurretAngle(0_deg);
+
+      // TODO Add logic for operator overrides
+      
+      if (Controllers::GetInstance().GetOperatorController().GetRightTriggerAxis() > 0.5) {
+        if (Shooter::GetInstance().GetShooterState() == Shooter::shooterStates::IDLE) {
+          // only call if not at idle
+          Shooter::GetInstance().StartShooting();
+        }
+
+      } else {
+        if (Shooter::GetInstance().GetShooterState() != Shooter::shooterStates::IDLE) {
+          // only call if not at idle
+          Shooter::GetInstance().StopShooting();
+        }
+      }
+
       // operator controls elseif statement hell
       //some controls missing cuz i was getting rid of unnecessary lines
       if (Controllers::GetInstance().GetOperatorController().GetXButtonPressed()) {
@@ -276,15 +328,10 @@ Robot::Robot()
 
       } else if (Controllers::GetInstance().GetOperatorController().GetLeftTriggerAxis() > 0.5) {
         SupaIntake::GetInstance().SetMotors(0.75);
+
       } else if (Controllers::GetInstance().GetOperatorController().GetLeftTriggerAxis() < 0.5) {
         SupaIntake::GetInstance().SetMotors(0.0);
-      } if (Controllers::GetInstance().GetOperatorController().GetRightTriggerAxis() > 0.5) {
-        //todo: update shooter speed & angle alignment
-        Shooter::GetInstance().StartShooting();
 
-      } else if (Controllers::GetInstance().GetOperatorController().GetRightTriggerAxis() < 0.5) {
-        Indexer::GetInstance().StopIndexing();
-        Shooter::GetInstance().SetShooterSpeed(0.0_tps);
       } else { std::cout << "hello\n"; }
 
     } else if (mode == kDisabled) {

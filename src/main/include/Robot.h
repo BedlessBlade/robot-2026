@@ -17,6 +17,7 @@
 #include <frc/LEDPattern.h>
 
 #include <units/time.h>
+#include <units/velocity.h>
 
 class Robot : public frc::TimedRobot {
 public:
@@ -54,7 +55,10 @@ private:
   int m_autoAlignSetpointIndex = 0;
   PIDController m_alignControllers[3];
 
-  frc::Translation2d goalPosition;
+  frc::Translation2d m_goalPosition;
+  frc::Pose2d m_currentPose;
+  frc::Translation2d m_currentVelocity;
+  units::degrees_per_second_t m_currentAngularVelocity;
 
   bool m_braking = false;
   bool m_intaking = false;
