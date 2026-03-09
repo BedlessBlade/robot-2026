@@ -1,5 +1,6 @@
 #pragma once
 
+#include <frc/Compressor.h>
 #include <cameraserver/CameraServer.h>
 #include <frc/TimedRobot.h>
 #include <frc/geometry/Pose2d.h>
@@ -16,6 +17,7 @@
 #include <frc/LEDPattern.h>
 
 #include <units/time.h>
+#include <units/velocity.h>
 
 class Robot : public frc::TimedRobot {
 public:
@@ -32,8 +34,11 @@ public:
   void TeleopInit() override;
 
   std::string globalAlliance = "None";
+  bool isXButtonPressed = false;
 
 private:
+
+  frc::Compressor m_compressor;
 
   Looper m_looper;
 
@@ -49,6 +54,11 @@ private:
   frc::Pose2d m_autoAlignSetpoint;
   int m_autoAlignSetpointIndex = 0;
   PIDController m_alignControllers[3];
+
+  frc::Translation2d m_goalPosition;
+  frc::Pose2d m_currentPose;
+  frc::Translation2d m_currentVelocity;
+  units::degrees_per_second_t m_currentAngularVelocity;
 
   bool m_braking = false;
   bool m_intaking = false;
