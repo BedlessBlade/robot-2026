@@ -27,7 +27,7 @@
 
 // This gets called first. So, initialize everything here.
 Robot::Robot()
-  : m_compressor{Constants::kPneumaticCanId , frc::PneumaticsModuleType::REVPH},
+  : m_compressor{frc::PneumaticsModuleType::REVPH},
     m_alignControllers{
       {Constants::kPathFollowingKp, Constants::kPathFollowingKi,
        Constants::kPathFollowingKd},
