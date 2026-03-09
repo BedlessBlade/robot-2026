@@ -23,6 +23,10 @@ public:
   // Constants for the drivetrain
   static constexpr int kPigeonCanId = 13;
 
+  //todo: update robot length
+  static constexpr auto kRobotWidth = 28.625 / kInchesPerMeter;
+  static constexpr auto kRobotLength = -1 / kInchesPerMeter;
+
   static constexpr auto kWheelBaseWidth = 26.75_in; //left to right
   static constexpr auto kWheelBaseLength = 15.75_in; //front to back
 
@@ -89,10 +93,10 @@ public:
   static constexpr double kFieldWidth = 316.64 / kInchesPerMeter;
 
   //TODO: update probably
-  static constexpr double kStartLineOffset = (25 * 12) / kInchesPerMeter;
-  static constexpr double kStartOffsetY =
-      kFieldWidth / 2 - (24 / kInchesPerMeter); // meters
-  static constexpr double kStartOffsetX = 0;    // meters   
+  static constexpr double kStartLineOffset = 156.06 / kInchesPerMeter;
+  static constexpr double kStartOffsetY = 60 / kInchesPerMeter;
+
+  static constexpr double kStartOffsetX = kRobotWidth / 2;    // meters   
 
   //field object positions/sizes
   static constexpr double kHubWidth = 47.00 / kInchesPerMeter;

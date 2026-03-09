@@ -22,9 +22,6 @@ AutoDepot::AutoDepot(frc::DriverStation::Alliance alliance) {
       std::vector<frc::Pose2d>{
           Locations::GetInstance().GetClimbPosition(alliance),
       false, false));
-    m.tasks.push_back(std::make_shared<climberextend>());
-    m.tasks.push_back(std::make_shared<Delay(1.0)>));
-    m.tasks.push_back(std::make_shared<climberclimb>());
 */
 
 }
