@@ -241,44 +241,28 @@ Robot::Robot()
       //m_currentAngularVelocity = SwerveDrive::GetInstance().getAngularVelocity();
 
       // update goal position
-      if(alliance == frc::DriverStation::Alliance::kRed) {
-        if(m_currentPose.X() >= 492.33_in) {
-          // red side hub
-          m_goalPosition.X() = 492.33_in;
-          m_goalPosition.Y() = 158.32_in;
 
-        } else {
-          if (m_currentPose.Y() <= 158.32_in) { 
-          // pass location 1
-          m_goalPosition.X() = 640.12_in - 60_in;
-          m_goalPosition.Y() = 60_in;
-
-          } else {
-          // pass location 2 
-          m_goalPosition.X() = 640.12_in - 60_in;
-          m_goalPosition.Y() = 316.64_in - 60_in;
-          }
-        }
-        
-      } else if (alliance == frc::DriverStation::Alliance::kBlue) {
-        if(m_currentPose.X() <= 157.79_in) {
-          // blue side hub
-          m_goalPosition.X() = 180.08_in;
-          m_goalPosition.Y() = 158.32_in;
-
-        } else {  
-
-          if (m_currentPose.Y() <= 158.32_in) {
-          // pass location 1
-          m_goalPosition.X() = 60_in;
-          m_goalPosition.Y() = 60_in;
-
-          } else {
-          // pass location 2
-          m_goalPosition.X() = 60_in;
-          m_goalPosition.Y() = 316.64_in - 60_in;
-          }
-        }
+      if(alliance == frc::DriverStation::Alliance::kRed && m_currentPose.X() >= 492.33_in) {
+        // red side hub
+        m_goalPosition.X() = 492.33_in;
+        m_goalPosition.Y() = units::inch_t{Constants::kFieldWidth / 2};
+      } else if (alliance == frc::DriverStation::Alliance::kBlue && m_currentPose.X() <= 157.79_in) {
+        // blue side hub
+        m_goalPosition.X() = 180.08_in;
+        m_goalPosition.Y() = units::inch_t{Constants::kFieldWidth / 2};
+      } else {
+        //X pos varies based on alliance
+        m_goalPosition.X() = units::inch_t{
+          alliance == frc::DriverStation::Alliance::kRed 
+          ? Constants::kFieldLength - 60 
+          : 60
+        };
+        //Y pos varies based on half of field (top/bottom)
+        m_goalPosition.Y() = units::inch_t{
+          m_currentPose.Y() <= units::inch_t{Constants::kFieldWidth / 2} 
+          ? 60 
+          : Constants::kFieldWidth - 60.0
+        };
       }
 
       // Calculate shot at current state
