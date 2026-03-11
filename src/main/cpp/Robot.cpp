@@ -61,12 +61,13 @@ Robot::Robot()
   Shooter::GetInstance();
 
 
-  m_compressor.EnableAnalog(
-    units::pounds_per_square_inch_t{Constants::kMinPressure},
-    units::pounds_per_square_inch_t{Constants::kMaxPressure}
+  m_compressor.EnableDigital(
+      // units::pounds_per_square_inch_t{Constants::kMinPressure},
+      // units::pounds_per_square_inch_t{Constants::kMaxPressure}
   );
-
   
+  
+
   // This initializes the main looper. What you put here will run @200 Hz while
   // the robot is on.
   m_looper = Looper{[this] {
@@ -101,6 +102,12 @@ Robot::Robot()
         SwerveDrive::GetInstance().Coast();
         m_braking = false;
       }
+
+
+      std::cout << "enabled:" << m_compressor.IsEnabled() << "\n";
+      // std::cout << "pressure:" << m_compressor.GetPressure().value() << "\n";
+      std::cout << "pswitch: " << m_compressor.GetPressureSwitchValue() << "\n";
+
 
       // The auto will reset the pose to be facing towards the driver on the red
       // alliance so it needs to be corrected
