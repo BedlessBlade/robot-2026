@@ -31,8 +31,15 @@ Shooter::Shooter() :
         .OutputRange(Constants::kMinAzimuthOutput, Constants::kMaxAzimuthOutput)
         .SetFeedbackSensor(rev::spark::FeedbackSensor::kPrimaryEncoder);
     
+    m_azimuthConfig.closedLoop.maxMotion
+        .CruiseVelocity(Constants::kShooterAzimuthCV) // Trapz max velocity
+        .MaxAcceleration(Constants::kShooterAzimuthAcc) // Trapz acceleration
+        .AllowedProfileError(Constants::kShooterAzimuthTol); // Trapz path following tolerance
+
 
     m_azimuthConfig.Inverted(true);
+
+
     //.feedForward
     //    .kS(Constants::kShooterAzimuthS)
     //    .kV(Constants::kShooterAzimuthV)
@@ -41,10 +48,6 @@ Shooter::Shooter() :
     //    .kCos(0)
     //    .kCosRatio(0);
 
-    //m_azimuthConfig.closedLoop.maxMotion
-    //    .CruiseVelocity(Constants::kShooterAzimuthCV) // Trapz max velocity
-    //    .MaxAcceleration(Constants::kShooterAzimtuhAcc) // Trapz acceleration
-    //    .AllowedProfileError(Constants::kShooterAzimuthTol); // Trapz path following tolerance
     
     m_azimuthTurretMotor.Configure(m_azimuthConfig, rev::ResetMode::kResetSafeParameters, rev::PersistMode::kPersistParameters);
     m_azimuthTurretMotor.GetEncoder().SetPosition(0);
@@ -159,6 +162,6 @@ void Shooter::Update(Robot::Mode mode, double t) {
         // Update turret
         double turretRevs = std::clamp(m_azimuthSetpoint.value(), Constants::kMinShooterAzimuth, Constants::kMaxShooterAzimuth) / 360; // Convert and clamp setpoint
         double motorRevs = Constants::kAzimuthMotorRevsToRevs * turretRevs; // Convert turret rotations to motor rotations (214.5:1 reduction)
-        m_azimuthController.SetSetpoint(motorRevs, SparkMax::ControlType::kPosition, ClosedLoopSlot::kSlot0); // Set turret motor
+        m_azimuthController.SetSetpoint(motorRevs, SparkMax::ControlType::kMAXMotionPositionControl, ClosedLoopSlot::kSlot0); // Set turret motor
     }
 };

@@ -178,8 +178,14 @@ public:
   static constexpr double kShooterMotorV = 0.12;
   static constexpr double kShooterMotorS = 0.1;
 
+  // Shooter azimuth maxmotion gains
+
+  static constexpr double kShooterAzimuthCV = 100.0 * 60; //RPS --> RPM conversion for CV
+  static constexpr double kShooterAzimuthAcc = 2100.0; //Units in RPM/second
+  static constexpr double kShooterAzimuthTol = 0.02; //Units in rotations
+
   // Shooter limits and misc
-  static constexpr double velErrorTol = 50;
+  static constexpr double velErrorTol = 1;
   static constexpr double azimuthErrorTol = 1;
   
   // Turret Motor CANID
@@ -205,6 +211,18 @@ public:
   static constexpr double kAzimuthMotorRevsToRevs = 233.5 / 1;
   static constexpr frc::Translation2d kTurretOffset{-4_in, -9.5_in}; // turret is 4" back in x, 9.5" over
   
+  // Distance to TPS power series constants
+  static constexpr double kDist2TPSA = 23.2;
+  static constexpr double kDist2TPSB = 0.438;
+
+  // Distance to ToF power series constants
+  static constexpr double kDist2ToFA = 0.507; 
+  static constexpr double kDist2ToFB = 0.573;
+
+  // Velocity to Distance power series constants
+  static constexpr double kVel2DistA = 0.196;
+  static constexpr double kVel2DistB = 2.37;
+  
   // Hood linear actuator ports
   static constexpr int kLeftHoodServoPort = 9;
   static constexpr int kRightHoodServoPort = 8;
@@ -214,6 +232,6 @@ public:
   static constexpr double kMaxPressure = 120;
   static constexpr int kPneumaticCanId = 22;
 
-
   // Hood limits
 };
+

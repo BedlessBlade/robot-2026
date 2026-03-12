@@ -45,6 +45,4 @@ void Cameras::Update(Robot::Mode mode, double t) {
   }
 }
 
-Cameras::AlgaeState Cameras::GetAlgaeState() const { return m_algaeState; }
-
 Cameras::Cameras() {}

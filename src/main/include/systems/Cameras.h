@@ -13,9 +13,6 @@ public:
     return instance;
   }
 
-  enum AlgaeState { kNone, kBottom, kTop, kBoth };
-
-  AlgaeState GetAlgaeState() const;
   void Update(Robot::Mode mode, double t) override;
 
 private:
@@ -24,14 +21,12 @@ private:
 
   photon::PhotonPoseEstimator m_leftPoseEstimator{
       frc::AprilTagFieldLayout::LoadField(
-          frc::AprilTagField::k2025ReefscapeWelded),
+          frc::AprilTagField::k2026RebuiltWelded),
       photon::MULTI_TAG_PNP_ON_COPROCESSOR, Constants::kLeftCameraTransform};
   photon::PhotonPoseEstimator m_rightPoseEstimator{
       frc::AprilTagFieldLayout::LoadField(
-          frc::AprilTagField::k2025ReefscapeWelded),
+          frc::AprilTagField::k2026RebuiltWelded),
       photon::MULTI_TAG_PNP_ON_COPROCESSOR, Constants::kRightCameraTransform};
-
-  AlgaeState m_algaeState;
 
   Cameras();
 };
