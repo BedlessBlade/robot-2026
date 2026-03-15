@@ -6,6 +6,7 @@
 #include <frc/geometry/Pose2d.h>
 #include <frc/smartdashboard/SmartDashboard.h>
 #include <memory>
+#include <iostream>
 #include <networktables/NetworkTableInstance.h>
 #include <frc/geometry/Rotation2d.h>
 
@@ -13,7 +14,7 @@
 #include "Controllers.h"
 #include "Locations.h"
 #include "Util.h"
-#include "auto/AutoDoNothing.h"
+
 //#include "systems/Intake.h" -- Not removing any just commenting for SupaIntake testing
 #include "systems/SupaIntake.h"
 #include "systems/Cameras.h"
@@ -24,6 +25,13 @@
 #include "systems/Climber.h"
 #include "systems/Shooter.h"
 #include "systems/ShotCalculator.h"
+
+#include "auto/AutoDoNothing.h"
+// #include "auto/AutoDepot.h"
+#include "auto/AutoOutpost.h"
+#include "auto/AutoShoot.h"
+#include "auto/AutoShootBackUp.h"
+
 
 // This gets called first. So, initialize everything here.
 Robot::Robot()
@@ -38,14 +46,18 @@ Robot::Robot()
   m_startChooser.SetDefaultOption("1", 1);
   m_startChooser.AddOption("2", 2);
   m_startChooser.AddOption("3", 3);
-  frc::SmartDashboard::PutData("Start Location", &m_startChooser);
 
-  frc::SmartDashboard::PutBoolean("Calibrate Pose", false);
-        
   m_autoChooser.SetDefaultOption("Do Nothing", "DoNothing");
-  //  m_autoChooser.AddOption("Cross the Line", "CrossLine");
-  frc::SmartDashboard::PutData("Auto", &m_autoChooser);
+  m_autoChooser.SetDefaultOption("To Outpost", "Outpost");
+  m_autoChooser.SetDefaultOption("Shoot", "Shoot");
+  m_autoChooser.SetDefaultOption("Shoot & Back Up", "ShootBackup");
+  // m_autoChooser.SetDefaultOption("To Neutral Zone", "Neutral");
+  // m_autoChooser.SetDefaultOption("Shoot & Climb", "ShootClimb");
+  
 
+  frc::SmartDashboard::PutData("Start Location", &m_startChooser);
+  frc::SmartDashboard::PutBoolean("Calibrate Pose", false);
+  frc::SmartDashboard::PutData("Auto", &m_autoChooser);
   frc::SmartDashboard::PutData("Field", &m_field);
   frc::SmartDashboard::PutData("QuestNav Field", &m_QuestNavField);
 
@@ -80,22 +92,44 @@ Robot::Robot()
     }
 
     double t = frc::Timer::GetFPGATimestamp().value();
+    auto alliance = frc::DriverStation::GetAlliance();
+
   
     if (mode != kDisabled) {
-      auto alliance = frc::DriverStation::GetAlliance();
       if (alliance.has_value() && alliance.value() == frc::DriverStation::Alliance::kRed) {
         globalAlliance = "Red";
+        m_goalPosition = frc::Translation2d{468.56_in + Constants::kHubOffset, 158.32_in};
+
       } else if (alliance.has_value() && alliance.value() == frc::DriverStation::Alliance::kBlue) {
         globalAlliance = "Blue";
+        m_goalPosition = frc::Translation2d{181.56_in - Constants::kHubOffset, 158.32_in};
+
       } else {
         globalAlliance = "None";
       }
+
     }
+
+    m_currentPose = SwerveDrive::GetInstance().GetPose2d();
+    //m_currentVelocity = SwerveDrive::GetInstance().getVelocity();
+    //m_currentAngularVelocity = SwerveDrive::GetInstance().getAngularVelocity();
+
+    //Calculate shot at current state
+    ShotCalculator::GetInstance().CalculateShotParams(m_currentPose.Translation(), 
+                                                      frc::Translation2d{0_m, 0_m}, 
+                                                      m_goalPosition,
+                                                      m_currentPose.Rotation(), 
+                                                      0_deg_per_s,
+                                                      0.1_s);
 
     if (mode == kAuto) {
       if (m_auto) {
         m_auto->Update(t);
+        // if (Shooter::GetInstance().GetShooterState() == Shooter::shooterStates::IDLE) {
+        //   Shooter::GetInstance().StartShooting();
+        // }
       }
+
     } else if (mode == kTeleop) {
       if (m_braking) {
         SwerveDrive::GetInstance().Coast();
@@ -116,10 +150,10 @@ Robot::Robot()
       // SwerveDrive::GetInstance().ResetPose(frc::Pose2d{frc::Translation2d{492.33_in + 178_in, 158.32_in}, frc::Rotation2d{180_deg}});
 
       // frc::Pose2d robotPose = SwerveDrive::GetInstance().GetPose2d();
-      // // std::cout << "X:Y:Pitch : " << robotPose.X().value() << ", "
-      // //                             << robotPose.Y().value() << ", "
-      // //                             << robotPose.Rotation().Degrees().value()
-      // //                             << std::endl;
+      // std::cout << "X:Y:Pitch : " << robotPose.X().value() * Constants::kInchesPerMeter << ", "
+      //                             << robotPose.Y().value() * Constants::kInchesPerMeter << ", "
+      //                             << robotPose.Rotation().Degrees().value()
+      //                             << std::endl;
 
       // ShotCalculator::GetInstance().CalculateShotParams(robotPose.Translation(), 
       //                                                   frc::Translation2d{1_m, 0_m}, 
@@ -148,14 +182,11 @@ Robot::Robot()
           Controllers::GetInstance().GetDriverController().GetRightX();
       double w = Util::Exp(-rightX) * Constants::kDriveAngularControlMultiplier;
 
-      
-
-      if (alliance.has_value() && alliance.value() == frc::DriverStation::Alliance::kRed) {
-        globalAlliance = "Red";
-      } else if (alliance.has_value() && alliance.value() == frc::DriverStation::Alliance::kBlue) {
-        globalAlliance = "Blue";
-      } else {
-        globalAlliance = "None";
+      // Slow Mode
+      if (Controllers::GetInstance().GetDriverController().GetRightTriggerAxis() > 0.5) {
+        vy *= Constants::kSlowMode;
+        vx *= Constants::kSlowMode;
+        w *= Constants::kSlowMode;
       }
 
       if (alliance.has_value() &&
@@ -238,65 +269,69 @@ Robot::Robot()
       }
 
       // Auto Aim
-      m_currentPose = SwerveDrive::GetInstance().GetPose2d();
+      //m_currentPose = SwerveDrive::GetInstance().GetPose2d();
       //m_currentVelocity = SwerveDrive::GetInstance().getVelocity();
       //m_currentAngularVelocity = SwerveDrive::GetInstance().getAngularVelocity();
 
       // update goal position
-
-      if(alliance == frc::DriverStation::Alliance::kRed && m_currentPose.X() >= 492.33_in) {
-        // red side hub
-        m_goalPosition.X() = units::meter_t{492.33_in};
-        m_goalPosition.Y() = units::meter_t{Constants::kFieldWidth / 2};
-      } else if (alliance == frc::DriverStation::Alliance::kBlue && m_currentPose.X() <= 157.79_in) {
-        // blue side hub
-        m_goalPosition.X() = units::meter_t{180.08_in};
-        m_goalPosition.Y() = units::meter_t{Constants::kFieldWidth / 2};
-      } else {
-        //X pos varies based on alliance
-        m_goalPosition.X() = units::inch_t{
-          alliance == frc::DriverStation::Alliance::kRed 
-          ? Constants::kFieldLength - 60 
-          : 60
-        };
-        //Y pos varies based on half of field (top/bottom)
-        m_goalPosition.Y() = units::inch_t{
-          m_currentPose.Y() <= units::inch_t{Constants::kFieldWidth / 2} 
-          ? 60 
-          : Constants::kFieldWidth - 60.0
-        };
-      }
+      // if(alliance == frc::DriverStation::Alliance::kRed && m_currentPose.X() >= units::meter_t{Constants::kRedHubX}) {
+      //   // red side hub
+      //   m_goalPosition.X() = units::meter_t{Constants::kRedHubX};
+      //   m_goalPosition.Y() = units::meter_t{Constants::kRedHubY};
+      // } else if (alliance == frc::DriverStation::Alliance::kBlue && m_currentPose.X() <= units::meter_t{Constants::kBlueHubX}) {
+      //   // blue side hub
+      //   m_goalPosition.X() = units::meter_t{Constants::kBlueHubX};
+      //   m_goalPosition.Y() = units::meter_t{Constants::kBlueHubY};
+      // } else {
+      //   //X pos varies based on alliance
+      //   m_goalPosition.X() = units::inch_t{
+      //     alliance == frc::DriverStation::Alliance::kRed 
+      //     ? Constants::kFieldLength - 60 
+      //     : 60
+      //   };
+      //   //Y pos varies based on half of field (top/bottom)
+      //   m_goalPosition.Y() = units::inch_t{
+      //     m_currentPose.Y() <= units::inch_t{Constants::kFieldWidth / 2} 
+      //     ? 60 
+      //     : Constants::kFieldWidth - 60.0
+      //   };
+      // }
 
       //Calculate shot at current state
-      ShotCalculator::GetInstance().CalculateShotParams(m_currentPose.Translation(), 
-                                                         frc::Translation2d{0_m, 0_m}, 
-                                                         m_goalPosition, 
-                                                         m_currentPose.Rotation(), 
-                                                         0_deg_per_s,
-                                                         0.1_s);
+      // ShotCalculator::GetInstance().CalculateShotParams(m_currentPose.Translation(), 
+      //                                                    frc::Translation2d{0_m, 0_m}, 
+      //                                                    frc::Translation2d{492.33_in - 5_in, 158.32_in + 5_in}, 
+      //                                                    //m_goalPosition,
+      //                                                    m_currentPose.Rotation(), 
+      //                                                    0_deg_per_s,
+      //                                                    0.1_s);
 
       // operator overrides
       // TODO figure out what static positions we want
       if (Controllers::GetInstance().GetOperatorController().GetAButton()) {
         // Override 1
-        ShotCalculator::GetInstance().SetShooterVelocity(45_tps);
-        ShotCalculator::GetInstance().SetTurretAngle(-90_deg);
+        ShotCalculator::GetInstance().SetShooterVelocity(35_tps);
+        ShotCalculator::GetInstance().SetTurretAngle(180_deg);
       
       } else if (Controllers::GetInstance().GetOperatorController().GetBButton()) {
         // Override 2
-        ShotCalculator::GetInstance().SetShooterVelocity(45_tps);
-        ShotCalculator::GetInstance().SetTurretAngle(0_deg);
+        ShotCalculator::GetInstance().SetShooterVelocity(40_tps);
+        ShotCalculator::GetInstance().SetTurretAngle(180_deg);
         
       } else if (Controllers::GetInstance().GetOperatorController().GetYButton()) {
         // Override 3
         ShotCalculator::GetInstance().SetShooterVelocity(45_tps);
-        ShotCalculator::GetInstance().SetTurretAngle(90_deg);
+        ShotCalculator::GetInstance().SetTurretAngle(180_deg);
       }
 
       if (Controllers::GetInstance().GetOperatorController().GetRightTriggerAxis() > 0.5) {
         if (Shooter::GetInstance().GetShooterState() == Shooter::shooterStates::IDLE) {
-          // only call if not at idle
-          Shooter::GetInstance().StartShooting();
+          if (ShotCalculator::GetInstance().ShotValid()) {
+            Shooter::GetInstance().StartShooting();
+          } else {
+            Controllers::GetInstance().GetDriverController().SetRumble(frc::GenericHID::RumbleType::kBothRumble, .2);
+            Controllers::GetInstance().GetOperatorController().SetRumble(frc::GenericHID::RumbleType::kBothRumble, .2);
+          }
         }
 
       } else {
@@ -310,10 +345,8 @@ Robot::Robot()
       // operator controls elseif statement hell
       //some controls missing cuz i was getting rid of unnecessary lines
       if (Controllers::GetInstance().GetOperatorController().GetXButtonPressed()) {
-          SupaIntake::GetInstance().SetPneums();
+          SupaIntake::GetInstance().ToggleIntake();
         
-      } else if (Controllers::GetInstance().GetOperatorController().GetXButtonReleased()) {
-
       //Dpad up - Extend climb
       } else if (Controllers::GetInstance().GetOperatorController().GetPOV() == 0) {
         Climber::GetInstance().SetClimber(2);
@@ -366,7 +399,6 @@ Robot::Robot()
     Cameras::GetInstance().Update(mode, t);
     SwerveDrive::GetInstance().Update(mode, t);
     Shooter::GetInstance().Update(mode, t);
-    //Intake::GetInstance().Update(mode, t);
     SupaIntake::GetInstance().Update(mode, t);
     LEDs::GetInstance().Update(mode, globalAlliance);
     Indexer::GetInstance().Update(mode);
@@ -396,39 +428,24 @@ void Robot::DisabledExit() {
 
     std::string autoName = m_autoChooser.GetSelected();
         double t = frc::Timer::GetFPGATimestamp().value();
-        m_auto = std::make_shared<AutoDoNothing>();
+        //go to places
+        // if(autoName == "Depot") { m_auto = std::make_shared<AutoDepot>(alliance.value()); } 
+        if(autoName == "Outpost") { m_auto = std::make_shared<AutoOutpost>(alliance.value()); } 
+
+        //shoot
+        else if (autoName == "Shoot") { m_auto = std::make_shared<AutoShoot>(alliance.value()); }
+        // else if (autoName == "ShootBackUp") { m_auto = std::make_shared<AutoShootBackUp>(alliance.value()); }
+
+        //autodonothing!!!
+        else { m_auto = std::make_shared<AutoDoNothing>(); } 
         m_auto->Start(t);
   }
 }
 
 void Robot::TeleopInit() {
-  // Make sure that ramping is enabled for the driver motors even if auto is
-  // incomplete
+  // Make sure that ramping is enabled for the driver motors even if auto is incomplete
   SwerveDrive::GetInstance().EnableRamp();
 }
-
-// frc::Pose2d Robot::NearestLeftCoral(frc::Pose2d robotPose, int *i) {
-//   frc::Pose2d nearest = Locations::GetInstance().GetCoralPositions()[0];
-//   auto minDistance = robotPose.Translation().Distance(nearest.Translation());
-//   if (i) {
-//     *i = 0;
-//   }
-
-//   for (int j = 2; j < 12; j += 2) {
-//     auto distance = robotPose.Translation().Distance(
-//         Locations::GetInstance().GetCoralPositions()[j].Translation());
-//     if (distance < minDistance) {
-//       nearest = Locations::GetInstance().GetCoralPositions()[j];
-//       minDistance = distance;
-
-//       if (i) {
-//         *i = j;
-//       }
-//     }
-//   }
-
-//   return nearest;
-// }
 
 #ifndef RUNNING_FRC_TESTS
 int main(int argc, char **argv) { frc::StartRobot<Robot>(); }

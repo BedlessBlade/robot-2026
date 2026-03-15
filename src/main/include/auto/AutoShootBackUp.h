@@ -5,8 +5,8 @@
 #include <frc/DriverStation.h>
 #include <frc/geometry/Pose2d.h>
 
-class AutoShoot : public TaskList {
+class AutoShootBackUp : public TaskList {
 public:
-    AutoShoot(frc::DriverStation::Alliance alliance);
+    AutoShootBackUp(frc::DriverStation::Alliance alliance);
 
 };

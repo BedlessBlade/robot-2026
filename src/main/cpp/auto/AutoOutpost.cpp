@@ -1,4 +1,4 @@
-#include "auto/AutoDepot.h"
+#include "auto/AutoOutpost.h"
 
 #include <frc/DriverStation.h>
 #include <frc/geometry/Pose2d.h>
@@ -12,15 +12,16 @@
 #include "auto/TaskList.h"
 #include "auto/StartShooter.h"
 #include "auto/StopShooter.h"
+#include "systems/SwerveDrive.h"
 // #include ""
 
 
-AutoDepot::AutoDepot(frc::DriverStation::Alliance alliance) {
+AutoOutpost::AutoOutpost(frc::DriverStation::Alliance alliance) {
 
   // this is test pseudo code for autos,  uses set points which still need to be made and this one has move shoot and climb
     m_tasks.push_back(std::make_shared<FollowPath>(
       std::vector<frc::Pose2d>{
-          Locations::GetInstance().GetStartPosition(alliance, 3), // position might be optional depending on how we want to start matches
+          SwerveDrive::GetInstance().GetPose2d(), // position might be optional depending on how we want to start matches
           Locations::GetInstance().GetDepotPosition(alliance)},
       false, false));
     m_tasks.push_back(std::make_shared<StartShooter>());

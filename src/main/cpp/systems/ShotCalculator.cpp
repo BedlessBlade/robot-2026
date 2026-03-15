@@ -63,24 +63,18 @@ void ShotCalculator::CalculateShotParams(frc::Translation2d robotPosition,
     frc::Translation2d shotVelocity = targetVelocity.operator-(turretVelocity);
 
     // Extract shooter params
-    units::degree_t goalAngle = shotVelocity.Angle().Degrees();
-    if (robotHeading.Degrees() < 0_deg) {
-        if (goalAngle > 0_deg) {
-            goalAngle -= 360_deg;
-        }
-        m_turretAngle = 180_deg - (robotHeading.Degrees() - goalAngle);
-
-    } else {
-        if (goalAngle < 0_deg) {
-            goalAngle += 360_deg;
-        }
-        m_turretAngle = (goalAngle - robotHeading.Degrees()) + 180_deg;
+    units::degree_t goalAngle = (shotVelocity.Angle().Degrees() - robotHeading.Degrees()) + 180_deg;
+    if (goalAngle < 0_deg) {
+        // All commands are positive
+        goalAngle += 360_deg;
     }
-    units::meters_per_second_t requiredVelocity = units::meters_per_second_t{shotVelocity.Norm().value()};
+
+    m_turretAngle = units::degree_t{std::fmod(goalAngle.value(), 360.0)};
 
     // use LUT to find the shooter RPS
+    units::meters_per_second_t requiredVelocity = units::meters_per_second_t{shotVelocity.Norm().value()};
     units::meter_t effectiveDistance = units::meter_t{Constants::kVel2DistA * pow(requiredVelocity.value(), Constants::kVel2DistB)};// Convert vel to dist
-    m_shooterVelocity = units::turns_per_second_t{Constants::kDist2TPSA * pow(effectiveDistance.value(), Constants::kDist2TPSB)}; // Convert dist to TPS
+    m_shooterVelocity = units::turns_per_second_t{Constants::kDist2TPSA * 0.98 * pow(effectiveDistance.value(), Constants::kDist2TPSB)}; // Convert dist to TPS
 }
 
 // Shooter wheel velocity getter (RPS or Rev/s)
@@ -95,7 +89,11 @@ units::degree_t ShotCalculator::GetTurretAngle() {
 
 // Turret angle setter
 void ShotCalculator::SetTurretAngle(units::degree_t angle) {
-    m_turretAngle = -angle;
+    m_turretAngle = angle;
+}
+
+bool ShotCalculator::ShotValid() {
+    return m_turretAngle < 270_deg && m_shooterVelocity.value() > Constants::kMinShooterCal && m_shooterVelocity.value() < Constants::kMaxShooterCal;
 }
 
 // Shooter wheel velocity setter

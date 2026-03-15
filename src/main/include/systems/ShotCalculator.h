@@ -33,6 +33,8 @@ public:
     void SetTurretAngle(units::degree_t angle);
     void SetShooterVelocity(units::turns_per_second_t velocity);
 
+    bool ShotValid();
+
 private:
     // Private constructor
     ShotCalculator();

@@ -16,7 +16,7 @@ public:
     }
 
     void SetMotors(double Speed);   // Motors Function
-    void SetPneums();   // Pnuematics Function
+    void ToggleIntake();   // Pnuematics Function
 
     void StartAll();    // Enable and Disable all motors associated with the intake system 
     void EndAll();      // only allow use during auto & is not usable during teleop
@@ -31,9 +31,7 @@ private:
         Constants::kIntakePneumId1,
         Constants::kIntakePneumId2};
 
-    bool m_pneumState = false;    // False is up, True is down
-    bool m_easilyUse = false;   // Set so that ease of use functions cant be activated during teleop
-
+    bool m_intakeDown = false;    // False is up, True is down
     double m_motorSpeed;    // Set motor to equal speed (-1.0 to 1.0)
 
     SupaIntake();

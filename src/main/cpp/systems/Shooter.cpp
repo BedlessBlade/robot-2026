@@ -31,10 +31,10 @@ Shooter::Shooter() :
         .OutputRange(Constants::kMinAzimuthOutput, Constants::kMaxAzimuthOutput)
         .SetFeedbackSensor(rev::spark::FeedbackSensor::kPrimaryEncoder);
     
-    m_azimuthConfig.closedLoop.maxMotion
-        .CruiseVelocity(Constants::kShooterAzimuthCV) // Trapz max velocity
-        .MaxAcceleration(Constants::kShooterAzimuthAcc) // Trapz acceleration
-        .AllowedProfileError(Constants::kShooterAzimuthTol); // Trapz path following tolerance
+    // m_azimuthConfig.closedLoop.maxMotion
+    //     .CruiseVelocity(Constants::kShooterAzimuthCV) // Trapz max velocity
+    //     .MaxAcceleration(Constants::kShooterAzimuthAcc) // Trapz acceleration
+    //     .AllowedProfileError(Constants::kShooterAzimuthTol); // Trapz path following tolerance
 
 
     m_azimuthConfig.Inverted(true);
@@ -75,7 +75,7 @@ void Shooter::StopShooting() {
 };
 
 void Shooter::SetTurretAngle(units::degree_t angle) {
-    m_azimuthSetpoint = angle + 180.0_deg;
+    m_azimuthSetpoint = angle;
 };
 
 void Shooter::SetShooterSpeed(units::turns_per_second_t speed) {
@@ -100,7 +100,6 @@ Shooter::shooterStates Shooter::GetShooterState() {
 };
 
 
-// Define readytofire
 bool Shooter::ReadyToFire() {
     double velocityError = std::abs(m_velocitySetpoint.value() - GetShooterSpeed());
     double azimuthError = std::abs(m_azimuthSetpoint.value() - GetTurretAngle());
@@ -122,16 +121,16 @@ bool Shooter::ReadyToFire() {
 void Shooter::Update(Robot::Mode mode, double t) {
     if (mode == Robot::kAuto || mode == Robot::kTeleop) {
         // Shooter statemachine
+        SetTurretAngle(ShotCalculator::GetInstance().GetTurretAngle());
+
         if (m_shooterState == shooterStates::IDLE) {
             // Shooter State is IDLE
             SetShooterSpeed(0.0_tps);
-            SetTurretAngle(0.0_deg);
             // SetHoodPosition(0.2);
 
         } else if (m_shooterState == shooterStates::PREFIRE) {
             // Shooter State is PREFIRE
             SetShooterSpeed(ShotCalculator::GetInstance().GetShooterVelocity());
-            SetTurretAngle(ShotCalculator::GetInstance().GetTurretAngle());
             // SetHoodPosition(0.2);
 
             // If at setpoint, transition to fire
@@ -143,7 +142,6 @@ void Shooter::Update(Robot::Mode mode, double t) {
         } else if (m_shooterState == shooterStates::FIRE) {
             // Shooter State is FIRE
             SetShooterSpeed(ShotCalculator::GetInstance().GetShooterVelocity());
-            SetTurretAngle(ShotCalculator::GetInstance().GetTurretAngle());
             // SetHoodPosition(0.2);
 
             // If not at setpoint, transition to PREFIRE
@@ -162,6 +160,6 @@ void Shooter::Update(Robot::Mode mode, double t) {
         // Update turret
         double turretRevs = std::clamp(m_azimuthSetpoint.value(), Constants::kMinShooterAzimuth, Constants::kMaxShooterAzimuth) / 360; // Convert and clamp setpoint
         double motorRevs = Constants::kAzimuthMotorRevsToRevs * turretRevs; // Convert turret rotations to motor rotations (214.5:1 reduction)
-        m_azimuthController.SetSetpoint(motorRevs, SparkMax::ControlType::kMAXMotionPositionControl, ClosedLoopSlot::kSlot0); // Set turret motor
+        m_azimuthController.SetSetpoint(motorRevs, SparkMax::ControlType::kPosition, ClosedLoopSlot::kSlot0); // Set turret motor
     }
 };

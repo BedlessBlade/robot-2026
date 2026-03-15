@@ -241,6 +241,14 @@ frc::Rotation2d SwerveDrive::GetGyroRotation2d() const {
   return m_gyro.GetRotation2d();
 }
 
+// units::degrees_per_second_t SwerveDrive::GetGyroAngVelocity2d() {
+//   return units::degrees_per_second_t{m_gyro.GetAngularVelocityZWorld().GetValue().value()};
+// }
+
+// frc::Translation2d SwerveDrive::GetVelocity2d() {
+
+// }
+
 frc::Pose2d SwerveDrive::GetPose2d() const {
   return m_poseEstimator.GetEstimatedPosition();
 }

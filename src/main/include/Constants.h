@@ -22,10 +22,11 @@ public:
 
   // Constants for the drivetrain
   static constexpr int kPigeonCanId = 13;
+  static constexpr double kSlowMode = 0.3;
 
   //todo: update robot length
   static constexpr auto kRobotWidth = 28.625 / kInchesPerMeter;
-  static constexpr auto kRobotLength = -1 / kInchesPerMeter;
+  static constexpr auto kRobotLength = 40 / kInchesPerMeter;
 
   static constexpr auto kWheelBaseWidth = 26.75_in; //left to right
   static constexpr auto kWheelBaseLength = 15.75_in; //front to back
@@ -79,35 +80,32 @@ public:
 
 
   // Vision
-  static constexpr frc::Transform3d kLeftCameraTransform{
+  static constexpr frc::Transform3d kRightCameraTransform{
       frc::Translation3d{-6.229_in, 12.359_in, 26.747_in},
       frc::Rotation3d{0_rad, 0_rad, -35_deg}};
-  static constexpr frc::Transform3d kRightCameraTransform{
+  static constexpr frc::Transform3d kLeftCameraTransform{
       frc::Translation3d{4.75_in, -11.25_in, 26.747_in},
       frc::Rotation3d{0_rad, 0_rad, 35_deg}};
-  static constexpr auto kBlockedTags = {1, 2, 3, 4, 5, 12, 13, 14, 15, 16};
+  static constexpr auto kBlockedTags = {0};
 
 
   // Locations
   static constexpr double kFieldLength = 650.12 / kInchesPerMeter;
   static constexpr double kFieldWidth = 316.64 / kInchesPerMeter;
+  static constexpr units::inch_t kHubOffset = 12_in;
 
   //TODO: update probably
   static constexpr double kStartLineOffset = 156.06 / kInchesPerMeter;
   static constexpr double kStartOffsetY = 60 / kInchesPerMeter;
-
   static constexpr double kStartOffsetX = kRobotWidth / 2;    // meters   
 
   //field object positions/sizes
   static constexpr double kHubWidth = 47.00 / kInchesPerMeter;
-  static constexpr double kBlueHubX = 158.32 / kInchesPerMeter;
-  static constexpr double kBlueHubY = 181.56 / kInchesPerMeter;
-  static constexpr double kRedHubX = 491.80 / kInchesPerMeter;
-  static constexpr double kRedHubY = 135.08 / kInchesPerMeter;
+  static constexpr double kBlueHubX = 181.56 / kInchesPerMeter;
+  static constexpr double kBlueHubY = 158.32 / kInchesPerMeter;
+  static constexpr double kRedHubX = (kFieldLength - (181.56 / kInchesPerMeter)) * kInchesPerMeter;
+  static constexpr double kRedHubY = 158.32 / kInchesPerMeter;
 
-  //assuming origin as bottom left corner of the arena, as per diagram on frc resources
-  static constexpr double kHubX = 158.84 / kInchesPerMeter;
-  static constexpr double kHubY = 182.11 / kInchesPerMeter;
 
   // Path following
   static constexpr double kPathFollowingKp = 6.0;
@@ -172,7 +170,7 @@ public:
   static constexpr int kShooterMotorLeftId = 18;
 
   // Shooter motor PID/ FF gains
-  static constexpr double kShooterMotorP = 0.05;
+  static constexpr double kShooterMotorP = 0.15;
   static constexpr double kShooterMotorI = 0.0;
   static constexpr double kShooterMotorD = 0.0;
   static constexpr double kShooterMotorV = 0.12;
@@ -192,11 +190,11 @@ public:
   static constexpr int kAzimuthMotorId = 16; // This needs to be updated
   
   // Turret motor PID/ FF gains
-  static constexpr double kShooterAzimuthP = 0.35;
+  static constexpr double kShooterAzimuthP = 0.15;
   static constexpr double kShooterAzimuthI = 0.0;
-  static constexpr double kShooterAzimuthD = 0.9;
-  static constexpr double kMinAzimuthOutput = -1;
-  static constexpr double kMaxAzimuthOutput = 1;
+  static constexpr double kShooterAzimuthD = 1.5;
+  static constexpr double kMinAzimuthOutput = -0.4;
+  static constexpr double kMaxAzimuthOutput = 0.4;
 
   static constexpr double kShooterAzimuthS = 0.0;
   static constexpr double kShooterAzimuthV = 0.0942;
@@ -222,7 +220,11 @@ public:
   // Velocity to Distance power series constants
   static constexpr double kVel2DistA = 0.196;
   static constexpr double kVel2DistB = 2.37;
-  
+
+  // Calibration range
+  static constexpr double kMinShooterCal = 33.0;
+  static constexpr double kMaxShooterCal = 48.0;
+
   // Hood linear actuator ports
   static constexpr int kLeftHoodServoPort = 9;
   static constexpr int kRightHoodServoPort = 8;

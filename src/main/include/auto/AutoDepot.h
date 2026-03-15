@@ -1,9 +1,10 @@
 #pragma once
 
-#include "Task.h"
+#include "TaskList.h"
+
 #include <frc/DriverStation.h>
 
-class AutoDepot : public Task {
+class AutoDepot : public TaskList {
 public:
   
   AutoDepot(frc::DriverStation::Alliance alliance);
