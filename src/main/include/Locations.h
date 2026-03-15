@@ -17,7 +17,7 @@ public:
   //const std::vector<frc::Pose2d> GetAlgaePositions() const;
 
   frc::Pose2d GetStartPosition(frc::DriverStation::Alliance alliance, int i) const;
-  frc::Pose2d GetDepotPosition(frc::DriverStation::Alliance alliance) const;
+  frc::Pose2d GetOutpostPosition(frc::DriverStation::Alliance alliance) const;
 
 private:
   Locations();

@@ -17,7 +17,7 @@ void Locations::Generate(frc::DriverStation::Alliance alliance) {
 // }
 
 
-frc::Pose2d Locations::GetDepotPosition(frc::DriverStation::Alliance alliance) const {
+frc::Pose2d Locations::GetOutpostPosition(frc::DriverStation::Alliance alliance) const {
   if (alliance == frc::DriverStation::Alliance::kBlue) {
     return frc::Pose2d{
       units::meter_t{20 / Constants::kInchesPerMeter}, 
