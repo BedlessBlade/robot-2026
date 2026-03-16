@@ -73,9 +73,9 @@ Robot::Robot()
   Shooter::GetInstance();
 
 
-  m_compressor.EnableAnalog(
-    units::pounds_per_square_inch_t{Constants::kMinPressure},
-    units::pounds_per_square_inch_t{Constants::kMaxPressure}
+  m_compressor.EnableDigital(
+    // units::pounds_per_square_inch_t{Constants::kMinPressure},
+    // units::pounds_per_square_inch_t{Constants::kMaxPressure}
   );
 
   
