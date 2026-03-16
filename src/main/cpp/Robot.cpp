@@ -98,29 +98,53 @@ Robot::Robot()
     if (mode != kDisabled) {
       if (alliance.has_value() && alliance.value() == frc::DriverStation::Alliance::kRed) {
         globalAlliance = "Red";
-        m_goalPosition = frc::Translation2d{468.56_in + Constants::kHubOffset, 158.32_in};
+        m_goalPosition = frc::Translation2d{469.11_in, 158.84_in};
 
       } else if (alliance.has_value() && alliance.value() == frc::DriverStation::Alliance::kBlue) {
         globalAlliance = "Blue";
-        m_goalPosition = frc::Translation2d{181.56_in - Constants::kHubOffset, 158.32_in};
+        m_goalPosition = frc::Translation2d{182.11_in, 158.84_in};
 
       } else {
         globalAlliance = "None";
       }
-
     }
 
+    // update goal position
+    // if(alliance == frc::DriverStation::Alliance::kRed && m_currentPose.X() >= units::meter_t{Constants::kRedHubX}) {
+    //   // red side hub
+    //   m_goalPosition.X() = units::meter_t{Constants::kRedHubX};
+    //   m_goalPosition.Y() = units::meter_t{Constants::kRedHubY};
+    // } else if (alliance == frc::DriverStation::Alliance::kBlue && m_currentPose.X() <= units::meter_t{Constants::kBlueHubX}) {
+    //   // blue side hub
+    //   m_goalPosition.X() = units::meter_t{Constants::kBlueHubX};
+    //   m_goalPosition.Y() = units::meter_t{Constants::kBlueHubY};
+    // } else {
+    //   //X pos varies based on alliance
+    //   m_goalPosition.X() = units::inch_t{
+    //     alliance == frc::DriverStation::Alliance::kRed 
+    //     ? Constants::kFieldLength - 60 
+    //     : 60
+    //   };
+    //   //Y pos varies based on half of field (top/bottom)
+    //   m_goalPosition.Y() = units::inch_t{
+    //     m_currentPose.Y() <= units::inch_t{Constants::kFieldWidth / 2} 
+    //     ? 60 
+    //     : Constants::kFieldWidth - 60.0
+    //   };
+    // }
+
+    // Get Current State
     m_currentPose = SwerveDrive::GetInstance().GetPose2d();
-    //m_currentVelocity = SwerveDrive::GetInstance().getVelocity();
-    //m_currentAngularVelocity = SwerveDrive::GetInstance().getAngularVelocity();
+    m_currentVelocity = SwerveDrive::GetInstance().GetVelocity2d();
+    m_currentAngularVelocity = SwerveDrive::GetInstance().GetGyroAngVelocity2d();
 
     //Calculate shot at current state
     ShotCalculator::GetInstance().CalculateShotParams(m_currentPose.Translation(), 
-                                                      frc::Translation2d{0_m, 0_m}, 
+                                                      m_currentVelocity, 
                                                       m_goalPosition,
                                                       m_currentPose.Rotation(), 
-                                                      0_deg_per_s,
-                                                      0.1_s);
+                                                      m_currentAngularVelocity,
+                                                      Constants::kPhaseDelay);
 
     if (mode == kAuto) {
       if (m_auto) {
@@ -145,25 +169,6 @@ Robot::Robot()
       m_autoAlignMode = kNone;
 
       bool LastPosPiston = false;
-
-      // // FOR SHOOTER TESTING DO NOT UNCOMMENT
-      // SwerveDrive::GetInstance().ResetPose(frc::Pose2d{frc::Translation2d{492.33_in + 178_in, 158.32_in}, frc::Rotation2d{180_deg}});
-
-      // frc::Pose2d robotPose = SwerveDrive::GetInstance().GetPose2d();
-      // std::cout << "X:Y:Pitch : " << robotPose.X().value() * Constants::kInchesPerMeter << ", "
-      //                             << robotPose.Y().value() * Constants::kInchesPerMeter << ", "
-      //                             << robotPose.Rotation().Degrees().value()
-      //                             << std::endl;
-
-      // ShotCalculator::GetInstance().CalculateShotParams(robotPose.Translation(), 
-      //                                                   frc::Translation2d{1_m, 0_m}, 
-      //                                                   frc::Translation2d{492.33_in, 158.32_in}, 
-      //                                                   robotPose.Rotation(), 
-      //                                                   0_deg_per_s, 
-      //                                                   0.1_s);
-
-      // std::cout << ShotCalculator::GetInstance().GetTurretAngle().value() << std::endl;
-      // std::cout << ShotCalculator::GetInstance().GetShooterVelocity().value() << std::endl;
 
       // Get the inputs from the controller during teleop mode. Note this uses
       // the split setup where the left joystick controls velocity, and the
@@ -269,49 +274,12 @@ Robot::Robot()
       }
 
       // Auto Aim
-      //m_currentPose = SwerveDrive::GetInstance().GetPose2d();
-      //m_currentVelocity = SwerveDrive::GetInstance().getVelocity();
-      //m_currentAngularVelocity = SwerveDrive::GetInstance().getAngularVelocity();
-
-      // update goal position
-      // if(alliance == frc::DriverStation::Alliance::kRed && m_currentPose.X() >= units::meter_t{Constants::kRedHubX}) {
-      //   // red side hub
-      //   m_goalPosition.X() = units::meter_t{Constants::kRedHubX};
-      //   m_goalPosition.Y() = units::meter_t{Constants::kRedHubY};
-      // } else if (alliance == frc::DriverStation::Alliance::kBlue && m_currentPose.X() <= units::meter_t{Constants::kBlueHubX}) {
-      //   // blue side hub
-      //   m_goalPosition.X() = units::meter_t{Constants::kBlueHubX};
-      //   m_goalPosition.Y() = units::meter_t{Constants::kBlueHubY};
-      // } else {
-      //   //X pos varies based on alliance
-      //   m_goalPosition.X() = units::inch_t{
-      //     alliance == frc::DriverStation::Alliance::kRed 
-      //     ? Constants::kFieldLength - 60 
-      //     : 60
-      //   };
-      //   //Y pos varies based on half of field (top/bottom)
-      //   m_goalPosition.Y() = units::inch_t{
-      //     m_currentPose.Y() <= units::inch_t{Constants::kFieldWidth / 2} 
-      //     ? 60 
-      //     : Constants::kFieldWidth - 60.0
-      //   };
-      // }
-
-      //Calculate shot at current state
-      // ShotCalculator::GetInstance().CalculateShotParams(m_currentPose.Translation(), 
-      //                                                    frc::Translation2d{0_m, 0_m}, 
-      //                                                    frc::Translation2d{492.33_in - 5_in, 158.32_in + 5_in}, 
-      //                                                    //m_goalPosition,
-      //                                                    m_currentPose.Rotation(), 
-      //                                                    0_deg_per_s,
-      //                                                    0.1_s);
-
-      // operator overrides
+      // operator Shooter/ Turret overrides
       // TODO figure out what static positions we want
       if (Controllers::GetInstance().GetOperatorController().GetAButton()) {
         // Override 1
-        ShotCalculator::GetInstance().SetShooterVelocity(35_tps);
-        ShotCalculator::GetInstance().SetTurretAngle(180_deg);
+        ShotCalculator::GetInstance().SetShooterVelocity(45_tps);
+        ShotCalculator::GetInstance().SetTurretAngle(0_deg);
       
       } else if (Controllers::GetInstance().GetOperatorController().GetBButton()) {
         // Override 2

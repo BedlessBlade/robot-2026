@@ -241,13 +241,21 @@ frc::Rotation2d SwerveDrive::GetGyroRotation2d() const {
   return m_gyro.GetRotation2d();
 }
 
-// units::degrees_per_second_t SwerveDrive::GetGyroAngVelocity2d() {
-//   return units::degrees_per_second_t{m_gyro.GetAngularVelocityZWorld().GetValue().value()};
-// }
+units::degrees_per_second_t SwerveDrive::GetGyroAngVelocity2d() {
+  return units::degrees_per_second_t{m_gyro.GetAngularVelocityZWorld().GetValue().value()};
+}
 
-// frc::Translation2d SwerveDrive::GetVelocity2d() {
+frc::Translation2d SwerveDrive::GetVelocity2d() {
+  // Get module states
+  frc::SwerveModuleState flCur{units::meters_per_second_t{m_driveMotors[0].GetVelocity().GetValue().value() * 2 * M_PI * Constants::kWheelRadius * Constants::kDriveGearRatio}, m_encoders[0].GetPosition().GetValue()};
+  frc::SwerveModuleState frCur{units::meters_per_second_t{m_driveMotors[1].GetVelocity().GetValue().value() * 2 * M_PI * Constants::kWheelRadius * Constants::kDriveGearRatio}, m_encoders[1].GetPosition().GetValue()};
+  frc::SwerveModuleState blCur{units::meters_per_second_t{m_driveMotors[2].GetVelocity().GetValue().value() * 2 * M_PI * Constants::kWheelRadius * Constants::kDriveGearRatio}, m_encoders[2].GetPosition().GetValue()};
+  frc::SwerveModuleState brCur{units::meters_per_second_t{m_driveMotors[3].GetVelocity().GetValue().value() * 2 * M_PI * Constants::kWheelRadius * Constants::kDriveGearRatio}, m_encoders[3].GetPosition().GetValue()};
 
-// }
+  // Convert module states to chassis speeds (robot relative)
+  auto [vx, vy, omega] = frc::ChassisSpeeds::FromRobotRelativeSpeeds(m_kinematics.ToChassisSpeeds(flCur, frCur, blCur, brCur), m_gyro.GetRotation2d());
+  return frc::Translation2d{units::meter_t{vx.value()}, units::meter_t{vy.value()}}; // this sucks, but who cares
+}
 
 frc::Pose2d SwerveDrive::GetPose2d() const {
   return m_poseEstimator.GetEstimatedPosition();
