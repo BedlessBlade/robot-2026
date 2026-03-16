@@ -16,7 +16,7 @@ public:
   void Update(Robot::Mode mode, double t) override;
 
 private:
-  photon::PhotonCamera m_leftCamera{"Tag_Camera_02"};
+  photon::PhotonCamera m_leftCamera{"Arducam_OV9281_USB_Camera"};
   photon::PhotonCamera m_rightCamera{"Tag_Camera_01"};
 
   photon::PhotonPoseEstimator m_leftPoseEstimator{

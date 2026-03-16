@@ -84,7 +84,7 @@ public:
       frc::Translation3d{-6.229_in, 12.359_in, 26.747_in},
       frc::Rotation3d{0_rad, 0_rad, -35_deg}};
   static constexpr frc::Transform3d kLeftCameraTransform{
-      frc::Translation3d{4.75_in, -11.25_in, 26.747_in},
+      frc::Translation3d{-6.229_in, 11.25_in, 26.747_in},
       frc::Rotation3d{0_rad, 0_rad, 35_deg}};
   static constexpr auto kBlockedTags = {0};
 
@@ -208,6 +208,7 @@ public:
   static constexpr double kMaxShooterAzimuth = 270.0;
   static constexpr double kAzimuthMotorRevsToRevs = 233.5 / 1;
   static constexpr frc::Translation2d kTurretOffset{-4_in, -9.5_in}; // turret is 4" back in x, 9.5" over
+  static constexpr units::second_t kPhaseDelay = 0.1_s;
   
   // Distance to TPS power series constants
   static constexpr double kDist2TPSA = 23.2;
@@ -223,7 +224,7 @@ public:
 
   // Calibration range
   static constexpr double kMinShooterCal = 33.0;
-  static constexpr double kMaxShooterCal = 48.0;
+  static constexpr double kMaxShooterCal = 100.0;
 
   // Hood linear actuator ports
   static constexpr int kLeftHoodServoPort = 9;
