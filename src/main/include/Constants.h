@@ -178,9 +178,9 @@ public:
 
   // Shooter azimuth maxmotion gains
 
-  static constexpr double kShooterAzimuthCV = 100.0 * 60; //RPS --> RPM conversion for CV
-  static constexpr double kShooterAzimuthAcc = 2100.0; //Units in RPM/second
-  static constexpr double kShooterAzimuthTol = 0.02; //Units in rotations
+  static constexpr double kShooterAzimuthCV = 8250; //RPS --> RPM conversion for CV
+  static constexpr double kShooterAzimuthAcc = 8520*3; //Units in RPM/second
+  static constexpr double kShooterAzimuthTol = 10; //Units in rotations
 
   // Shooter limits and misc
   static constexpr double velErrorTol = 1;
@@ -190,18 +190,15 @@ public:
   static constexpr int kAzimuthMotorId = 16; // This needs to be updated
   
   // Turret motor PID/ FF gains
-  static constexpr double kShooterAzimuthP = 0.15;
+  static constexpr double kShooterAzimuthP = 0.2;
   static constexpr double kShooterAzimuthI = 0.0;
-  static constexpr double kShooterAzimuthD = 1.5;
-  static constexpr double kMinAzimuthOutput = -0.4;
-  static constexpr double kMaxAzimuthOutput = 0.4;
+  static constexpr double kShooterAzimuthD = 0.0;
+  static constexpr double kMinAzimuthOutput = -1;
+  static constexpr double kMaxAzimuthOutput = 1;
 
   static constexpr double kShooterAzimuthS = 0.0;
-  static constexpr double kShooterAzimuthV = 0.0942;
+  static constexpr double kShooterAzimuthV = 0.00109;
   static constexpr double kShooterAzimuthA = 0.0;
-  static constexpr double kShooterAzimuthG = 0.0;
-  static constexpr double kShooterAzimuthCos = 0.0;
-  static constexpr double kShooterAzimuthCosRatio = 0.0;
 
   // Turret limits and misc
   static constexpr double kMinShooterAzimuth = 0.0;
