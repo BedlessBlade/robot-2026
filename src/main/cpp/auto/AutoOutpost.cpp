@@ -22,7 +22,7 @@ AutoOutpost::AutoOutpost(frc::DriverStation::Alliance alliance) {
     m_tasks.push_back(std::make_shared<FollowPath>(
       std::vector<frc::Pose2d>{
           SwerveDrive::GetInstance().GetPose2d(), // position might be optional depending on how we want to start matches
-          Locations::GetInstance().GetDepotPosition(alliance)},
+          Locations::GetInstance().GetOutpostPosition(alliance)},
       false, false));
     m_tasks.push_back(std::make_shared<StartShooter>());
 
