@@ -100,9 +100,41 @@ Robot::Robot()
         globalAlliance = "Red";
         m_goalPosition = frc::Translation2d{469.11_in, 158.84_in};
 
+        // Pose selection logic
+        if (m_currentPose.X() >= 469.11_in) {
+          // in red alliance zone
+          //m_goalPosition = frc::Translation2d{469.11_in, 158.84_in};
+
+        } else {
+          // in neutral zone
+          if (m_currentPose.Y() >= 158.84_in) {
+            //m_goalPosition = frc::Translation2d{};
+
+          } else {
+            //m_goalPosition = frc::Translation2d{};
+
+          }
+        }
+
       } else if (alliance.has_value() && alliance.value() == frc::DriverStation::Alliance::kBlue) {
         globalAlliance = "Blue";
         m_goalPosition = frc::Translation2d{182.11_in, 158.84_in};
+        
+        // Pose selection logic
+        if (m_currentPose.X() <= 182.11_in) {
+          // in blue alliance zone
+          //m_goalPosition = frc::Translation2d{182.11_in, 158.84_in};
+
+        } else {
+          // in neutral zone
+          if (m_currentPose.Y() >= 158.84_in) {
+            //m_goalPosition = frc::Translation2d{};
+
+          } else {
+            //m_goalPosition = frc::Translation2d{};
+
+          }
+        }
 
       } else {
         globalAlliance = "None";
@@ -140,10 +172,10 @@ Robot::Robot()
 
     //Calculate shot at current state
     ShotCalculator::GetInstance().CalculateShotParams(m_currentPose.Translation(), 
-                                                      m_currentVelocity, 
+                                                      frc::Translation2d{0_m, 0_m}, 
                                                       m_goalPosition,
                                                       m_currentPose.Rotation(), 
-                                                      m_currentAngularVelocity,
+                                                      0_deg_per_s,
                                                       Constants::kPhaseDelay);
 
     if (mode == kAuto) {

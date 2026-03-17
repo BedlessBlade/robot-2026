@@ -190,11 +190,11 @@ public:
   static constexpr int kAzimuthMotorId = 16; // This needs to be updated
   
   // Turret motor PID/ FF gains
-  static constexpr double kShooterAzimuthP = 0.2;
+  static constexpr double kShooterAzimuthP = 0.15;
   static constexpr double kShooterAzimuthI = 0.0;
-  static constexpr double kShooterAzimuthD = 0.0;
-  static constexpr double kMinAzimuthOutput = -1;
-  static constexpr double kMaxAzimuthOutput = 1;
+  static constexpr double kShooterAzimuthD = 1.5;
+  static constexpr double kMinAzimuthOutput = -0.4;
+  static constexpr double kMaxAzimuthOutput = 0.4;
 
   static constexpr double kShooterAzimuthS = 0.0;
   static constexpr double kShooterAzimuthV = 0.00109;
