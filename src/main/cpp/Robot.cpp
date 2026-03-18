@@ -29,6 +29,7 @@
 #include "auto/AutoDoNothing.h"
 // #include "auto/AutoDepot.h"
 #include "auto/AutoOutpost.h"
+#include "auto/AutoCenter.h"
 #include "auto/AutoShoot.h"
 #include "auto/AutoShootBackUp.h"
 
@@ -51,7 +52,8 @@ Robot::Robot()
   m_autoChooser.SetDefaultOption("To Outpost", "Outpost");
   m_autoChooser.SetDefaultOption("Shoot", "Shoot");
   m_autoChooser.SetDefaultOption("Shoot & Back Up", "ShootBackup");
-  // m_autoChooser.SetDefaultOption("To Neutral Zone", "Neutral");
+  m_autoChooser.SetDefaultOption("Left Side Neutral Zone", "CenterLeft");
+  m_autoChooser.SetDefaultOption("Right Side Neutral Zone", "CenterRight");
   // m_autoChooser.SetDefaultOption("Shoot & Climb", "ShootClimb");
   
 
@@ -431,6 +433,8 @@ void Robot::DisabledExit() {
         //go to places
         // if(autoName == "Depot") { m_auto = std::make_shared<AutoDepot>(alliance.value()); } 
         if(autoName == "Outpost") { m_auto = std::make_shared<AutoOutpost>(alliance.value()); } 
+        if(autoName == "LeftCenter") { m_auto = std::make_shared<AutoCenter>(alliance.value(), 1); } 
+        if(autoName == "RightCenter") { m_auto = std::make_shared<AutoCenter>(alliance.value(), 0); } 
 
         //shoot
         else if (autoName == "Shoot") { m_auto = std::make_shared<AutoShoot>(alliance.value()); }

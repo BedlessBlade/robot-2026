@@ -7,5 +7,5 @@
 class AutoCenter : public TaskList {
 public:
   
-  AutoCenter(frc::DriverStation::Alliance alliance);
+  AutoCenter(frc::DriverStation::Alliance alliance, bool onLeft);
 };
