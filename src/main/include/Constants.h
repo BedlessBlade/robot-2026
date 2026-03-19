@@ -204,8 +204,8 @@ public:
   static constexpr double kMinShooterAzimuth = 0.0;
   static constexpr double kMaxShooterAzimuth = 270.0;
   static constexpr double kAzimuthMotorRevsToRevs = 233.5 / 1;
-  static constexpr frc::Translation2d kTurretOffset{-4_in, -9.5_in}; // turret is 4" back in x, 9.5" over
-  static constexpr units::second_t kPhaseDelay = 0.1_s;
+  static constexpr frc::Transform2d kTurretOffset{-4_in, -9.5_in, 0_deg}; // turret is 4" back in x, 9.5" over
+  static constexpr units::second_t kPhaseDelay = 0.0_s;
   
   // Distance to TPS power series constants
   static constexpr double kDist2TPSA = 23.2;

@@ -18,11 +18,7 @@ public:
     }
 
     //shooter getters for turret Azimuth angle (degrees) and shooter angular velocity (Rev/s)
-    void CalculateShotParams(frc::Translation2d robotPosition, 
-                            frc::Translation2d robotVelocity,
-                            frc::Translation2d goalPosition,
-                            frc::Rotation2d robotHeading,
-                            units::degrees_per_second_t robotAngVelocitiy,
+    void CalculateShotParams(frc::Translation2d goalPosition,
                             units::second_t latency);
     
     // Getters

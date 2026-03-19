@@ -26,7 +26,7 @@ public:
   void Update(Robot::Mode mode, double t) override;
   frc::Rotation2d GetGyroRotation2d() const;
   units::angular_velocity::degrees_per_second_t GetGyroAngVelocity2d();
-  frc::Translation2d GetVelocity2d(); 
+  frc::ChassisSpeeds GetVelocity2d(); 
   frc::Pose2d GetPose2d() const;
   void Coast();
   void Brake();

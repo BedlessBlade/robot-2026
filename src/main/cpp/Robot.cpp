@@ -98,40 +98,41 @@ Robot::Robot()
     if (mode != kDisabled) {
       if (alliance.has_value() && alliance.value() == frc::DriverStation::Alliance::kRed) {
         globalAlliance = "Red";
-        m_goalPosition = frc::Translation2d{469.11_in, 158.84_in};
 
         // Pose selection logic
         if (m_currentPose.X() >= 469.11_in) {
           // in red alliance zone
-          //m_goalPosition = frc::Translation2d{469.11_in, 158.84_in};
+          m_goalPosition = frc::Translation2d{469.11_in, 158.84_in};
+          std::cout << "Red Zone" << std::endl;
 
         } else {
           // in neutral zone
           if (m_currentPose.Y() >= 158.84_in) {
-            //m_goalPosition = frc::Translation2d{};
+            m_goalPosition = frc::Translation2d{560.165_in, 226.635_in};
+            std::cout << "Passing Zone 1" << std::endl;
 
           } else {
-            //m_goalPosition = frc::Translation2d{};
+            m_goalPosition = frc::Translation2d{560.165_in, 91.055_in};
+            std::cout << "Passing  Zone 2" << std::endl;
 
           }
         }
 
       } else if (alliance.has_value() && alliance.value() == frc::DriverStation::Alliance::kBlue) {
         globalAlliance = "Blue";
-        m_goalPosition = frc::Translation2d{182.11_in, 158.84_in};
         
         // Pose selection logic
         if (m_currentPose.X() <= 182.11_in) {
           // in blue alliance zone
-          //m_goalPosition = frc::Translation2d{182.11_in, 158.84_in};
+          m_goalPosition = frc::Translation2d{182.11_in, 158.84_in};
 
         } else {
           // in neutral zone
           if (m_currentPose.Y() >= 158.84_in) {
-            //m_goalPosition = frc::Translation2d{};
+            m_goalPosition = frc::Translation2d{91.055_in, 226.635_in};
 
           } else {
-            //m_goalPosition = frc::Translation2d{};
+            m_goalPosition = frc::Translation2d{91.055_in, 91.055_in};
 
           }
         }
@@ -141,42 +142,11 @@ Robot::Robot()
       }
     }
 
-    // update goal position
-    // if(alliance == frc::DriverStation::Alliance::kRed && m_currentPose.X() >= units::meter_t{Constants::kRedHubX}) {
-    //   // red side hub
-    //   m_goalPosition.X() = units::meter_t{Constants::kRedHubX};
-    //   m_goalPosition.Y() = units::meter_t{Constants::kRedHubY};
-    // } else if (alliance == frc::DriverStation::Alliance::kBlue && m_currentPose.X() <= units::meter_t{Constants::kBlueHubX}) {
-    //   // blue side hub
-    //   m_goalPosition.X() = units::meter_t{Constants::kBlueHubX};
-    //   m_goalPosition.Y() = units::meter_t{Constants::kBlueHubY};
-    // } else {
-    //   //X pos varies based on alliance
-    //   m_goalPosition.X() = units::inch_t{
-    //     alliance == frc::DriverStation::Alliance::kRed 
-    //     ? Constants::kFieldLength - 60 
-    //     : 60
-    //   };
-    //   //Y pos varies based on half of field (top/bottom)
-    //   m_goalPosition.Y() = units::inch_t{
-    //     m_currentPose.Y() <= units::inch_t{Constants::kFieldWidth / 2} 
-    //     ? 60 
-    //     : Constants::kFieldWidth - 60.0
-    //   };
-    // }
-
     // Get Current State
     m_currentPose = SwerveDrive::GetInstance().GetPose2d();
-    m_currentVelocity = SwerveDrive::GetInstance().GetVelocity2d();
-    m_currentAngularVelocity = SwerveDrive::GetInstance().GetGyroAngVelocity2d();
 
     //Calculate shot at current state
-    ShotCalculator::GetInstance().CalculateShotParams(m_currentPose.Translation(), 
-                                                      frc::Translation2d{0_m, 0_m}, 
-                                                      m_goalPosition,
-                                                      m_currentPose.Rotation(), 
-                                                      0_deg_per_s,
-                                                      Constants::kPhaseDelay);
+    ShotCalculator::GetInstance().CalculateShotParams(m_goalPosition, Constants::kPhaseDelay);
 
     if (mode == kAuto) {
       if (m_auto) {
