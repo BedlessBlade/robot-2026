@@ -92,6 +92,7 @@ public:
   // Locations
   static constexpr double kFieldLength = 650.12 / kInchesPerMeter;
   static constexpr double kFieldWidth = 316.64 / kInchesPerMeter;
+  static constexpr frc::Translation2d kFieldCenter = {units::meter_t{kFieldLength / 2}, units::meter_t{kFieldWidth / 2}};
   static constexpr units::inch_t kHubOffset = 12_in;
 
   //TODO: update probably
