@@ -105,21 +105,17 @@ Robot::Robot()
         globalAlliance = "Red";
 
         // Pose selection logic
-        if (m_currentPose.X() >= 469.11_in) {
+        if (m_currentPose.X() >= units::meter_t{Constants::kRedHubX}) {
           // in red alliance zone
-          m_goalPosition = frc::Translation2d{469.11_in, 158.84_in};
-          // std::cout << "Red Zone" << std::endl;
+          m_goalPosition = frc::Translation2d{units::meter_t{Constants::kRedHubX}, units::meter_t{Constants::kRedHubY}};
 
         } else {
           // in neutral zone
-          if (m_currentPose.Y() >= 158.84_in) {
+          if (m_currentPose.Y() >= units::meter_t{Constants::kRedHubY}) {
             m_goalPosition = frc::Translation2d{560.165_in, 226.635_in};
-            // std::cout << "Passing Zone 1" << std::endl;
 
           } else {
             m_goalPosition = frc::Translation2d{560.165_in, 91.055_in};
-            // std::cout << "Passing  Zone 2" << std::endl;
-
           }
         }
 
@@ -127,13 +123,13 @@ Robot::Robot()
         globalAlliance = "Blue";
         
         // Pose selection logic
-        if (m_currentPose.X() <= 182.11_in) {
+        if (m_currentPose.X() <= units::meter_t{Constants::kBlueHubX}) {
           // in blue alliance zone
-          m_goalPosition = frc::Translation2d{182.11_in, 158.84_in};
+          m_goalPosition = frc::Translation2d{units::meter_t{Constants::kBlueHubX}, units::meter_t{Constants::kBlueHubY}};
 
         } else {
           // in neutral zone
-          if (m_currentPose.Y() >= 158.84_in) {
+          if (m_currentPose.Y() >= units::meter_t{Constants::kRedHubY}) {
             m_goalPosition = frc::Translation2d{91.055_in, 226.635_in};
 
           } else {
@@ -172,6 +168,39 @@ Robot::Robot()
       
       m_autoAlignMode = kNone;
 
+      // Ramp auto align logic
+      if (Controllers::GetInstance().GetDriverController().GetXButtonPressed()) {
+        ResetAlignControllers();
+        units::meter_t ySetpoint;
+        units::degree_t thetaSetpoint;
+
+        // Find closest ramp center
+        if (m_currentPose.Y() >= units::meter_t{Constants::kRedHubY}) {
+          ySetpoint = units::meter_t{Constants::kRedHubY} + 60_in;
+
+        } else {
+          ySetpoint = units::meter_t{Constants::kRedHubY} - 60_in;
+        }
+
+        // Find closest heading
+        if (std::abs(m_currentPose.Rotation().Degrees().value()) > 90) {
+          thetaSetpoint = 180_deg;
+
+        } else {
+          thetaSetpoint = 0_deg;
+        }
+
+        m_autoAlignSetpoint = {frc::Translation2d{0_m, ySetpoint}, frc::Rotation2d{thetaSetpoint}};
+
+        m_autoAlignMode = kRamp;
+        SwerveDrive::GetInstance().DisableRamp();
+
+      } else if (Controllers::GetInstance().GetDriverController().GetXButtonReleased()) {
+        m_autoAlignMode = kNone;
+        SwerveDrive::GetInstance().EnableRamp();
+
+      }
+
       bool LastPosPiston = false;
 
       // Get the inputs from the controller during teleop mode. Note this uses
@@ -191,13 +220,22 @@ Robot::Robot()
           Controllers::GetInstance().GetDriverController().GetRightX();
       double w = Util::Exp(-rightX) * Constants::kDriveAngularControlMultiplier;
 
-      // Slow Mode
+      // Slow/ Medium Mode
       if (Controllers::GetInstance().GetDriverController().GetRightTriggerAxis() > 0.5) {
         vy *= Constants::kSlowMode;
         vx *= Constants::kSlowMode;
-        // w *= Constants::kSlowMode;
+
+      } else if (Controllers::GetInstance().GetDriverController().GetLeftTriggerAxis() > 0.5) {
+        vx *= Constants::kMediumMode;
+        vy *= Constants::kMediumMode;
       }
 
+      // Brake Mode
+      if (Controllers::GetInstance().GetDriverController().GetLeftBumperButton() || Controllers::GetInstance().GetDriverController().GetRightBumperButton()) {
+        SwerveDrive::GetInstance().DriveVelocity(0, 0, 0);
+      }
+
+      // Invert driver controls when on red
       if (alliance.has_value() &&
           alliance.value() == frc::DriverStation::Alliance::kRed) {
         vx *= -1;
@@ -222,37 +260,27 @@ Robot::Robot()
         if (m_autoAlignMode != kNone) {
           auto robotPose = SwerveDrive::GetInstance().GetPose2d();
 
-          if (m_autoAlignMode != kNoPosition) {
-            vx = m_alignControllers[0].Update(
-                robotPose.Translation().X().value(),
-                m_autoAlignSetpoint.Translation().X().value());
-            if (vx < -Constants::kPathFollowingMaxV) {
-              vx = -Constants::kPathFollowingMaxV;
-            }
-            if (vx > Constants::kPathFollowingMaxV) {
-              vx = Constants::kPathFollowingMaxV;
-            }
-
-            vy = m_alignControllers[1].Update(
-                robotPose.Translation().Y().value(),
-                m_autoAlignSetpoint.Translation().Y().value());
-            if (vy < -Constants::kPathFollowingMaxV) {
-              vy = -Constants::kPathFollowingMaxV;
-            }
-            if (vy > Constants::kPathFollowingMaxV) {
-              vy = Constants::kPathFollowingMaxV;
-            }
-
-            if (robotPose
-             .Translation()
-             .Distance(m_autoAlignSetpoint.Translation())
-             .value() < Constants::kPathFollowingTolerance && SwerveDrive::GetInstance().VelocityMagnitude() <
-             Constants::kPathFollowingVelocityTolerance) {
-                Controllers::GetInstance().GetDriverController().SetRumble(frc::GenericHID::RumbleType::kBothRumble, 1.0);
-                Controllers::GetInstance().GetOperatorController().SetRumble(frc::GenericHID::RumbleType::kBothRumble, 1.0);
-             }
+          // Update y controller only
+          vy = m_alignControllers[1].Update(
+              robotPose.Translation().Y().value(),
+              m_autoAlignSetpoint.Translation().Y().value());
+          if (vy < -Constants::kPathFollowingMaxV) {
+            vy = -Constants::kPathFollowingMaxV;
+          }
+          if (vy > Constants::kPathFollowingMaxV) {
+            vy = Constants::kPathFollowingMaxV;
           }
 
+          // if (robotPose
+          //  .Translation()
+          //  .Distance(m_autoAlignSetpoint.Translation())
+          //  .value() < Constants::kPathFollowingTolerance && SwerveDrive::GetInstance().VelocityMagnitude() <
+          //  Constants::kPathFollowingVelocityTolerance) {
+          //     Controllers::GetInstance().GetDriverController().SetRumble(frc::GenericHID::RumbleType::kBothRumble, 1.0);
+          //     Controllers::GetInstance().GetOperatorController().SetRumble(frc::GenericHID::RumbleType::kBothRumble, 1.0);
+          //  }
+
+          // Update theta controller
           double angleSetpoint =
               m_autoAlignSetpoint.Rotation().Radians().value();
           if (angleSetpoint < -Constants::kPathFollowingMaxV) {
@@ -268,9 +296,6 @@ Robot::Robot()
           }
 
           w = m_alignControllers[2].Update(currentAngle, angleSetpoint);
-        } else {
-          Controllers::GetInstance().GetDriverController().SetRumble(frc::GenericHID::RumbleType::kBothRumble, 0);
-          Controllers::GetInstance().GetOperatorController().SetRumble(frc::GenericHID::RumbleType::kBothRumble, 0);
         }
 
         //makes swerve work

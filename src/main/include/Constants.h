@@ -23,6 +23,7 @@ public:
   // Constants for the drivetrain
   static constexpr int kPigeonCanId = 13;
   static constexpr double kSlowMode = 0.3;
+  static constexpr double kMediumMode = 0.5;
 
   //todo: update robot length
   static constexpr auto kRobotWidth = 28.625 / kInchesPerMeter;
@@ -105,7 +106,7 @@ public:
   static constexpr double kHubWidth = 47.00 / kInchesPerMeter;
   static constexpr double kBlueHubX = 181.56 / kInchesPerMeter;
   static constexpr double kBlueHubY = 158.32 / kInchesPerMeter;
-  static constexpr double kRedHubX = (kFieldLength - (181.56 / kInchesPerMeter)) * kInchesPerMeter;
+  static constexpr double kRedHubX = 469.11 / kInchesPerMeter;
   static constexpr double kRedHubY = 158.32 / kInchesPerMeter;
 
 

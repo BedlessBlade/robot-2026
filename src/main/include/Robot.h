@@ -24,7 +24,7 @@ public:
   // Enum to specify the robot's mode to the sub-systems
   enum Mode { kDisabled, kAuto, kTeleop };
 
-  enum AutoAlignMode { kNone, kPosition, kNoPosition };
+  enum AutoAlignMode { kNone, kPosition, kRamp, kNoPosition};
 
   Robot();
   ~Robot();
@@ -69,8 +69,8 @@ private:
     }
   }
 
-  frc::Pose2d NearestLeftCoral(frc::Pose2d robotPose, int *i = nullptr);
-  frc::Pose2d NearestRightCoral(frc::Pose2d robotPose, int *i = nullptr);
-  frc::Pose2d NearestAlgae(frc::Pose2d robotPose, int *i = nullptr);
-  frc::Pose2d NearestFeeder(frc::Pose2d robotPose, int *i = nullptr);
+  //frc::Pose2d NearestLeftCoral(frc::Pose2d robotPose, int *i = nullptr);
+  //frc::Pose2d NearestRightCoral(frc::Pose2d robotPose, int *i = nullptr);
+  //frc::Pose2d NearestAlgae(frc::Pose2d robotPose, int *i = nullptr);
+  //frc::Pose2d NearestFeeder(frc::Pose2d robotPose, int *i = nullptr);
 };
