@@ -1,4 +1,5 @@
 #include "systems/SwerveDrive.h"
+#include "systems/Shooter.h"
 
 #include <frc/geometry/Translation2d.h>
 #include <frc/kinematics/SwerveDriveKinematics.h>
@@ -150,10 +151,33 @@ void SwerveDrive::Update(Robot::Mode mode, double t) {
     double w = m_w;
 
     if (mode == Robot::kTeleop && m_rampEnabled) {
-      // Ramp enabled: use the slow filters (no Elevator this year)
-      vx = m_filterXSlow.Calculate(units::meters_per_second_t{m_vx}).value();
-      vy = m_filterYSlow.Calculate(units::meters_per_second_t{m_vy}).value();
-      w = m_filterWSlow.Calculate(units::radians_per_second_t{m_w}).value();
+      if (Shooter::GetInstance().GetShooterState() != Shooter::shooterStates::IDLE) {
+        if (m_fastFilter) {
+          m_fastFilter = false;
+          m_filterXFast.Reset(units::meters_per_second_t{m_vx});
+          m_filterYFast.Reset(units::meters_per_second_t{m_vy});
+          m_filterWFast.Reset(units::radians_per_second_t{m_w});
+
+        }
+      } else if (!m_fastFilter) {
+        m_fastFilter = true;
+        m_filterXSlow.Reset(units::meters_per_second_t{m_vx});
+        m_filterYSlow.Reset(units::meters_per_second_t{m_vy});
+        m_filterWSlow.Reset(units::radians_per_second_t{m_w});
+
+      }
+
+      if (m_fastFilter) {
+        vx = m_filterXFast.Calculate(units::meters_per_second_t{m_vx}).value();
+        vy = m_filterYFast.Calculate(units::meters_per_second_t{m_vy}).value();
+        w = m_filterWFast.Calculate(units::radians_per_second_t{m_w}).value();
+
+      } else {
+        vx = m_filterXSlow.Calculate(units::meters_per_second_t{m_vx}).value();
+        vy = m_filterYSlow.Calculate(units::meters_per_second_t{m_vy}).value();
+        w = m_filterWSlow.Calculate(units::radians_per_second_t{m_w}).value();
+        
+      }
     }
 
     // Use the WPILib kinematics class to determine the individual wheel
