@@ -2,6 +2,7 @@
 
 #include "Constants.h"
 #include "systems/SwerveDrive.h"
+#include <iostream>
 
 FollowPath::FollowPath(std::vector<frc::Pose2d> points, bool resetPose,
                        bool persist)
@@ -66,6 +67,7 @@ void FollowPath::Update(double t) {
   auto w = m_controllers[2].Update(currentAngle, angleSetpoint);
 
   SwerveDrive::GetInstance().DriveVelocity(vx, vy, w);
+  std::cout << "doing something\n";
 }
 
 void FollowPath::Stop() {
@@ -74,6 +76,9 @@ void FollowPath::Stop() {
 }
 
 bool FollowPath::IsDone() const {
+  if ( m_started && !m_persist && AtPoint() &&
+         SwerveDrive::GetInstance().VelocityMagnitude() <
+             Constants::kPathFollowingVelocityTolerance) {std::cout << "path done\n";} 
   return m_started && !m_persist && AtPoint() &&
          SwerveDrive::GetInstance().VelocityMagnitude() <
              Constants::kPathFollowingVelocityTolerance;

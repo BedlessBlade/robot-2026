@@ -49,11 +49,11 @@ Robot::Robot()
   m_startChooser.AddOption("3", 3);
 
   m_autoChooser.SetDefaultOption("Do Nothing", "DoNothing");
-  m_autoChooser.SetDefaultOption("To Outpost", "Outpost");
-  m_autoChooser.SetDefaultOption("Shoot", "Shoot");
-  m_autoChooser.SetDefaultOption("Shoot & Back Up", "ShootBackup");
-  m_autoChooser.SetDefaultOption("Left Side Neutral Zone", "CenterLeft");
-  m_autoChooser.SetDefaultOption("Right Side Neutral Zone", "CenterRight");
+  m_autoChooser.AddOption("To Outpost", "Outpost");
+  m_autoChooser.AddOption("Shoot", "Shoot");
+  m_autoChooser.AddOption("Shoot & Back Up", "ShootBackup");
+  m_autoChooser.AddOption("Left Side Neutral Zone", "CenterLeft");
+  m_autoChooser.AddOption("Right Side Neutral Zone", "CenterRight");
   // m_autoChooser.SetDefaultOption("Shoot & Climb", "ShootClimb");
   
 
@@ -105,17 +105,17 @@ Robot::Robot()
         if (m_currentPose.X() >= 469.11_in) {
           // in red alliance zone
           m_goalPosition = frc::Translation2d{469.11_in, 158.84_in};
-          std::cout << "Red Zone" << std::endl;
+          // std::cout << "Red Zone" << std::endl;
 
         } else {
           // in neutral zone
           if (m_currentPose.Y() >= 158.84_in) {
             m_goalPosition = frc::Translation2d{560.165_in, 226.635_in};
-            std::cout << "Passing Zone 1" << std::endl;
+            // std::cout << "Passing Zone 1" << std::endl;
 
           } else {
             m_goalPosition = frc::Translation2d{560.165_in, 91.055_in};
-            std::cout << "Passing  Zone 2" << std::endl;
+            // std::cout << "Passing  Zone 2" << std::endl;
 
           }
         }
@@ -153,9 +153,6 @@ Robot::Robot()
     if (mode == kAuto) {
       if (m_auto) {
         m_auto->Update(t);
-        // if (Shooter::GetInstance().GetShooterState() == Shooter::shooterStates::IDLE) {
-        //   Shooter::GetInstance().StartShooting();
-        // }
       }
 
     } else if (mode == kTeleop) {
@@ -195,7 +192,7 @@ Robot::Robot()
       if (Controllers::GetInstance().GetDriverController().GetRightTriggerAxis() > 0.5) {
         vy *= Constants::kSlowMode;
         vx *= Constants::kSlowMode;
-        w *= Constants::kSlowMode;
+        // w *= Constants::kSlowMode;
       }
 
       if (alliance.has_value() &&
@@ -366,6 +363,7 @@ Robot::Robot()
     //                             << QuestPose.Rotation().Degrees().value()
     //                             << std::endl;
 
+    // std::cout << SwerveDrive::GetInstance().GetPose2d().Rotation().Degrees().value() << "\n";
 
     // Call update functions for subsystems instances
     Cameras::GetInstance().Update(mode, t);
@@ -375,6 +373,7 @@ Robot::Robot()
     LEDs::GetInstance().Update(mode, globalAlliance);
     Indexer::GetInstance().Update(mode);
   }};
+
 };
 
 // This destructor gets called when the robot program shuts down.
@@ -399,20 +398,21 @@ void Robot::DisabledExit() {
     SwerveDrive::GetInstance().ResetPose(start);
 
     std::string autoName = m_autoChooser.GetSelected();
-        double t = frc::Timer::GetFPGATimestamp().value();
-        //go to places
-        // if(autoName == "Depot") { m_auto = std::make_shared<AutoDepot>(alliance.value()); } 
-        if(autoName == "Outpost") { m_auto = std::make_shared<AutoOutpost>(alliance.value()); } 
-        if(autoName == "LeftCenter") { m_auto = std::make_shared<AutoCenter>(alliance.value(), 1); } 
-        if(autoName == "RightCenter") { m_auto = std::make_shared<AutoCenter>(alliance.value(), 0); } 
+    double t = frc::Timer::GetFPGATimestamp().value();
+    //go to places
+    // if(autoName == "Depot") { m_auto = std::make_shared<AutoDepot>(alliance.value()); } 
+    if(autoName == "Outpost") { m_auto = std::make_shared<AutoOutpost>(alliance.value()); } 
+    if(autoName == "CenterLeft") { 
+      m_auto = std::make_shared<AutoCenter>(alliance.value(), true); } 
+    if(autoName == "CenterRight") { m_auto = std::make_shared<AutoCenter>(alliance.value(), false); } 
 
-        //shoot
-        else if (autoName == "Shoot") { m_auto = std::make_shared<AutoShoot>(alliance.value()); }
-        // else if (autoName == "ShootBackUp") { m_auto = std::make_shared<AutoShootBackUp>(alliance.value()); }
+    //shoot
+    else if (autoName == "Shoot") { m_auto = std::make_shared<AutoShoot>(alliance.value()); }
+    else if (autoName == "ShootBackup") { m_auto = std::make_shared<AutoShootBackUp>(alliance.value()); }
 
-        //autodonothing!!!
-        else { m_auto = std::make_shared<AutoDoNothing>(); } 
-        m_auto->Start(t);
+    //autodonothing!!!
+    else { m_auto = std::make_shared<AutoDoNothing>(); } 
+    m_auto->Start(t);
   }
 }
 

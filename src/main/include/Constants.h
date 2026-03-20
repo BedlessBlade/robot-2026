@@ -109,15 +109,15 @@ public:
 
 
   // Path following
-  static constexpr double kPathFollowingKp = 6.0;
-  static constexpr double kPathFollowingKi = 0.005;
+  static constexpr double kPathFollowingKp = 3.0;
+  static constexpr double kPathFollowingKi = 0.0;
   static constexpr double kPathFollowingKd = 0;
   static constexpr double kPathFollowingAngleKp = 3.0;
-  static constexpr double kPathFollowingAngleKi = 0.004;
+  static constexpr double kPathFollowingAngleKi = 0.0;
   static constexpr double kPathFollowingAngleKd = 0.0;
-  static constexpr double kPathFollowingMaxV = 1.5;       // meters per second
-  static constexpr double kPathFollowingMaxW = 0.5;       // radians per second
-  static constexpr double kPathFollowingTolerance = 0.04; // meters
+  static constexpr double kPathFollowingMaxV = 0.2;       // meters per second
+  static constexpr double kPathFollowingMaxW = 0.2;       // radians per second
+  static constexpr double kPathFollowingTolerance = 0.3; // meters
   static constexpr double kPathFollowingVelocityTolerance = 0.1; // meters per second
 
   static constexpr auto kFeederDistance = 0.515_m;
@@ -185,7 +185,7 @@ public:
 
   // Shooter limits and misc
   static constexpr double velErrorTol = 1;
-  static constexpr double azimuthErrorTol = 1;
+  static constexpr double azimuthErrorTol = 3;
   
   // Turret Motor CANID
   static constexpr int kAzimuthMotorId = 16; // This needs to be updated

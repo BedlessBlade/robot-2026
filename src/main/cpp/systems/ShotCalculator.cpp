@@ -45,7 +45,7 @@ void ShotCalculator::CalculateShotParams(frc::Translation2d goalPosition,
     }
     
     // Calculate parameters accounting for imparted velocity
-    units::degree_t goalAngle = (goalPosition - lookAheadPose.Translation()).Angle().Degrees() - 0_deg;
+    units::degree_t goalAngle = ((goalPosition - lookAheadPose.Translation()).Angle().Degrees() - estimatedPose.Rotation().Degrees()) + 180_deg;
     if (goalAngle < 0_deg) {
         // All commands are positive
         goalAngle += 360_deg;
