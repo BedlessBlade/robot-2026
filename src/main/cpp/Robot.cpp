@@ -27,7 +27,7 @@
 #include "systems/ShotCalculator.h"
 
 #include "auto/AutoDoNothing.h"
-// #include "auto/AutoDepot.h"
+#include "auto/AutoDepot.h"
 #include "auto/AutoOutpost.h"
 #include "auto/AutoCenter.h"
 #include "auto/AutoShoot.h"
@@ -47,13 +47,16 @@ Robot::Robot()
   m_startChooser.SetDefaultOption("1", 1);
   m_startChooser.AddOption("2", 2);
   m_startChooser.AddOption("3", 3);
+  m_startChooser.AddOption("4", 4);
+  m_startChooser.AddOption("5", 5);
 
   m_autoChooser.SetDefaultOption("Do Nothing", "DoNothing");
+  m_autoChooser.AddOption("To Depot", "Outpost");
   m_autoChooser.AddOption("To Outpost", "Outpost");
+  m_autoChooser.AddOption("To Neutral Zone", "Center");
   m_autoChooser.AddOption("Shoot", "Shoot");
-  m_autoChooser.AddOption("Shoot & Back Up", "ShootBackup");
-  m_autoChooser.AddOption("Left Side Neutral Zone", "CenterLeft");
-  m_autoChooser.AddOption("Right Side Neutral Zone", "CenterRight");
+  m_autoChooser.AddOption("Shoot & Back Up", "ShootBackUp");
+  // m_autoChooser.AddOption("To Neutral & Depot", "CenterDepot");
   // m_autoChooser.SetDefaultOption("Shoot & Climb", "ShootClimb");
   
 
@@ -399,19 +402,25 @@ void Robot::DisabledExit() {
 
     std::string autoName = m_autoChooser.GetSelected();
     double t = frc::Timer::GetFPGATimestamp().value();
+    
     //go to places
-    // if(autoName == "Depot") { m_auto = std::make_shared<AutoDepot>(alliance.value()); } 
-    if(autoName == "Outpost") { m_auto = std::make_shared<AutoOutpost>(alliance.value()); } 
-    if(autoName == "CenterLeft") { 
-      m_auto = std::make_shared<AutoCenter>(alliance.value(), true); } 
-    if(autoName == "CenterRight") { m_auto = std::make_shared<AutoCenter>(alliance.value(), false); } 
+    if(autoName == "Depot") { 
+      m_auto = std::make_shared<AutoDepot>(alliance.value(), m_startChooser.GetSelected()); 
+    } else if(autoName == "Outpost") { 
+      m_auto = std::make_shared<AutoOutpost>(alliance.value(), m_startChooser.GetSelected()); 
+    } else if(autoName == "Center") { 
+      m_auto = std::make_shared<AutoCenter>(alliance.value(), m_startChooser.GetSelected()); 
 
     //shoot
-    else if (autoName == "Shoot") { m_auto = std::make_shared<AutoShoot>(alliance.value()); }
-    else if (autoName == "ShootBackup") { m_auto = std::make_shared<AutoShootBackUp>(alliance.value()); }
+    } else if (autoName == "Shoot") { 
+      m_auto = std::make_shared<AutoShoot>(alliance.value(), m_startChooser.GetSelected()); 
+    } else if (autoName == "ShootBackUp") { 
+      m_auto = std::make_shared<AutoShootBackUp>(alliance.value(), m_startChooser.GetSelected()); 
 
     //autodonothing!!!
-    else { m_auto = std::make_shared<AutoDoNothing>(); } 
+    } else { 
+      m_auto = std::make_shared<AutoDoNothing>(); 
+    } 
     m_auto->Start(t);
   }
 }

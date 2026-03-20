@@ -20,18 +20,19 @@
 #include "systems/SwerveDrive.h"
 
 
-AutoCenter::AutoCenter(frc::DriverStation::Alliance alliance, bool onLeft) {
+AutoCenter::AutoCenter(frc::DriverStation::Alliance alliance, int position){
   // todos: tune delays at buzz on wednesday (or thursday)
   //        clean up and make more readable after assuring it works (ie convert all inches to meters)
   //        check to make sure degrees are accurate (i rushed them at the end)
   
   // alliance - red = 0, blue = 1
+  bool onLeft = position < 3;
 
   // m_tasks.push_back(std::make_shared<Delay>(0.1));
   // back up to make shooter work
   m_tasks.push_back(std::make_shared<FollowPath>(
     std::vector<frc::Pose2d>{
-      Locations::GetInstance().GetStartPosition(alliance, onLeft ? 2 : 4),
+      Locations::GetInstance().GetStartPosition(alliance, position),
       Locations::GetInstance().GetAutoCenterPositions(alliance, onLeft)[0]
     }, false, false));
 

@@ -8,30 +8,19 @@
 #include "Constants.h"
 #include "Util.h"
 
-void Locations::Generate(frc::DriverStation::Alliance alliance) {
-//   m_algaePositions.clear();
-//   m_algaePositions.push_back(frc::Pose2d{frc::Translation2d{yeah}});
-}
-
-// const std::vector<frc::Pose2d> Locations::GetAlgaePositions() const {
-//   return m_coralPositions;
-// }
-
+void Locations::Generate(frc::DriverStation::Alliance alliance) { }
 
 frc::Pose2d Locations::GetOutpostPosition(frc::DriverStation::Alliance alliance) const {
-  if (alliance == frc::DriverStation::Alliance::kBlue) {
-    return frc::Pose2d{
-      units::meter_t{20 / Constants::kInchesPerMeter}, 
-      units::meter_t{25.62 / Constants::kInchesPerMeter},
-      0_deg
-    };
-  } else {
-    return frc::Pose2d{
-      units::meter_t{Constants::kFieldLength - (20 / Constants::kInchesPerMeter)}, 
-      units::meter_t{Constants::kFieldWidth - (25.62 / Constants::kInchesPerMeter)},
-      0_deg
-    };
-  }
+  return frc::Pose2d{ 20_in, 25.62_in, 180_deg }
+    .RotateAround(Constants::kFieldCenter, alliance == frc::DriverStation::Alliance::kRed ? 180_deg : 0_deg);
+}
+
+frc::Pose2d Locations::GetDepotPosition(frc::DriverStation::Alliance alliance, bool withRobotOffset) const {
+  return frc::Pose2d{ 
+    27_in + units::meter_t{withRobotOffset ? Constants::kRobotWidth / 2 : 0}, 
+    units::meter_t{Constants::kFieldWidth} - 82.32_in, 
+    180_deg 
+  }.RotateAround(Constants::kFieldCenter, alliance == frc::DriverStation::Alliance::kRed ? 180_deg : 0_deg);
 }
 
 std::vector<frc::Pose2d> Locations::GetAutoCenterPositions(frc::DriverStation::Alliance alliance, bool onLeft) const {
@@ -64,8 +53,7 @@ std::vector<frc::Pose2d> Locations::GetAutoCenterPositions(frc::DriverStation::A
   };
 }
 
-frc::Pose2d Locations::GetStartPosition(frc::DriverStation::Alliance alliance,
-                                        int i) const {
+frc::Pose2d Locations::GetStartPosition(frc::DriverStation::Alliance alliance, int i) const {
   double x = alliance == frc::DriverStation::Alliance::kRed
                  ? Constants::kFieldLength - Constants::kStartLineOffset +
                        Constants::kStartOffsetX
@@ -74,21 +62,25 @@ frc::Pose2d Locations::GetStartPosition(frc::DriverStation::Alliance alliance,
   double angle = alliance == frc::DriverStation::Alliance::kRed ? 0 : M_PI;
 
   switch (i) {
-  case 1: //should be 2
+  case 1: 
     break;
-  case 2: //should be 2
     y += alliance == frc::DriverStation::Alliance::kRed
-             ? -Constants::kStartOffsetY
-             : Constants::kStartOffsetY;
-    // angle += M_PI ;
+      ? -Constants::kStartOffsetYFar
+      : Constants::kStartOffsetYFar;
+  case 2: 
+    y += alliance == frc::DriverStation::Alliance::kRed
+      ? -Constants::kStartOffsetY
+      : Constants::kStartOffsetY;
     break;
-  case 4: // should be 4
+  case 4: 
     y -= alliance == frc::DriverStation::Alliance::kRed
-             ? -Constants::kStartOffsetY
-             : Constants::kStartOffsetY;
-    // angle -= M_PI / 4;
+      ? -Constants::kStartOffsetY
+      : Constants::kStartOffsetY;
     break;
   case 5:
+    y -= alliance == frc::DriverStation::Alliance::kRed
+      ? -Constants::kStartOffsetYFar
+      : Constants::kStartOffsetYFar;
     break;
   default:
     break;

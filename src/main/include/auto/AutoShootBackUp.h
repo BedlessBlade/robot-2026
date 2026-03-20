@@ -7,6 +7,6 @@
 
 class AutoShootBackUp : public TaskList {
 public:
-    AutoShootBackUp(frc::DriverStation::Alliance alliance);
+    AutoShootBackUp(frc::DriverStation::Alliance alliance, int position);
 
 };

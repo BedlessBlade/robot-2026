@@ -7,5 +7,5 @@
 class AutoDepot : public TaskList {
 public:
   
-  AutoDepot(frc::DriverStation::Alliance alliance);
+  AutoDepot(frc::DriverStation::Alliance alliance, int position);
 };

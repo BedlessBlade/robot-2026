@@ -7,6 +7,6 @@
 
 class AutoShoot : public TaskList {
 public:
-    AutoShoot(frc::DriverStation::Alliance alliance);
+    AutoShoot(frc::DriverStation::Alliance alliance, int position);
 
 };

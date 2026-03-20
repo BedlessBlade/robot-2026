@@ -97,8 +97,9 @@ public:
 
   //TODO: update probably
   static constexpr double kStartLineOffset = 156.06 / kInchesPerMeter;
-  static constexpr double kStartOffsetY = 60 / kInchesPerMeter;
   static constexpr double kStartOffsetX = kRobotWidth / 2;    // meters   
+  static constexpr double kStartOffsetY = 60 / kInchesPerMeter;
+  static constexpr double kStartOffsetYFar = 132.7 / kInchesPerMeter;
 
   //field object positions/sizes
   static constexpr double kHubWidth = 47.00 / kInchesPerMeter;

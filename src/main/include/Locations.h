@@ -14,15 +14,13 @@ public:
   }
 
   void Generate(frc::DriverStation::Alliance alliance);
-  //const std::vector<frc::Pose2d> GetAlgaePositions() const;
 
   frc::Pose2d GetStartPosition(frc::DriverStation::Alliance alliance, int i) const;
+  frc::Pose2d GetDepotPosition(frc::DriverStation::Alliance alliance, bool withRobotOffset) const;
   frc::Pose2d GetOutpostPosition(frc::DriverStation::Alliance alliance) const;
   std::vector<frc::Pose2d> GetAutoCenterPositions(frc::DriverStation::Alliance alliance, bool onLeft) const;
 
 
 private:
   Locations();
-
-  // std::vector<frc::Pose2d> m_algaePositions;
 };

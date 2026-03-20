@@ -15,28 +15,22 @@
 // #include ""
 
 
-AutoDepot::AutoDepot(frc::DriverStation::Alliance alliance) {
-
+AutoDepot::AutoDepot(frc::DriverStation::Alliance alliance, int position) {
   // // this is test pseudo code for autos,  uses set points which still need to be made and this one has move shoot and climb
-  //   m_tasks.push_back(std::make_shared<FollowPath>(
-  //     std::vector<frc::Pose2d>{
-  //         Locations::GetInstance().GetStartPosition(alliance, 3), // position might be optional depending on how we want to start matches
-  //         Locations::GetInstance().GetDepotPosition(alliance)},
-  //     false, false));
-  //   m_tasks.push_back(std::make_shared<StartShooter>());
-
-
-    // m_tasks.push_back(std::make_shared<StartIntake>());
-    // m_tasks.push_back(std::make_shared<Delay>(1.0)); // should be tested and changed
-    // m_tasks.push_back(std::make_shared<FollowPath>(
-      // std::vector<frc::Pose2d>{
-          // Locations::GetInstance().GetShootPosition(alliance), // just so we can have a set point for when we want to shoot
-      // false, false));
-    // m_tasks.push_back(std::make_shared<StartShooter>());
-    // m_tasks.push_back(std::make_shared<FollowPath>(
-    //   std::vector<frc::Pose2d>{
-    //       Locations::GetInstance().GetClimbPosition(alliance),
-    //   false, false));
-
-
+    m_tasks.push_back(std::make_shared<FollowPath>(
+      std::vector<frc::Pose2d>{
+        Locations::GetInstance().GetStartPosition(alliance, position), 
+        Locations::GetInstance().GetDepotPosition(alliance, true)
+      }, false, false));
+    m_tasks.push_back(std::make_shared<FollowPath>(
+      std::vector<frc::Pose2d>{
+        Locations::GetInstance().GetDepotPosition(alliance, true), 
+        Locations::GetInstance().GetDepotPosition(alliance, false)
+      }, false, false));
+    m_tasks.push_back(std::make_shared<FollowPath>(
+      std::vector<frc::Pose2d>{
+        Locations::GetInstance().GetDepotPosition(alliance, false), 
+        Locations::GetInstance().GetDepotPosition(alliance, false).RotateBy(90_deg)
+      }, false, false));
+    m_tasks.push_back(std::make_shared<StartShooter>());
 }
