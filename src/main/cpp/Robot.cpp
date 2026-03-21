@@ -265,33 +265,19 @@ Robot::Robot()
         if (m_autoAlignMode == kRamp) {
           auto robotPose = SwerveDrive::GetInstance().GetPose2d();
 
-          // Update y controller only
-          vy = m_alignControllers[1].Update(
-              robotPose.Translation().Y().value(),
-              m_autoAlignSetpoint.Translation().Y().value());
-          if (vy < -Constants::kPathFollowingMaxV) {
-            vy = -Constants::kPathFollowingMaxV;
-          }
-          if (vy > Constants::kPathFollowingMaxV) {
-            vy = Constants::kPathFollowingMaxV;
-          }
-
-          // Update theta controller
-          double angleSetpoint =
-              m_autoAlignSetpoint.Rotation().Radians().value();
-          if (angleSetpoint < -Constants::kPathFollowingMaxW) {
-              angleSetpoint = -Constants::kPathFollowingMaxW;
-          }
-          if (angleSetpoint > Constants::kPathFollowingMaxW) {
-             angleSetpoint = Constants::kPathFollowingMaxW;
-           }
+          auto vy = std::clamp(m_alignControllers[1].Update(robotPose.Translation().Y().value(), m_autoAlignSetpoint.Translation().Y().value()), 
+            -Constants::kPathFollowingMaxV, Constants::kPathFollowingMaxV);
+            
+          double angleSetpoint = m_autoAlignSetpoint.Rotation().Radians().value();
+          
           double currentAngle = robotPose.Rotation().Radians().value();
           double angleError = angleSetpoint - currentAngle;
           if (angleError > M_PI) {
             angleSetpoint -= 2 * M_PI;
           }
 
-          w = m_alignControllers[2].Update(currentAngle, angleSetpoint);
+          auto w = std::clamp(m_alignControllers[2].Update(currentAngle, angleSetpoint), 
+            -Constants::kPathFollowingMaxW, Constants::kPathFollowingMaxW);
         }
 
         //makes swerve work

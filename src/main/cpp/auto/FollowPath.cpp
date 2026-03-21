@@ -31,42 +31,13 @@ void FollowPath::Update(double t) {
 
   auto robotPose = SwerveDrive::GetInstance().GetPose2d();
   
-  //   auto vx =
-  //     m_controllers[0].Update(robotPose.Translation().X().value(),
-  //                             m_points[m_pointIndex].Translation().X().value());
-  // if (vx < -Constants::kPathFollowingMaxV) {
-  //   vx = -Constants::kPathFollowingMaxV;
-  // }
-  // if (vx > Constants::kPathFollowingMaxV) {
-  //   vx = Constants::kPathFollowingMaxV;
-  // }
-
-  // auto vy =
-  //     m_controllers[1].Update(robotPose.Translation().Y().value(),
-  //                             m_points[m_pointIndex].Translation().Y().value());
-  // if (vy < -Constants::kPathFollowingMaxV) {
-  //   vy = -Constants::kPathFollowingMaxV;
-  // }
-  // if (vy > Constants::kPathFollowingMaxV) {
-  //   vy = Constants::kPathFollowingMaxV;
-  // }
-  
-  // double angleSetpoint = m_points[m_pointIndex].Rotation().Radians().value();
-  // if (angleSetpoint < -Constants::kPathFollowingMaxW) {
-  //   angleSetpoint = -Constants::kPathFollowingMaxW;
-  // }
-  // if (angleSetpoint > Constants::kPathFollowingMaxW) {
-  //   angleSetpoint = Constants::kPathFollowingMaxW;
-  // }
-
   auto vx = std::clamp(m_controllers[0].Update(robotPose.Translation().X().value(), m_points[m_pointIndex].Translation().X().value()), 
     -Constants::kPathFollowingMaxV, Constants::kPathFollowingMaxV);
 
   auto vy = std::clamp(m_controllers[1].Update(robotPose.Translation().Y().value(), m_points[m_pointIndex].Translation().Y().value()), 
     -Constants::kPathFollowingMaxV, Constants::kPathFollowingMaxV);
     
-  double angleSetpoint = std::clamp(m_points[m_pointIndex].Rotation().Radians().value(), 
-    -Constants::kPathFollowingMaxW, Constants::kPathFollowingMaxW);
+  double angleSetpoint = m_points[m_pointIndex].Rotation().Radians().value();
   
   double currentAngle = robotPose.Rotation().Radians().value();
   double angleError = angleSetpoint - currentAngle;
@@ -74,13 +45,10 @@ void FollowPath::Update(double t) {
     angleSetpoint -= 2 * M_PI;
   }
 
-  auto w = m_controllers[2].Update(currentAngle, angleSetpoint);
+  auto w = std::clamp(m_controllers[2].Update(currentAngle, angleSetpoint), 
+    -Constants::kPathFollowingMaxW, Constants::kPathFollowingMaxW);
+
   SwerveDrive::GetInstance().DriveVelocity(vx, vy, w);
-  // std::cout << angleSetpoint << " " << currentAngle <<  "\n";
-  std::cout << m_points[m_pointIndex].X().value() * Constants::kInchesPerMeter << ", "
-            << m_points[m_pointIndex].Y().value() * Constants::kInchesPerMeter << ", "
-            << m_points[m_pointIndex].Rotation().Degrees().value() << " uhhh setpoint\n";
-            
 }
 
 void FollowPath::Stop() {
@@ -89,9 +57,6 @@ void FollowPath::Stop() {
 }
 
 bool FollowPath::IsDone() const {
-  if ( m_started && !m_persist && AtPoint() &&
-         SwerveDrive::GetInstance().VelocityMagnitude() <
-             Constants::kPathFollowingVelocityTolerance) { std::cout << "path done\n"; } 
   return m_started && !m_persist && AtPoint() &&
          SwerveDrive::GetInstance().VelocityMagnitude() <
              Constants::kPathFollowingVelocityTolerance;
