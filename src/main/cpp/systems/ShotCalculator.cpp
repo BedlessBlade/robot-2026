@@ -52,7 +52,7 @@ void ShotCalculator::CalculateShotParams(frc::Translation2d goalPosition,
     }
 
     m_turretAngle = units::degree_t{std::fmod(goalAngle.value(), 360.0)};
-    m_shooterVelocity = units::turns_per_second_t{Constants::kDist2TPSA * pow(lookAheadDistanceToGoal.value(), Constants::kDist2TPSB)};
+    m_shooterVelocity = units::turns_per_second_t{Constants::kDist2TPSA * 0.98 * pow(lookAheadDistanceToGoal.value(), Constants::kDist2TPSB)};
 
     // latency compensation
     //frc::Translation2d futurePosition = robotPosition.operator+(robotVelocity.operator*(latency.value()));

@@ -54,40 +54,24 @@ std::vector<frc::Pose2d> Locations::GetAutoCenterPositions(frc::DriverStation::A
 }
 
 frc::Pose2d Locations::GetStartPosition(frc::DriverStation::Alliance alliance, int i) const {
-  double x = alliance == frc::DriverStation::Alliance::kRed
-                 ? Constants::kFieldLength - Constants::kStartLineOffset +
-                       Constants::kStartOffsetX
-                 : Constants::kStartLineOffset - Constants::kStartOffsetX;
   double y = Constants::kFieldWidth / 2;
-  double angle = alliance == frc::DriverStation::Alliance::kRed ? 0 : M_PI;
+  double onLeft = i < 3;
 
   switch (i) {
-  case 1: 
+  case 1: case 5: 
+    y += (onLeft ? 1 : -1) * Constants::kStartOffsetYFar;
     break;
-    y += alliance == frc::DriverStation::Alliance::kRed
-      ? -Constants::kStartOffsetYFar
-      : Constants::kStartOffsetYFar;
-  case 2: 
-    y += alliance == frc::DriverStation::Alliance::kRed
-      ? -Constants::kStartOffsetY
-      : Constants::kStartOffsetY;
-    break;
-  case 4: 
-    y -= alliance == frc::DriverStation::Alliance::kRed
-      ? -Constants::kStartOffsetY
-      : Constants::kStartOffsetY;
-    break;
-  case 5:
-    y -= alliance == frc::DriverStation::Alliance::kRed
-      ? -Constants::kStartOffsetYFar
-      : Constants::kStartOffsetYFar;
+  case 2: case 4: 
+    y += (onLeft ? 1 : -1) * Constants::kStartOffsetY;
     break;
   default:
     break;
   }
 
-  return frc::Pose2d{frc::Translation2d{units::meter_t{x}, units::meter_t{y}},
-                     frc::Rotation2d{units::radian_t{angle}}};
+  return frc::Pose2d{
+    units::meter_t{Constants::kStartLineOffset - Constants::kStartOffsetX}, 
+    units::meter_t{y}, 0_deg
+  }.RotateAround(Constants::kFieldCenter, alliance == frc::DriverStation::Alliance::kRed ? 180_deg : 0_deg);
 }
 
 Locations::Locations() {}

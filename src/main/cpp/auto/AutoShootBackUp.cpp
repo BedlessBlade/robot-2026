@@ -9,8 +9,6 @@
 
 
 AutoShootBackUp::AutoShootBackUp(frc::DriverStation::Alliance alliance, int position) {
-  // m_tasks.push_back(std::make_shared<DriveVelocity>(
-  //   alliance == frc::DriverStation::kBlue ? -1 : 1, 0, 0));
   m_tasks.push_back(std::make_shared<FollowPath>(
     std::vector<frc::Pose2d>{
       Locations::GetInstance().GetStartPosition(alliance, position),
