@@ -265,7 +265,7 @@ Robot::Robot()
         if (m_autoAlignMode == kRamp) {
           auto robotPose = SwerveDrive::GetInstance().GetPose2d();
 
-          auto vy = std::clamp(m_alignControllers[1].Update(robotPose.Translation().Y().value(), m_autoAlignSetpoint.Translation().Y().value()), 
+          vy = std::clamp(m_alignControllers[1].Update(robotPose.Translation().Y().value(), m_autoAlignSetpoint.Translation().Y().value()), 
             -Constants::kPathFollowingMaxV, Constants::kPathFollowingMaxV);
             
           double angleSetpoint = m_autoAlignSetpoint.Rotation().Radians().value();
@@ -276,7 +276,7 @@ Robot::Robot()
             angleSetpoint -= 2 * M_PI;
           }
 
-          auto w = std::clamp(m_alignControllers[2].Update(currentAngle, angleSetpoint), 
+          w = std::clamp(m_alignControllers[2].Update(currentAngle, angleSetpoint), 
             -Constants::kPathFollowingMaxW, Constants::kPathFollowingMaxW);
         }
 
