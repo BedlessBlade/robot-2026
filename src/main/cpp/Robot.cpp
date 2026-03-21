@@ -205,8 +205,6 @@ Robot::Robot()
 
       std::cout << m_autoAlignMode << std::endl;
 
-      bool LastPosPiston = false;
-
       // Get the inputs from the controller during teleop mode. Note this uses
       // the split setup where the left joystick controls velocity, and the
       // right joystick controls the rotation. The Util::exp() function squares
@@ -352,11 +350,10 @@ Robot::Robot()
       if (Controllers::GetInstance().GetOperatorController().GetLeftTriggerAxis() > 0.5) {
         SupaIntake::GetInstance().SetMotors(0.75);
 
-      } else if (Controllers::GetInstance().GetOperatorController().GetLeftBumperButtonPressed()) {
+      } else if (Controllers::GetInstance().GetOperatorController().GetLeftBumperButton()) {
         SupaIntake::GetInstance().SetMotors(-0.75);
       
-      } else if (Controllers::GetInstance().GetOperatorController().GetLeftTriggerAxis() < 0.5 || 
-                Controllers::GetInstance().GetOperatorController().GetLeftBumperReleased()) {
+      } else {
         SupaIntake::GetInstance().SetMotors(0.0);
       }
 
