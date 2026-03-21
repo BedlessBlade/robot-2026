@@ -150,6 +150,8 @@ Robot::Robot()
 
     //Calculate shot at current state
     ShotCalculator::GetInstance().CalculateShotParams(m_goalPosition, Constants::kPhaseDelay);
+    Controllers::GetInstance().GetDriverController().SetRumble(frc::GenericHID::RumbleType::kBothRumble, 0);
+    Controllers::GetInstance().GetOperatorController().SetRumble(frc::GenericHID::RumbleType::kBothRumble, 0);
 
     if (mode == kAuto) {
       if (m_auto) {
@@ -233,7 +235,8 @@ Robot::Robot()
       }
 
       // Brake Mode
-      if (Controllers::GetInstance().GetDriverController().GetLeftBumperButton() || Controllers::GetInstance().GetDriverController().GetRightBumperButton()) {
+      if (Controllers::GetInstance().GetDriverController().GetLeftBumperButton() || 
+          Controllers::GetInstance().GetDriverController().GetRightBumperButton()) {
         // SwerveDrive::GetInstance().DriveVelocity(0, 0, 0);
         vx = 0;
         vy = 0;
@@ -319,8 +322,6 @@ Robot::Robot()
         if (Shooter::GetInstance().GetShooterState() == Shooter::shooterStates::IDLE) {
           if (ShotCalculator::GetInstance().ShotValid()) {
             Shooter::GetInstance().StartShooting();
-            Controllers::GetInstance().GetDriverController().SetRumble(frc::GenericHID::RumbleType::kBothRumble, 0);
-            Controllers::GetInstance().GetOperatorController().SetRumble(frc::GenericHID::RumbleType::kBothRumble, 0);
           } else {
             Controllers::GetInstance().GetDriverController().SetRumble(frc::GenericHID::RumbleType::kBothRumble, .2);
             Controllers::GetInstance().GetOperatorController().SetRumble(frc::GenericHID::RumbleType::kBothRumble, .2);
@@ -334,8 +335,7 @@ Robot::Robot()
         }
       }
 
-
-      // operator controls elseif statement hell
+      // intake up/down if/else
       if (Controllers::GetInstance().GetOperatorController().GetPOV() == 0) {
         SupaIntake::GetInstance().SetIntake(0);
 
@@ -346,14 +346,19 @@ Robot::Robot()
       //Dpad left - Climb
       } else if (Controllers::GetInstance().GetOperatorController().GetPOV() == 270) {
         //Climber::GetInstance().SetClimber(1);
-
-      } else if (Controllers::GetInstance().GetOperatorController().GetLeftTriggerAxis() > 0.5) {
+      } 
+      
+      //intake motor if/else
+      if (Controllers::GetInstance().GetOperatorController().GetLeftTriggerAxis() > 0.5) {
         SupaIntake::GetInstance().SetMotors(0.75);
 
-      } else if (Controllers::GetInstance().GetOperatorController().GetLeftTriggerAxis() < 0.5) {
+      } else if (Controllers::GetInstance().GetOperatorController().GetLeftBumperButtonPressed()) {
+        SupaIntake::GetInstance().SetMotors(-0.75);
+      
+      } else if (Controllers::GetInstance().GetOperatorController().GetLeftTriggerAxis() < 0.5 || 
+                Controllers::GetInstance().GetOperatorController().GetLeftBumperReleased()) {
         SupaIntake::GetInstance().SetMotors(0.0);
-
-      } else { std::cout << "hello\n"; }
+      }
 
     } else if (mode == kDisabled) {
       if (std::abs(
