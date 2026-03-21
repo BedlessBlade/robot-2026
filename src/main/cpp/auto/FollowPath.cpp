@@ -4,9 +4,8 @@
 #include "systems/SwerveDrive.h"
 #include <iostream>
 
-FollowPath::FollowPath(std::vector<frc::Pose2d> points, bool resetPose,
-                       bool persist)
-    : m_points{points}, m_resetPose{resetPose}, m_persist{persist} {}
+FollowPath::FollowPath(std::vector<frc::Pose2d> points, bool resetPose, bool persist)
+  : m_points{points}, m_resetPose{resetPose}, m_persist{persist} {}
 
 void FollowPath::Start(double t) {
   if (m_resetPose && m_points.size() > 0) {
@@ -31,33 +30,44 @@ void FollowPath::Update(double t) {
   }
 
   auto robotPose = SwerveDrive::GetInstance().GetPose2d();
-  auto vx =
-      m_controllers[0].Update(robotPose.Translation().X().value(),
-                              m_points[m_pointIndex].Translation().X().value());
-  if (vx < -Constants::kPathFollowingMaxV) {
-    vx = -Constants::kPathFollowingMaxV;
-  }
-  if (vx > Constants::kPathFollowingMaxV) {
-    vx = Constants::kPathFollowingMaxV;
-  }
+  
+  //   auto vx =
+  //     m_controllers[0].Update(robotPose.Translation().X().value(),
+  //                             m_points[m_pointIndex].Translation().X().value());
+  // if (vx < -Constants::kPathFollowingMaxV) {
+  //   vx = -Constants::kPathFollowingMaxV;
+  // }
+  // if (vx > Constants::kPathFollowingMaxV) {
+  //   vx = Constants::kPathFollowingMaxV;
+  // }
 
-  auto vy =
-      m_controllers[1].Update(robotPose.Translation().Y().value(),
-                              m_points[m_pointIndex].Translation().Y().value());
-  if (vy < -Constants::kPathFollowingMaxV) {
-    vy = -Constants::kPathFollowingMaxV;
-  }
-  if (vy > Constants::kPathFollowingMaxV) {
-    vy = Constants::kPathFollowingMaxV;
-  }
+  // auto vy =
+  //     m_controllers[1].Update(robotPose.Translation().Y().value(),
+  //                             m_points[m_pointIndex].Translation().Y().value());
+  // if (vy < -Constants::kPathFollowingMaxV) {
+  //   vy = -Constants::kPathFollowingMaxV;
+  // }
+  // if (vy > Constants::kPathFollowingMaxV) {
+  //   vy = Constants::kPathFollowingMaxV;
+  // }
+  
+  // double angleSetpoint = m_points[m_pointIndex].Rotation().Radians().value();
+  // if (angleSetpoint < -Constants::kPathFollowingMaxW) {
+  //   angleSetpoint = -Constants::kPathFollowingMaxW;
+  // }
+  // if (angleSetpoint > Constants::kPathFollowingMaxW) {
+  //   angleSetpoint = Constants::kPathFollowingMaxW;
+  // }
 
-  double angleSetpoint = m_points[m_pointIndex].Rotation().Radians().value();
-  if (angleSetpoint < -Constants::kPathFollowingMaxW) {
-    angleSetpoint = -Constants::kPathFollowingMaxW;
-  }
-  if (angleSetpoint > Constants::kPathFollowingMaxW) {
-    angleSetpoint = Constants::kPathFollowingMaxW;
-  }
+  auto vx = std::clamp(m_controllers[0].Update(robotPose.Translation().X().value(), m_points[m_pointIndex].Translation().X().value()), 
+    -Constants::kPathFollowingMaxV, Constants::kPathFollowingMaxV);
+
+  auto vy = std::clamp(m_controllers[1].Update(robotPose.Translation().Y().value(), m_points[m_pointIndex].Translation().Y().value()), 
+    -Constants::kPathFollowingMaxV, Constants::kPathFollowingMaxV);
+    
+  double angleSetpoint = std::clamp(m_points[m_pointIndex].Rotation().Radians().value(), 
+    -Constants::kPathFollowingMaxW, Constants::kPathFollowingMaxW);
+  
   double currentAngle = robotPose.Rotation().Radians().value();
   double angleError = angleSetpoint - currentAngle;
   if (angleError > M_PI) {
