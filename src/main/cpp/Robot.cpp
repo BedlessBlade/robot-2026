@@ -167,8 +167,6 @@ Robot::Robot()
       auto alliance = frc::DriverStation::GetAlliance();
 
       m_field.SetRobotPose(SwerveDrive::GetInstance().GetPose2d());
-      
-      m_autoAlignMode = kNone;
 
       // Ramp auto align logic
       if (Controllers::GetInstance().GetDriverController().GetXButtonPressed()) {
