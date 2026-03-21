@@ -15,8 +15,9 @@ public:
         return instance;
     }
 
-    void SetMotors(double Speed);   // Motors Function
-    void ToggleIntake();   // Pnuematics Function
+    void SetMotors(double speed);   // Motors Function
+    //void ToggleIntake();   // Pnuematics Function
+    void SetIntake(bool state);
 
     void StartAll();    // Enable and Disable all motors associated with the intake system 
     void EndAll();      // only allow use during auto & is not usable during teleop
@@ -24,7 +25,7 @@ public:
     void Update(Robot::Mode mode, double t) override;   // Set Values to hardware
 
 private:
-    rev::spark::SparkMax m_intakeSupaMotor{Constants::kIntakeMotorId, rev::spark::SparkMax::MotorType::kBrushless};
+    rev::spark::SparkMax m_intakeMotor{Constants::kIntakeMotorId, rev::spark::SparkMax::MotorType::kBrushless};
 
     frc::DoubleSolenoid m_intakeSolenoid{Constants::kIntakePneumCanId,
         frc::PneumaticsModuleType::REVPH,

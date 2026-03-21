@@ -16,7 +16,8 @@
 #include "auto/StopShooter.h"
 #include "auto/StartIntake.h"
 #include "auto/StopIntake.h"
-#include "auto/ToggleIntake.h"
+#include "auto/DeployIntake.h"
+#include "auto/StowIntake.h"
 #include "systems/SwerveDrive.h"
 
 
@@ -56,7 +57,7 @@ AutoCenter::AutoCenter(frc::DriverStation::Alliance alliance, int position){
     }, false, false));
   
   // starts intake & moves forward to collect balls
-  m_tasks.push_back(std::make_shared<ToggleIntake>());
+  m_tasks.push_back(std::make_shared<DeployIntake>());
   m_tasks.push_back(std::make_shared<StartIntake>());
   m_tasks.push_back(std::make_shared<FollowPath>(
     std::vector<frc::Pose2d>{
@@ -69,7 +70,7 @@ AutoCenter::AutoCenter(frc::DriverStation::Alliance alliance, int position){
   
   // stop intaking balls, rotate to face ramp
   m_tasks.push_back(std::make_shared<StopIntake>());
-  m_tasks.push_back(std::make_shared<ToggleIntake>());
+  m_tasks.push_back(std::make_shared<StowIntake>());
   m_tasks.push_back(std::make_shared<FollowPath>(
     std::vector<frc::Pose2d>{
       Locations::GetInstance().GetAutoCenterPositions(alliance, onLeft)[3],

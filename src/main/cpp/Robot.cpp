@@ -57,7 +57,6 @@ Robot::Robot()
   m_autoChooser.AddOption("Shoot", "Shoot");
   m_autoChooser.AddOption("Shoot & Back Up", "ShootBackUp");
   // m_autoChooser.AddOption("To Neutral & Depot", "CenterDepot");
-  // m_autoChooser.SetDefaultOption("Shoot & Climb", "ShootClimb");
   
 
   frc::SmartDashboard::PutData("Start Location", &m_startChooser);
@@ -137,10 +136,13 @@ Robot::Robot()
 
           }
         }
-
       } else {
         globalAlliance = "None";
       }
+      
+      // std::cout << SwerveDrive::GetInstance().GetPose2d().X().value() * Constants::kInchesPerMeter << ", " << 
+      //             SwerveDrive::GetInstance().GetPose2d().Y().value()  * Constants::kInchesPerMeter << ", " <<
+      //             SwerveDrive::GetInstance().GetPose2d().Rotation().Degrees().value() << "\n";
     }
 
     // Get Current State
@@ -201,6 +203,8 @@ Robot::Robot()
 
       }
 
+      std::cout << m_autoAlignMode << std::endl;
+
       bool LastPosPiston = false;
 
       // Get the inputs from the controller during teleop mode. Note this uses
@@ -232,7 +236,9 @@ Robot::Robot()
 
       // Brake Mode
       if (Controllers::GetInstance().GetDriverController().GetLeftBumperButton() || Controllers::GetInstance().GetDriverController().GetRightBumperButton()) {
-        SwerveDrive::GetInstance().DriveVelocity(0, 0, 0);
+        // SwerveDrive::GetInstance().DriveVelocity(0, 0, 0);
+        vx = 0;
+        vy = 0;
       }
 
       // Invert driver controls when on red
@@ -257,7 +263,7 @@ Robot::Robot()
 
         SwerveDrive::GetInstance().DriveVelocity(0, 0, 0);
       } else {
-        if (m_autoAlignMode != kNone) {
+        if (m_autoAlignMode == kRamp) {
           auto robotPose = SwerveDrive::GetInstance().GetPose2d();
 
           // Update y controller only
@@ -271,24 +277,15 @@ Robot::Robot()
             vy = Constants::kPathFollowingMaxV;
           }
 
-          // if (robotPose
-          //  .Translation()
-          //  .Distance(m_autoAlignSetpoint.Translation())
-          //  .value() < Constants::kPathFollowingTolerance && SwerveDrive::GetInstance().VelocityMagnitude() <
-          //  Constants::kPathFollowingVelocityTolerance) {
-          //     Controllers::GetInstance().GetDriverController().SetRumble(frc::GenericHID::RumbleType::kBothRumble, 1.0);
-          //     Controllers::GetInstance().GetOperatorController().SetRumble(frc::GenericHID::RumbleType::kBothRumble, 1.0);
-          //  }
-
           // Update theta controller
           double angleSetpoint =
               m_autoAlignSetpoint.Rotation().Radians().value();
-          if (angleSetpoint < -Constants::kPathFollowingMaxV) {
-            angleSetpoint = -Constants::kPathFollowingMaxW;
+          if (angleSetpoint < -Constants::kPathFollowingMaxW) {
+              angleSetpoint = -Constants::kPathFollowingMaxW;
           }
-          if (vx > Constants::kPathFollowingMaxV) {
-            angleSetpoint = Constants::kPathFollowingMaxW;
-          }
+          if (angleSetpoint > Constants::kPathFollowingMaxW) {
+             angleSetpoint = Constants::kPathFollowingMaxW;
+           }
           double currentAngle = robotPose.Rotation().Radians().value();
           double angleError = angleSetpoint - currentAngle;
           if (angleError > M_PI) {
@@ -304,7 +301,6 @@ Robot::Robot()
 
       // Auto Aim
       // operator Shooter/ Turret overrides
-      // TODO figure out what static positions we want
       if (Controllers::GetInstance().GetOperatorController().GetAButton()) {
         // Override 1
         ShotCalculator::GetInstance().SetShooterVelocity(45_tps);
@@ -340,21 +336,16 @@ Robot::Robot()
 
 
       // operator controls elseif statement hell
-      //some controls missing cuz i was getting rid of unnecessary lines
-      if (Controllers::GetInstance().GetOperatorController().GetXButtonPressed()) {
-          SupaIntake::GetInstance().ToggleIntake();
-        
-      //Dpad up - Extend climb
-      } else if (Controllers::GetInstance().GetOperatorController().GetPOV() == 0) {
-        Climber::GetInstance().SetClimber(2);
+      if (Controllers::GetInstance().GetOperatorController().GetPOV() == 0) {
+        SupaIntake::GetInstance().SetIntake(0);
 
       //Dpad down - Stow climb
       } else if (Controllers::GetInstance().GetOperatorController().GetPOV() == 180) {
-        Climber::GetInstance().SetClimber(0);
+        SupaIntake::GetInstance().SetIntake(1);
 
       //Dpad left - Climb
       } else if (Controllers::GetInstance().GetOperatorController().GetPOV() == 270) {
-        Climber::GetInstance().SetClimber(1);
+        //Climber::GetInstance().SetClimber(1);
 
       } else if (Controllers::GetInstance().GetOperatorController().GetLeftTriggerAxis() > 0.5) {
         SupaIntake::GetInstance().SetMotors(0.75);
@@ -391,8 +382,7 @@ Robot::Robot()
     //                             << QuestPose.Rotation().Degrees().value()
     //                             << std::endl;
 
-    // std::cout << SwerveDrive::GetInstance().GetPose2d().Rotation().Degrees().value() << "\n";
-
+    
     // Call update functions for subsystems instances
     Cameras::GetInstance().Update(mode, t);
     SwerveDrive::GetInstance().Update(mode, t);
@@ -428,7 +418,7 @@ void Robot::DisabledExit() {
     std::string autoName = m_autoChooser.GetSelected();
     double t = frc::Timer::GetFPGATimestamp().value();
     
-    //go to places
+    // //go to places
     if(autoName == "Depot") { 
       m_auto = std::make_shared<AutoDepot>(alliance.value(), m_startChooser.GetSelected()); 
     } else if(autoName == "Outpost") { 

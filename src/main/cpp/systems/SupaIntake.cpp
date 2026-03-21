@@ -7,28 +7,26 @@
 SupaIntake::SupaIntake() {}
 
 // Single-use functions
-void SupaIntake::SetMotors(double Speed) {
-    if (m_intakeDown){
-    m_motorSpeed = Speed;
-    } else {
-        m_motorSpeed = Speed;
-    }
+void SupaIntake::SetMotors(double speed) {
+    m_motorSpeed = speed;
 }
 
-void SupaIntake::ToggleIntake() {
-    m_intakeDown = !m_intakeDown;
+void SupaIntake::SetIntake(bool state) {
+    m_intakeDown = state;
+
+    if (state) {
+        m_intakeSolenoid.Set(frc::DoubleSolenoid::kReverse);
+    } else {
+        m_intakeSolenoid.Set(frc::DoubleSolenoid::kForward);
+    }
 }
 
 // deploy updates to the hardware
 void SupaIntake::Update(Robot::Mode mode, double t) {
-    m_intakeSupaMotor.Set(m_motorSpeed);
 
-    // cases so we can use bool to control pneumatics
     if (m_intakeDown) {
-        // m_intakeSolenoid.Set(frc::DoubleSolenoid::kOff);
-        m_intakeSolenoid.Set(frc::DoubleSolenoid::kForward);
+        m_intakeMotor.Set(m_motorSpeed);
     } else {
-        // m_intakeSolenoid.Set(frc::DoubleSolenoid::kOff);
-        m_intakeSolenoid.Set(frc::DoubleSolenoid::kReverse);
+        m_intakeMotor.Set(0.0);
     }
 }

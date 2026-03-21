@@ -13,7 +13,7 @@ AutoShootBackUp::AutoShootBackUp(frc::DriverStation::Alliance alliance, int posi
     std::vector<frc::Pose2d>{
       Locations::GetInstance().GetStartPosition(alliance, position),
       Locations::GetInstance().GetStartPosition(alliance, position)
-        .TransformBy(frc::Transform2d{ (alliance ? -1 : 1) * 2_m, 0_m, 0_deg })
+        .TransformBy(frc::Transform2d{ (alliance == frc::DriverStation::Alliance::kRed ? 1 : -1) * 2_m, 0_m, 0_deg })
     }, false, false));
   m_tasks.push_back(std::make_shared<StartShooter>());
 }

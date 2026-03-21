@@ -66,7 +66,11 @@ void FollowPath::Update(double t) {
 
   auto w = m_controllers[2].Update(currentAngle, angleSetpoint);
   SwerveDrive::GetInstance().DriveVelocity(vx, vy, w);
-  std::cout << w << "\n";
+  // std::cout << angleSetpoint << " " << currentAngle <<  "\n";
+  std::cout << m_points[m_pointIndex].X().value() * Constants::kInchesPerMeter << ", "
+            << m_points[m_pointIndex].Y().value() * Constants::kInchesPerMeter << ", "
+            << m_points[m_pointIndex].Rotation().Degrees().value() << " uhhh setpoint\n";
+            
 }
 
 void FollowPath::Stop() {
