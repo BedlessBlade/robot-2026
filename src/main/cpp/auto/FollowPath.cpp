@@ -52,10 +52,10 @@ void FollowPath::Update(double t) {
   }
 
   double angleSetpoint = m_points[m_pointIndex].Rotation().Radians().value();
-  if (angleSetpoint < -Constants::kPathFollowingMaxV) {
+  if (angleSetpoint < -Constants::kPathFollowingMaxW) {
     angleSetpoint = -Constants::kPathFollowingMaxW;
   }
-  if (vx > Constants::kPathFollowingMaxV) {
+  if (angleSetpoint > Constants::kPathFollowingMaxW) {
     angleSetpoint = Constants::kPathFollowingMaxW;
   }
   double currentAngle = robotPose.Rotation().Radians().value();
@@ -65,9 +65,8 @@ void FollowPath::Update(double t) {
   }
 
   auto w = m_controllers[2].Update(currentAngle, angleSetpoint);
-
   SwerveDrive::GetInstance().DriveVelocity(vx, vy, w);
-  std::cout << "doing something\n";
+  std::cout << w << "\n";
 }
 
 void FollowPath::Stop() {
@@ -78,7 +77,7 @@ void FollowPath::Stop() {
 bool FollowPath::IsDone() const {
   if ( m_started && !m_persist && AtPoint() &&
          SwerveDrive::GetInstance().VelocityMagnitude() <
-             Constants::kPathFollowingVelocityTolerance) {std::cout << "path done\n";} 
+             Constants::kPathFollowingVelocityTolerance) { std::cout << "path done\n"; } 
   return m_started && !m_persist && AtPoint() &&
          SwerveDrive::GetInstance().VelocityMagnitude() <
              Constants::kPathFollowingVelocityTolerance;
