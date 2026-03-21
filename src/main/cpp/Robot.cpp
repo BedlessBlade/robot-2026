@@ -321,6 +321,8 @@ Robot::Robot()
         if (Shooter::GetInstance().GetShooterState() == Shooter::shooterStates::IDLE) {
           if (ShotCalculator::GetInstance().ShotValid()) {
             Shooter::GetInstance().StartShooting();
+            Controllers::GetInstance().GetDriverController().SetRumble(frc::GenericHID::RumbleType::kBothRumble, 0);
+            Controllers::GetInstance().GetOperatorController().SetRumble(frc::GenericHID::RumbleType::kBothRumble, 0);
           } else {
             Controllers::GetInstance().GetDriverController().SetRumble(frc::GenericHID::RumbleType::kBothRumble, .2);
             Controllers::GetInstance().GetOperatorController().SetRumble(frc::GenericHID::RumbleType::kBothRumble, .2);
