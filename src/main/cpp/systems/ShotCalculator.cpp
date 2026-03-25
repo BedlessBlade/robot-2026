@@ -11,11 +11,8 @@
 #include <iostream>
 #include <math.h>
 
-
 // Call to calculate shot parameters
-void ShotCalculator::CalculateShotParams(frc::Translation2d goalPosition,
-                                         units::second_t latency) {
-
+void ShotCalculator::CalculateShotParams(frc::Translation2d goalPosition, units::second_t latency) {
     // Calculate estimated pose while accounting for phase delay
     frc::Pose2d estimatedPose = SwerveDrive::GetInstance().GetPose2d();
     frc::ChassisSpeeds robotRelVelocity = SwerveDrive::GetInstance().GetVelocity2d();
@@ -28,20 +25,19 @@ void ShotCalculator::CalculateShotParams(frc::Translation2d goalPosition,
     // Calculate field relative turret velocity
     frc::ChassisSpeeds robotVelocity = frc::ChassisSpeeds::FromRobotRelativeSpeeds(robotRelVelocity, estimatedPose.Rotation());
     double robotAngle = estimatedPose.Rotation().Radians().value();
-    units::meters_per_second_t turretVelX = robotVelocity.vx; // + robotVelocity.omega * (Constants::kTurretOffset.Y() * std::cos );
-    units::meters_per_second_t turretVelY = robotVelocity.vy; // + robotVelcoity.omega
+    units::meters_per_second_t turretVelX = robotVelocity.vx + robotVelocity.omega * (Constants::kTurretOffset.Y() * cos(robotAngle) - Constants::kTurretOffset.X() * sin(robotAngle));
+    units::meters_per_second_t turretVelY = robotVelocity.vy + robotVelocity.omega * (Constants::kTurretOffset.X() * cos(robotAngle) - Constants::kTurretOffset.Y() * sin(robotAngle));
 
     // Time of flight
     units::second_t timeOfFlight;
     frc::Pose2d lookAheadPose = turretPosition;
     units::meter_t lookAheadDistanceToGoal = distanceToGoal;
     for (int i = 0; i < 20; i++) {
-        timeOfFlight = units::second_t{Constants::kDist2ToFA * pow(lookAheadDistanceToGoal.value(), Constants::kDist2ToFB)};
+        timeOfFlight = units::second_t{Constants::kDist2ToFA * pow(lookAheadDistanceToGoal.value(), Constants::kDist2ToFB)}; // Fudge added at comp, need to retune
         units::meter_t offSetX = turretVelX * timeOfFlight;
         units::meter_t offSetY = turretVelY * timeOfFlight;
         lookAheadPose = {turretPosition.Translation() + frc::Translation2d(offSetX, offSetY), turretPosition.Rotation()};
         lookAheadDistanceToGoal = goalPosition.Distance(lookAheadPose.Translation());
-
     }
     
     // Calculate parameters accounting for imparted velocity
@@ -51,65 +47,8 @@ void ShotCalculator::CalculateShotParams(frc::Translation2d goalPosition,
         goalAngle += 360_deg;
     }
 
-    m_turretAngle = units::degree_t{std::fmod(goalAngle.value(), 360.0)};
-    m_shooterVelocity = units::turns_per_second_t{Constants::kDist2TPSA * 0.98 * pow(lookAheadDistanceToGoal.value(), Constants::kDist2TPSB)};
-
-    // latency compensation
-    //frc::Translation2d futurePosition = robotPosition.operator+(robotVelocity.operator*(latency.value()));
-    //frc::Rotation2d futureHeading = {robotHeading.operator+(robotAngVelocity * latency)};
-    
-    // Turret Position
-    //frc::Translation2d turretPosition = futurePosition.operator+(Constants::kTurretOffset.RotateBy(futureHeading));
-    
-    // Turret Velocity
-    //frc::Translation2d turretVelocityAng = {-robotAngVelocity.value() * Constants::kTurretOffset.X(), robotAngVelocity.value() * Constants::kTurretOffset.Y()}; // Cross product Omega X turretOffset
-    //frc::Translation2d turretVelocity = robotVelocity.operator+(turretVelocityAng);
-
-    // Get target vector
-    //frc::Translation2d toGoal = goalPosition.operator-(turretPosition);
-    //units::length::meter_t distanceToGoal = toGoal.Norm();
-    //frc::Translation2d toGoalNormalized = toGoal.operator/(distanceToGoal.value());
-
-    // TEMP non-SOM implementation
-    // units::degree_t goalAngle = toGoalNormalized.Angle().Degrees();
-    // if (robotHeading.Degrees() < 0_deg) {
-    //     if (goalAngle > 0_deg) {
-    //         goalAngle -= 360_deg;
-    //     }
-    //     m_turretAngle = 180_deg - (robotHeading.Degrees() - goalAngle);
-
-    // } else {
-    //     if (goalAngle < 0_deg) {
-    //         goalAngle += 360_deg;
-    //     }
-    //     m_turretAngle = (goalAngle - robotHeading.Degrees()) + 180_deg;
-    // }
-
-    // m_shooterVelocity = units::turns_per_second_t{Constants::kDist2TPSA * pow(distanceToGoal.value(), Constants::kDist2TPSB)}; // Convert dist to TPS
-
-    // Use LUT to find baseline (i.e., 0 robot velocity) shot params
-    //units::second_t timeOfFlight = units::second_t{Constants::kDist2ToFA * pow(distanceToGoal.value(), Constants::kDist2ToFB)}; // Convert dist to ToF
-    //units::meters_per_second_t baselineShotVelocity = distanceToGoal / timeOfFlight; // Shot velocity
-
-    // Get target velocity vector
-    //frc::Translation2d targetVelocity = toGoalNormalized.operator*(baselineShotVelocity.value()); // target velocity vector (m/s)
-
-    // Get shot velocity vector
-    //frc::Translation2d shotVelocity = turretVelocity.operator-(targetVelocity);
-
-    // Extract shooter params
-    //units::degree_t goalAngle = (shotVelocity.Angle().Degrees() - robotHeading.Degrees()) + 0_deg;
-    //if (goalAngle < 0_deg) {
-        // All commands are positive
-    //    goalAngle += 360_deg;
-    //}
-
-    //m_turretAngle = units::degree_t{std::fmod(goalAngle.value(), 360.0)};
-
-    // use LUT to find the shooter RPS
-    //units::meters_per_second_t requiredVelocity = units::meters_per_second_t{shotVelocity.Norm().value()};
-    //units::meter_t effectiveDistance = units::meter_t{Constants::kVel2DistA * pow(requiredVelocity.value(), Constants::kVel2DistB)};// Convert vel to dist
-    //m_shooterVelocity = units::turns_per_second_t{Constants::kDist2TPSA * pow(effectiveDistance.value(), Constants::kDist2TPSB)}; // Convert dist to TPS
+    m_turretAngle = angleFilter.Calculate(units::degree_t{std::fmod(goalAngle.value(), 360.0)});
+    m_shooterVelocity = velocityFilter.Calculate(units::turns_per_second_t{Constants::kDist2TPSA * 0.98 * pow(lookAheadDistanceToGoal.value(), Constants::kDist2TPSB)}); // Fudge added at comp, need to retune
 }
 
 // Shooter wheel velocity getter (RPS or Rev/s)
@@ -128,7 +67,9 @@ void ShotCalculator::SetTurretAngle(units::degree_t angle) {
 }
 
 bool ShotCalculator::ShotValid() {
-    return m_turretAngle.value() < Constants::kMaxShooterAzimuth && m_shooterVelocity.value() > Constants::kMinShooterCal && m_shooterVelocity.value() < Constants::kMaxShooterCal;
+    return m_turretAngle.value() < Constants::kMaxShooterAzimuth && 
+    m_shooterVelocity.value() > Constants::kMinShooterCal && 
+    m_shooterVelocity.value() < Constants::kMaxShooterCal;
 }
 
 // Shooter wheel velocity setter

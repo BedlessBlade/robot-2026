@@ -1,12 +1,13 @@
 #pragma once
 
+#include "Robot.h"
+
 #include <frc/DriverStation.h>
 #include <frc/geometry/Pose2d.h>
 #include <frc/geometry/translation2d.h>
 #include <wpi/interpolating_map.h>
 #include <vector>
-#include "Robot.h"
-#include <wpi/interpolating_map.h>
+#include <frc/filter/LinearFilter.h>
 
 // Shot calculator class
 class ShotCalculator {
@@ -34,6 +35,10 @@ public:
 private:
     // Private constructor
     ShotCalculator();
+
+    // Filters
+    frc::LinearFilter<units::degree_t> angleFilter = frc::LinearFilter<units::degree_t>::SinglePoleIIR(0.1, 0.005_s);
+    frc::LinearFilter<units::turns_per_second_t> velocityFilter = frc::LinearFilter<units::turns_per_second_t>::SinglePoleIIR(0.1, 0.005_s);
 
     //Shot Parameters
     units::degree_t m_turretAngle;
