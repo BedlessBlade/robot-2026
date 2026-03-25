@@ -17,19 +17,17 @@ class LEDs : public System {
       return instance;
     }
     //Initializes the LEDs object.
-    static constexpr int kLength = 300;
-    frc::AddressableLED m_led{7};
-    std::array<frc::AddressableLED::LEDData, kLength> m_ledBuffer;
+
+    frc::AddressableLED m_led{Constants::kLEDSportid}; //change this when adding LEDs to the robot to the rio port they are plugged into 
+    std::array<frc::AddressableLED::LEDData, Constants::kLEDSlength> m_ledBuffer;
     units::meter_t kLedSpacing{1 / 60.0};
 
     //Defines static patterns.
     frc::LEDPattern m_off = frc::LEDPattern::Off();
-    frc::LEDPattern m_pink = frc::LEDPattern::Solid(frc::Color::kWhite);
     frc::LEDPattern m_red = frc::LEDPattern::Solid(frc::Color::kRed);
     frc::LEDPattern m_blue = frc::LEDPattern::Solid(frc::Color::kBlue);
-    frc::LEDPattern m_breatheRed = m_red.Breathe(3_s);
-    frc::LEDPattern m_breatheBlue = m_blue.Breathe(3_s);
-    frc::LEDPattern m_orange = frc::LEDPattern::Solid(frc::Color::kOrange);
+    frc::LEDPattern m_breatheRed = m_red.Breathe(Constants::kLEDSbreathetime);
+    frc::LEDPattern m_breatheBlue = m_blue.Breathe(Constants::kLEDSbreathetime);
     //Defines multicolor patterns.
     frc::LEDPattern m_redAndYellow = frc::LEDPattern::Steps({
         {0, frc::Color::kRed},
@@ -84,6 +82,7 @@ class LEDs : public System {
         {0.98, frc::Color::kOrange}
     });
     frc::LEDPattern m_scrollingRedAndYellow = m_redAndYellow.ScrollAtRelativeSpeed(0.15_Hz);
+    frc::LEDPattern m_scrollingRedAndYellowReverse = m_redAndYellow.ScrollAtRelativeSpeed(-0.15_Hz);
     frc::LEDPattern m_blueAndYellow = frc::LEDPattern::Steps({
         {0, frc::Color::kBlue},
         {0.02, frc::Color::kOrange},
@@ -137,14 +136,13 @@ class LEDs : public System {
       	{0.98,  frc::Color::kOrange}  
     });
     frc::LEDPattern m_scrollingBlueAndYellow = m_blueAndYellow.ScrollAtRelativeSpeed(0.15_Hz);
-    //Defines cool rainbow.
-    frc::LEDPattern m_rainbow = frc::LEDPattern::Rainbow(255, 128);
-    frc::LEDPattern m_scrollingRainbow = m_rainbow.ScrollAtAbsoluteSpeed(1_mps, kLedSpacing);
+    frc::LEDPattern m_scrollingBlueAndYellowReverse = m_blueAndYellow.ScrollAtRelativeSpeed(-0.15_Hz);
+
     
     
     //Creates functions defined in LEDs.cpp
     void LEDsInit();
     void Update(Robot::Mode mode, std::string alliance);
     void updateXButtonToggle();
-    bool xButtonPressed = false;
+    bool intaking = false;
 };

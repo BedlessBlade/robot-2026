@@ -236,4 +236,10 @@ public:
   static constexpr int kPneumaticCanId = 22;
 
   // Hood limits
+
+
+  //LEDs constants
+  static constexpr int kLEDSportid = 7;
+  static constexpr int kLEDSlength = 300;
+  static constexpr units::second_t kLEDSbreathetime{1.5_s};
 };
