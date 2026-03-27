@@ -15,41 +15,64 @@ frc::Pose2d Locations::GetOutpostPosition(frc::DriverStation::Alliance alliance)
     .RotateAround(Constants::kFieldCenter, alliance == frc::DriverStation::Alliance::kRed ? 180_deg : 0_deg);
 }
 
-frc::Pose2d Locations::GetDepotPosition(frc::DriverStation::Alliance alliance, bool withRobotOffset) const {
-  return frc::Pose2d{ 
-    27_in + units::meter_t{withRobotOffset ? Constants::kRobotWidth / 2 : 0}, 
-    units::meter_t{Constants::kFieldWidth} - 82.32_in, 
-    180_deg 
-  }.RotateAround(Constants::kFieldCenter, alliance == frc::DriverStation::Alliance::kRed ? 180_deg : 0_deg);
+std::vector<frc::Pose2d> Locations::GetDepotPosition(frc::DriverStation::Alliance alliance) const {
+  return std::vector<frc::Pose2d>{
+    frc::Pose2d{
+      13_in + units::meter_t{Constants::kRobotWidth / 2} + 27_in,
+      units::meter_t{Constants::kFieldWidth} - 82.84_in,
+      180_deg
+    }.RotateAround(Constants::kFieldCenter, alliance == frc::DriverStation::Alliance::kRed ? 180_deg : 0_deg),
+    frc::Pose2d{
+      13_in + units::meter_t{Constants::kRobotWidth / 2},
+      units::meter_t{Constants::kFieldWidth} - 82.32_in,
+      180_deg
+    }.RotateAround(Constants::kFieldCenter, alliance == frc::DriverStation::Alliance::kRed ? 180_deg : 0_deg)
+  };
 }
 
 std::vector<frc::Pose2d> Locations::GetAutoCenterPositions(frc::DriverStation::Alliance alliance, bool onLeft) const {
   return std::vector<frc::Pose2d>{
+    // 0 - Move to shooting position
     frc::Pose2d{
       units::meter_t{0.5 * Constants::kStartLineOffset},
-      units::meter_t{(Constants::kFieldWidth / 2) + ((onLeft ? -1 : 1) * Constants::kStartOffsetY)},
+      units::meter_t{(Constants::kFieldWidth / 2) + ((onLeft ? 1 : -1) * Constants::kStartOffsetY)},
       0_deg
     }.RotateAround(Constants::kFieldCenter, (alliance == frc::DriverStation::Alliance::kRed ? 180_deg : 0_deg)),
+
+    // 1 - Move straight to 1ft across ramp
     frc::Pose2d{
-      units::meter_t{Constants::kStartLineOffset + (Constants::kRobotWidth / 2)} + 44.40_in,
-      units::meter_t{(Constants::kFieldWidth / 2) + ((onLeft ? -1 : 1) * Constants::kStartOffsetY)}, 
+      units::meter_t{Constants::kStartLineOffset + (Constants::kRobotWidth / 2)} + 44.40_in + 1_ft,
+      units::meter_t{(Constants::kFieldWidth / 2) + ((onLeft ? 1 : -1) * Constants::kStartOffsetY)}, 
       0_deg
     }.RotateAround(Constants::kFieldCenter, (alliance == frc::DriverStation::Alliance::kRed ? 180_deg : 0_deg)),
+
+    // 2 - Move along y-axis to the wall (directly in front of trench)
+    frc::Pose2d{
+      units::meter_t{Constants::kStartLineOffset + (Constants::kRobotWidth / 2)} + 56.40_in,
+      (onLeft ? (units::meter_t{Constants::kFieldWidth} - 25.62_in) : 0_m + 25.62_in),
+      (onLeft ? -1 : 1) * 90_deg
+    }.RotateAround(Constants::kFieldCenter, (alliance == frc::DriverStation::Alliance::kRed ? 180_deg : 0_deg)),
+
+    // 3 - Move forward to be in line (y) with balls in center
     frc::Pose2d{
       units::meter_t{Constants::kFieldLength / 2} - 17.975_in, 
       (onLeft ? (units::meter_t{Constants::kFieldWidth} - 25.62_in) : 0_m + 25.62_in), 
-      (onLeft ? 1 : -1) * 90_deg
+      (onLeft ? -1 : 1) * 90_deg
     }.RotateAround(Constants::kFieldCenter, (alliance == frc::DriverStation::Alliance::kRed ? 180_deg : 0_deg)),
+
+    // 4 - Move straight forward to collect balls. Go to center of field on y axis
     frc::Pose2d{
       units::meter_t{Constants::kFieldLength / 2} - 17.975_in,
-      units::meter_t{(Constants::kFieldWidth / 2) + ((onLeft ? -1 : 1) * Constants::kStartOffsetY)}, 
-      (onLeft ? 1 : -1) * 90_deg
+      units::meter_t{(Constants::kFieldWidth / 2) + (onLeft ? 1 : -1) * (13 + Constants::kRobotWidth / 2)}, 
+      (onLeft ? -1 : 1) * 90_deg
     }.RotateAround(Constants::kFieldCenter, (alliance == frc::DriverStation::Alliance::kRed ? 180_deg : 0_deg)),
-    frc::Pose2d{
-      units::meter_t{Constants::kFieldLength / 2} - 17.975_in,
-      units::meter_t{(Constants::kFieldWidth / 2) + ((onLeft ? -1 : 1) * Constants::kStartOffsetY)},  
-      0_deg
-    }.RotateAround(Constants::kFieldCenter, (alliance == frc::DriverStation::Alliance::kRed ? 180_deg : 0_deg))
+
+    // // 5 - Rotate to face ramp
+    // frc::Pose2d{
+    //   units::meter_t{Constants::kFieldLength / 2} - 17.975_in,
+    //   units::meter_t{(Constants::kFieldWidth / 2) + ((onLeft ? 1 : -1) * Constants::kStartOffsetY)},  
+    //   0_deg
+    // }.RotateAround(Constants::kFieldCenter, (alliance == frc::DriverStation::Alliance::kRed ? 180_deg : 0_deg))
   };
 }
 

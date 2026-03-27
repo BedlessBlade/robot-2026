@@ -51,7 +51,7 @@ Robot::Robot()
   m_startChooser.AddOption("5", 5);
 
   m_autoChooser.SetDefaultOption("Do Nothing", "DoNothing");
-  m_autoChooser.AddOption("To Depot", "Outpost");
+  m_autoChooser.AddOption("To Depot", "Depot");
   m_autoChooser.AddOption("To Outpost", "Outpost");
   m_autoChooser.AddOption("To Neutral Zone", "Center");
   m_autoChooser.AddOption("Shoot", "Shoot");

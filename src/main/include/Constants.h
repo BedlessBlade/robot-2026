@@ -111,15 +111,16 @@ public:
 
 
   // Path following
-  static constexpr double kPathFollowingKp = 3.0;
+  static constexpr double kPathFollowingKp = 6.0;
   static constexpr double kPathFollowingKi = 0.0;
   static constexpr double kPathFollowingKd = 0;
   static constexpr double kPathFollowingAngleKp = 3.0;
   static constexpr double kPathFollowingAngleKi = 0.0;
   static constexpr double kPathFollowingAngleKd = 0.0;
-  static constexpr double kPathFollowingMaxV = 0.2;       // meters per second
-  static constexpr double kPathFollowingMaxW = 0.2;       // radians per second
-  static constexpr double kPathFollowingTolerance = 0.3; // meters
+  static constexpr double kPathFollowingMaxV = 2;       // meters per second
+  static constexpr double kPathFollowingMaxW = M_PI;       // radians per second
+  static constexpr double kPathFollowingTolerance = 0.15; // meters
+  static constexpr double kPathFollowingAngleTolerance = 1; // degrees
   static constexpr double kPathFollowingVelocityTolerance = 0.1; // meters per second
 
   static constexpr auto kFeederDistance = 0.515_m;

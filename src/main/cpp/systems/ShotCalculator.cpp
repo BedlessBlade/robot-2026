@@ -25,8 +25,8 @@ void ShotCalculator::CalculateShotParams(frc::Translation2d goalPosition, units:
     // Calculate field relative turret velocity
     frc::ChassisSpeeds robotVelocity = frc::ChassisSpeeds::FromRobotRelativeSpeeds(robotRelVelocity, estimatedPose.Rotation());
     double robotAngle = estimatedPose.Rotation().Radians().value();
-    units::meters_per_second_t turretVelX = robotVelocity.vx + robotVelocity.omega * (Constants::kTurretOffset.Y() * cos(robotAngle) - Constants::kTurretOffset.X() * sin(robotAngle));
-    units::meters_per_second_t turretVelY = robotVelocity.vy + robotVelocity.omega * (Constants::kTurretOffset.X() * cos(robotAngle) - Constants::kTurretOffset.Y() * sin(robotAngle));
+    units::meters_per_second_t turretVelX = robotVelocity.vx; // + robotVelocity.omega * (Constants::kTurretOffset.Y() * cos(robotAngle) - Constants::kTurretOffset.X() * sin(robotAngle));
+    units::meters_per_second_t turretVelY = robotVelocity.vy; // + robotVelocity.omega * (Constants::kTurretOffset.X() * cos(robotAngle) - Constants::kTurretOffset.Y() * sin(robotAngle));
 
     // Time of flight
     units::second_t timeOfFlight;
