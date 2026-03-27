@@ -25,8 +25,8 @@ void ShotCalculator::CalculateShotParams(frc::Translation2d goalPosition, units:
     // Calculate field relative turret velocity
     frc::ChassisSpeeds robotVelocity = frc::ChassisSpeeds::FromRobotRelativeSpeeds(robotRelVelocity, estimatedPose.Rotation());
     double robotAngle = estimatedPose.Rotation().Radians().value();
-    units::meters_per_second_t turretVelX = robotVelocity.vx; // + robotVelocity.omega * (Constants::kTurretOffset.Y() * cos(robotAngle) - Constants::kTurretOffset.X() * sin(robotAngle));
-    units::meters_per_second_t turretVelY = robotVelocity.vy; // + robotVelocity.omega * (Constants::kTurretOffset.X() * cos(robotAngle) - Constants::kTurretOffset.Y() * sin(robotAngle));
+    units::meters_per_second_t turretVelX = robotVelocity.vx + units::meters_per_second_t{robotVelocity.omega.value() * (Constants::kTurretOffset.Y().value() * std::cos(robotAngle) - Constants::kTurretOffset.X().value() * std::sin(robotAngle))};
+    units::meters_per_second_t turretVelY = robotVelocity.vy + units::meters_per_second_t{robotVelocity.omega.value() * (Constants::kTurretOffset.X().value() * std::cos(robotAngle) - Constants::kTurretOffset.Y().value() * std::sin(robotAngle))};
 
     // Time of flight
     units::second_t timeOfFlight;
@@ -48,7 +48,9 @@ void ShotCalculator::CalculateShotParams(frc::Translation2d goalPosition, units:
     }
 
     m_turretAngle = angleFilter.Calculate(units::degree_t{std::fmod(goalAngle.value(), 360.0)});
-    m_shooterVelocity = velocityFilter.Calculate(units::turns_per_second_t{Constants::kDist2TPSA * 0.98 * pow(lookAheadDistanceToGoal.value(), Constants::kDist2TPSB)}); // Fudge added at comp, need to retune
+    m_turretVelocity = velocityFilter.Calculate((m_turretAngle - m_lastTurretAngle)/0.005_s); // Backwards difference method, turret velocity setpoint
+    m_lastTurretAngle = m_turretAngle;
+    m_shooterVelocity = units::turns_per_second_t{Constants::kDist2TPSA * 0.98 * pow(lookAheadDistanceToGoal.value(), Constants::kDist2TPSB)}; // Fudge added at comp, need to retune
 }
 
 // Shooter wheel velocity getter (RPS or Rev/s)
@@ -59,6 +61,10 @@ units::turns_per_second_t ShotCalculator::GetShooterVelocity() {
 // Turret angel getter (deg)
 units::degree_t ShotCalculator::GetTurretAngle() {
     return m_turretAngle;
+}
+
+units::degrees_per_second_t ShotCalculator::GetTurretVelocity() {
+    return m_turretVelocity;
 }
 
 // Turret angle setter
