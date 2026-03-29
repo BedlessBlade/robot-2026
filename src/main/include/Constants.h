@@ -82,12 +82,20 @@ public:
 
   // Vision
   static constexpr frc::Transform3d kRightCameraTransform{
-      frc::Translation3d{-6.229_in, 12.359_in, 26.747_in},
+      frc::Translation3d{-6.229_in, 12.941_in, 26.747_in},
       frc::Rotation3d{0_rad, 0_rad, -35_deg}};
+
   static constexpr frc::Transform3d kLeftCameraTransform{
-      frc::Translation3d{-6.229_in, 11.25_in, 26.747_in},
+      frc::Translation3d{-6.229_in, 10.058_in, 26.747_in},
       frc::Rotation3d{0_rad, 0_rad, 35_deg}};
-  static constexpr auto kBlockedTags = {0};
+
+  static constexpr frc::Transform3d kBackRightCameraTransform{
+      frc::Translation3d{-8.707_in, 13.228_in, 22.794_in},
+      frc::Rotation3d{0_rad, 0_rad, -145_deg}};
+
+  static constexpr frc::Transform3d kBackLeftCameraTransform{
+      frc::Translation3d{-8.707_in, 9.772_in, 22.794_in},
+      frc::Rotation3d{0_rad, 0_rad, 145_deg}};
 
 
   // Locations
