@@ -1,4 +1,4 @@
-#include "auto/AutoCenter.h"
+#include "auto/AutoCenterTwo.h"
 
 #include <frc/DriverStation.h>
 #include <frc/geometry/Pose2d.h>
@@ -21,10 +21,11 @@
 #include "systems/SwerveDrive.h"
 
 
-AutoCenter::AutoCenter(frc::DriverStation::Alliance alliance, int position){
-  // todos: clean up and make more readable after assuring it works (ie convert all inches to meters)
+AutoCenterTwo::AutoCenterTwo(frc::DriverStation::Alliance alliance, int position){
+  // todos: literally a copy of autocenterone. fix NOW (later)
   
   // alliance - red = 0, blue = 1
+  
   bool onLeft = position < 3;
 
   // back up to make shooter work

@@ -67,20 +67,21 @@ std::vector<frc::Pose2d> Locations::GetAutoCenterPositions(frc::DriverStation::A
       (onLeft ? -1 : 1) * 90_deg
     }.RotateAround(Constants::kFieldCenter, (alliance == frc::DriverStation::Alliance::kRed ? 180_deg : 0_deg)),
 
-    // // 5 - Rotate to face ramp
-    // frc::Pose2d{
-    //   units::meter_t{Constants::kFieldLength / 2} - 17.975_in,
-    //   units::meter_t{(Constants::kFieldWidth / 2) + ((onLeft ? 1 : -1) * Constants::kStartOffsetY)},  
-    //   0_deg
-    // }.RotateAround(Constants::kFieldCenter, (alliance == frc::DriverStation::Alliance::kRed ? 180_deg : 0_deg))
+    // 5 - Align with ramp on opposite side of field
+    frc::Pose2d{
+      units::meter_t{Constants::kFieldLength / 2} - 17.975_in,
+      units::meter_t{(Constants::kFieldWidth / 2) + ((onLeft ? -1 : 1) * Constants::kStartOffsetY)},
+
+      0_deg
+    }.RotateAround(Constants::kFieldCenter, (alliance == frc::DriverStation::Alliance::kRed ? 180_deg : 0_deg))
   };
 }
 
-frc::Pose2d Locations::GetStartPosition(frc::DriverStation::Alliance alliance, int i) const {
+frc::Pose2d Locations::GetStartPosition(frc::DriverStation::Alliance alliance, int position) const {
   double y = Constants::kFieldWidth / 2;
-  double onLeft = i < 3;
+  double onLeft = position < 3;
 
-  switch (i) {
+  switch (position) {
   case 1: case 5: 
     y += (onLeft ? 1 : -1) * Constants::kStartOffsetYFar;
     break;
