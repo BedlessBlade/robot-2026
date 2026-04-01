@@ -70,7 +70,7 @@ std::vector<frc::Pose2d> Locations::GetAutoCenterPositions(frc::DriverStation::A
     // 5 - Align with ramp on opposite side of field
     frc::Pose2d{
       units::meter_t{Constants::kFieldLength / 2} - 17.975_in,
-      units::meter_t{(Constants::kFieldWidth / 2) + ((onLeft ? -1 : 1) * Constants::kStartOffsetY)},
+      units::meter_t{(Constants::kFieldWidth / 2) + ((onLeft ? 1 : -1) * Constants::kStartOffsetY)},
 
       0_deg
     }.RotateAround(Constants::kFieldCenter, (alliance == frc::DriverStation::Alliance::kRed ? 180_deg : 0_deg))
