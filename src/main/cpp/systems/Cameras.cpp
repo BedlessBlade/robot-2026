@@ -19,7 +19,7 @@ void Cameras::Update(Robot::Mode mode, double t) {
   }
 
   // Right camera
-  auto results = m_rightCamera.GetAllUnreadResults();
+  results = m_rightCamera.GetAllUnreadResults();
   if (results.size() > 0) {
     auto pose = m_rightPoseEstimator.Update(results[0]);
 
@@ -29,7 +29,7 @@ void Cameras::Update(Robot::Mode mode, double t) {
   }
 
   // Back left camera
-  auto results = m_backLeftCamera.GetAllUnreadResults();
+  results = m_backLeftCamera.GetAllUnreadResults();
   if (results.size() > 0) {
     auto pose = m_backLeftPoseEstimator.Update(results[0]);
 
@@ -39,7 +39,7 @@ void Cameras::Update(Robot::Mode mode, double t) {
   }
 
   // Back right camera
-  auto results = m_backRightCamera.GetAllUnreadResults();
+  results = m_backRightCamera.GetAllUnreadResults();
   if (results.size() > 0) {
     auto pose = m_backRightPoseEstimator.Update(results[0]);
 
