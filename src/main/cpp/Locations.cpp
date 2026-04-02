@@ -82,6 +82,15 @@ std::vector<frc::Pose2d> Locations::GetAutoCenterPositions(frc::DriverStation::A
     frc::Pose2d{
       units::meter_t{Constants::kFieldLength / 2} - 17.975_in,
       units::meter_t{(Constants::kFieldWidth / 2) + ((onLeft ? -1 : 1) * Constants::kStartOffsetY)},
+
+      0_deg
+    }.RotateAround(Constants::kFieldCenter, (alliance == frc::DriverStation::Alliance::kRed ? 180_deg : 0_deg)),
+
+    // 6 - Opposite side of the neutral zone from Position 3 (Hopefully, this isn't tested yet, and I have no idea what I'm doing).
+    frc::Pose2d{
+      units::meter_t{Constants::kFieldLength / 2} - 10_in,
+      (onLeft ? 0_m + 25.62_in : (units::meter_t{Constants::kFieldWidth} - 25.62_in)),
+
       0_deg
     }.RotateAround(Constants::kFieldCenter, (alliance ? 0_deg : 180_deg))
   };

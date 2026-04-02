@@ -73,7 +73,7 @@ AutoCenterDepot::AutoCenterDepot(frc::DriverStation::Alliance alliance, int posi
         // cross ramp and go to shooting position
         m_tasks.push_back(std::make_shared<FollowPath>(
             std::vector<frc::Pose2d>{
-                Locations::GetInstance().GetAutoCenterPositions(alliance, false)[5],
+                Locations::GetInstance().GetAutoCenterPositions(alliance, true)[5],
                 Locations::GetInstance().GetAutoCenterPositions(alliance, true)[0],
             }, false, false));
         
