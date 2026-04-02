@@ -104,13 +104,13 @@ public:
   static constexpr frc::Translation2d kFieldCenter = {units::meter_t{kFieldLength / 2}, units::meter_t{kFieldWidth / 2}};
   static constexpr units::inch_t kHubOffset = 12_in;
 
-  //TODO: update probably
+  // start offsets
   static constexpr double kStartLineOffset = 156.06 / kInchesPerMeter;
   static constexpr double kStartOffsetX = kRobotWidth / 2;    // meters   
   static constexpr double kStartOffsetY = 60 / kInchesPerMeter;
   static constexpr double kStartOffsetYFar = 132.7 / kInchesPerMeter;
 
-  //field object positions/sizes
+  // field object positions/sizes
   static constexpr double kHubWidth = 47.00 / kInchesPerMeter;
   static constexpr double kBlueHubX = 181.56 / kInchesPerMeter;
   static constexpr double kBlueHubY = 158.32 / kInchesPerMeter;
@@ -175,6 +175,7 @@ public:
   static constexpr double kIntakeForce = 0.75;
 
   static constexpr double kStartIntakeThresh = 0.5;
+  static constexpr double kIntakeAutoProcessingTime = 0.25;
 
   //Shooter ------------------------------------------------------
   // Shooter motor CANIDs
@@ -205,8 +206,8 @@ public:
   static constexpr double kShooterAzimuthP = 0.15;
   static constexpr double kShooterAzimuthI = 0.0;
   static constexpr double kShooterAzimuthD = 1.5;
-  static constexpr double kMinAzimuthOutput = -0.4;
-  static constexpr double kMaxAzimuthOutput = 0.4;
+  static constexpr double kMinAzimuthOutput = -1;
+  static constexpr double kMaxAzimuthOutput = 1;
 
   static constexpr double kShooterAzimuthS = 0.0;
   static constexpr double kShooterAzimuthV = 0.00109;
@@ -214,10 +215,10 @@ public:
 
   // Turret limits and misc
   static constexpr double kMinShooterAzimuth = 0.0;
-  static constexpr double kMaxShooterAzimuth = 270.0;
+  static constexpr double kMaxShooterAzimuth = 320.0;
   static constexpr double kAzimuthMotorRevsToRevs = 233.5 / 1;
   static constexpr frc::Transform2d kTurretOffset{-4_in, -9.5_in, 0_deg}; // turret is 4" back in x, 9.5" over
-  static constexpr units::second_t kPhaseDelay = 0.0_s;
+  static constexpr units::second_t kPhaseDelay = 0.1_s;
   
   // Distance to TPS power series constants
   static constexpr double kDist2TPSA = 23.2;

@@ -36,7 +36,7 @@ AutoDepot::AutoDepot(frc::DriverStation::Alliance alliance, int position) {
       Locations::GetInstance().GetDepotPosition(alliance)[0], 
       Locations::GetInstance().GetDepotPosition(alliance)[1]
     }, false, false));
-  m_tasks.push_back(std::make_shared<Delay>(0.5));
+  m_tasks.push_back(std::make_shared<Delay>(Constants::kIntakeAutoProcessingTime));
   m_tasks.push_back(std::make_shared<FollowPath>(
     std::vector<frc::Pose2d>{
       Locations::GetInstance().GetDepotPosition(alliance)[1],
