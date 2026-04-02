@@ -25,6 +25,11 @@ AutoCenterDepot::AutoCenterDepot(frc::DriverStation::Alliance alliance, int posi
 
   bool onLeft = position < 3;
 
+  // safeguard to prevent auto from running when not in the right position
+  if (position != 2 && position != 4) {
+    return;
+  }
+
   // goes to a position half a robot width past the edge of the ramp
   m_tasks.push_back(std::make_shared<FollowPath>(
     std::vector<frc::Pose2d>{
@@ -42,8 +47,8 @@ AutoCenterDepot::AutoCenterDepot(frc::DriverStation::Alliance alliance, int posi
     if (onLeft) {
         m_tasks.push_back(std::make_shared<FollowPath>(
         std::vector<frc::Pose2d>{
-        Locations::GetInstance().GetAutoCenterPositions(alliance, true)[3],
-        Locations::GetInstance().GetAutoCenterPositions(alliance, true)[4],
+            Locations::GetInstance().GetAutoCenterPositions(alliance, true)[3],
+            Locations::GetInstance().GetAutoCenterPositions(alliance, true)[4],
         }, false, false));
 
         m_tasks.push_back(std::make_shared<Delay>(0.5));
@@ -52,9 +57,9 @@ AutoCenterDepot::AutoCenterDepot(frc::DriverStation::Alliance alliance, int posi
         m_tasks.push_back(std::make_shared<StopIntake>());
         m_tasks.push_back(std::make_shared<FollowPath>(
             std::vector<frc::Pose2d>{
-            Locations::GetInstance().GetAutoCenterPositions(alliance, true)[4],
-            Locations::GetInstance().GetAutoCenterPositions(alliance, true)[1],
-            Locations::GetInstance().GetAutoCenterPositions(alliance, true)[0],
+                Locations::GetInstance().GetAutoCenterPositions(alliance, true)[4],
+                Locations::GetInstance().GetAutoCenterPositions(alliance, true)[1],
+                Locations::GetInstance().GetAutoCenterPositions(alliance, true)[0],
             }, false, false));
 
         m_tasks.push_back(std::make_shared<StartShooter>());
@@ -64,17 +69,17 @@ AutoCenterDepot::AutoCenterDepot(frc::DriverStation::Alliance alliance, int posi
         // Go back over ramp
         m_tasks.push_back(std::make_shared<FollowPath>(
             std::vector<frc::Pose2d>{
-            Locations::GetInstance().GetAutoCenterPositions(alliance, true)[0],
-            Locations::GetInstance().GetDepotPosition(alliance)[0]
+                Locations::GetInstance().GetAutoCenterPositions(alliance, true)[0],
+                Locations::GetInstance().GetDepotPosition(alliance)[0]
         }, false, false));
 
     } else {
 
         m_tasks.push_back(std::make_shared<FollowPath>(
-        std::vector<frc::Pose2d>{
-        Locations::GetInstance().GetAutoCenterPositions(alliance, false)[3],
-        Locations::GetInstance().GetAutoCenterPositions(alliance, false)[5],
-        }, false, false));
+            std::vector<frc::Pose2d>{
+                Locations::GetInstance().GetAutoCenterPositions(alliance, false)[3],
+                Locations::GetInstance().GetAutoCenterPositions(alliance, false)[5],
+            }, false, false));
 
         m_tasks.push_back(std::make_shared<Delay>(0.5));
 
@@ -90,8 +95,8 @@ AutoCenterDepot::AutoCenterDepot(frc::DriverStation::Alliance alliance, int posi
 
         m_tasks.push_back(std::make_shared<FollowPath>(
             std::vector<frc::Pose2d>{
-            Locations::GetInstance().GetAutoCenterPositions(alliance, true)[0], 
-            Locations::GetInstance().GetDepotPosition(alliance)[0]
+                Locations::GetInstance().GetAutoCenterPositions(alliance, true)[0], 
+                Locations::GetInstance().GetDepotPosition(alliance)[0]
             }, false, false));
         
         
@@ -100,14 +105,14 @@ AutoCenterDepot::AutoCenterDepot(frc::DriverStation::Alliance alliance, int posi
     m_tasks.push_back(std::make_shared<StartIntake>());
     m_tasks.push_back(std::make_shared<FollowPath>(
         std::vector<frc::Pose2d>{
-        Locations::GetInstance().GetDepotPosition(alliance)[0], 
-        Locations::GetInstance().GetDepotPosition(alliance)[1]
+            Locations::GetInstance().GetDepotPosition(alliance)[0], 
+            Locations::GetInstance().GetDepotPosition(alliance)[1]
         }, false, false));
     m_tasks.push_back(std::make_shared<Delay>(0.5));
     m_tasks.push_back(std::make_shared<FollowPath>(
         std::vector<frc::Pose2d>{
-        Locations::GetInstance().GetDepotPosition(alliance)[1],
-        Locations::GetInstance().GetDepotPosition(alliance)[0]
+            Locations::GetInstance().GetDepotPosition(alliance)[1],
+            Locations::GetInstance().GetDepotPosition(alliance)[0]
         }, false, false));
     m_tasks.push_back(std::make_shared<FollowPath>(
         std::vector<frc::Pose2d>{

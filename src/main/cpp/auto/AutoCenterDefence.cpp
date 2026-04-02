@@ -13,6 +13,7 @@
 #include "auto/TaskList.h"
 #include "auto/Delay.h"
 #include "systems/SwerveDrive.h"
+#include "auto/DriveVelocity.h"
 
 
 AutoCenterDefence::AutoCenterDefence(frc::DriverStation::Alliance alliance, int position){  
@@ -20,27 +21,24 @@ AutoCenterDefence::AutoCenterDefence(frc::DriverStation::Alliance alliance, int 
   
   bool onLeft = position < 3;
 
-    /*
-    Follow Path from Start to Pos. 5
-    DriveVelocity 0 = vx, 0 = vy, kPathFollowingMaxW = w
-    Move in vy (side dependent) (left, negative vy, negative maxW; right, positive vy, positive maxW)
-    Low vy (0.5 m/s) for slow drift
-    */
-  
+  // safeguard to prevent auto from running when not in the right position
+  if (position != 2 && position != 4) {
+    return;
+  }
+
   // goes to a position half a robot width past the edge of the ramp
   m_tasks.push_back(std::make_shared<FollowPath>(
     std::vector<frc::Pose2d>{
       Locations::GetInstance().GetStartPosition(alliance, position),
-      Locations::GetInstance().GetAutoCenterPositions(alliance, onLeft)[0],
-      Locations::GetInstance().GetAutoCenterPositions(alliance, onLeft)[1],
-      Locations::GetInstance().GetAutoCenterPositions(alliance, onLeft)[2],
-      Locations::GetInstance().GetAutoCenterPositions(alliance, onLeft)[3]
+      frc::Pose2d{
+        units::meter_t{Constants::kFieldLength / 2},
+        Locations::GetInstance().GetStartPosition(alliance, position).Translation().Y(),
+        (alliance ? 0_deg : 180_deg)
+      },
     }, false, false));
   
-  // Moves forward to collect balls
-  m_tasks.push_back(std::make_shared<FollowPath>(
-    std::vector<frc::Pose2d>{
-      Locations::GetInstance().GetAutoCenterPositions(alliance, onLeft)[3],
-      Locations::GetInstance().GetAutoCenterPositions(alliance, onLeft)[6],
-    }, false, false));
+  // Moves forward to disturb fuel + other robots
+    m_tasks.push_back(std::make_shared<DriveVelocity>(0, (onLeft ? -1 : 1) * 0.5, (onLeft ? -1 : 1) * Constants::kPathFollowingMaxW));
+    m_tasks.push_back(std::make_shared<Delay>(1));
+    m_tasks.push_back(std::make_shared<DriveVelocity>(0, 0, 0));
 }

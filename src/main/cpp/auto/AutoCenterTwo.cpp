@@ -28,6 +28,11 @@ AutoCenterTwo::AutoCenterTwo(frc::DriverStation::Alliance alliance, int position
   
   bool onLeft = position < 3;
 
+  // safeguard to prevent auto from running when not in the right position
+  if (position != 2 && position != 4) {
+    return;
+  }
+
   // back up to make shooter work
   m_tasks.push_back(std::make_shared<DeployIntake>());
   m_tasks.push_back(std::make_shared<FollowPath>(
