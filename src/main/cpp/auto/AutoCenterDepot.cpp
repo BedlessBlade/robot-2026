@@ -22,104 +22,94 @@
 
 
 AutoCenterDepot::AutoCenterDepot(frc::DriverStation::Alliance alliance, int position) {
+    // todo: test to see if it works
+    bool onLeft = position < 3;
 
-  bool onLeft = position < 3;
+    // Go over ramp, move above/below ball island
+    m_tasks.push_back(std::make_shared<FollowPath>(
+        std::vector<frc::Pose2d>{
+            Locations::GetInstance().GetStartPosition(alliance, position),
+            Locations::GetInstance().GetAutoCenterPositions(alliance, onLeft)[1],
+            Locations::GetInstance().GetAutoCenterPositions(alliance, onLeft)[2],
+            Locations::GetInstance().GetAutoCenterPositions(alliance, onLeft)[3]
+        }, false, false));
+    
 
-  // goes to a position half a robot width past the edge of the ramp
-  m_tasks.push_back(std::make_shared<FollowPath>(
-    std::vector<frc::Pose2d>{
-      Locations::GetInstance().GetStartPosition(alliance, position),
-      Locations::GetInstance().GetAutoCenterPositions(alliance, onLeft)[1],
-      Locations::GetInstance().GetAutoCenterPositions(alliance, onLeft)[2],
-      Locations::GetInstance().GetAutoCenterPositions(alliance, onLeft)[3]
-    }, false, false));
-  
+    // starts intake & moves forward to collect balls
+    m_tasks.push_back(std::make_shared<DeployIntake>());
+    m_tasks.push_back(std::make_shared<StartIntake>());
 
-  // starts intake & moves forward to collect balls
-  m_tasks.push_back(std::make_shared<DeployIntake>());
-  m_tasks.push_back(std::make_shared<StartIntake>());
-
+    // path for left side - follows regular left center path
     if (onLeft) {
         m_tasks.push_back(std::make_shared<FollowPath>(
-        std::vector<frc::Pose2d>{
-        Locations::GetInstance().GetAutoCenterPositions(alliance, true)[3],
-        Locations::GetInstance().GetAutoCenterPositions(alliance, true)[4],
-        }, false, false));
-
-        m_tasks.push_back(std::make_shared<Delay>(0.5));
+            std::vector<frc::Pose2d>{
+                Locations::GetInstance().GetAutoCenterPositions(alliance, true)[3],
+                Locations::GetInstance().GetAutoCenterPositions(alliance, true)[4],
+            }, false, false));
+        
+        // delay to let intake process
+        m_tasks.push_back(std::make_shared<Delay>(Constants::kIntakeAutoProcessingTime));
     
-        // stop intaking balls, go to ramp & go over ramp 
+        // stop intaking balls, go to ramp & go over ramp and get in shooting position
         m_tasks.push_back(std::make_shared<StopIntake>());
         m_tasks.push_back(std::make_shared<FollowPath>(
             std::vector<frc::Pose2d>{
-            Locations::GetInstance().GetAutoCenterPositions(alliance, true)[4],
-            Locations::GetInstance().GetAutoCenterPositions(alliance, true)[1],
-            Locations::GetInstance().GetAutoCenterPositions(alliance, true)[0],
+                Locations::GetInstance().GetAutoCenterPositions(alliance, true)[4],
+                Locations::GetInstance().GetAutoCenterPositions(alliance, true)[1],
+                Locations::GetInstance().GetAutoCenterPositions(alliance, true)[0],
             }, false, false));
 
-        m_tasks.push_back(std::make_shared<StartShooter>());
-        m_tasks.push_back(std::make_shared<Delay>(2.0));
-        m_tasks.push_back(std::make_shared<StopShooter>());
-
-        // Go back over ramp
+    // path for right side - crosses neutral zone to get to left side, then follows left center to end
+    } else {
         m_tasks.push_back(std::make_shared<FollowPath>(
             std::vector<frc::Pose2d>{
-            Locations::GetInstance().GetAutoCenterPositions(alliance, true)[0],
-            Locations::GetInstance().GetDepotPosition(alliance)[0]
-        }, false, false));
+                Locations::GetInstance().GetAutoCenterPositions(alliance, false)[3],
+                Locations::GetInstance().GetAutoCenterPositions(alliance, false)[5],
+            }, false, false));
 
-    } else {
-
-        m_tasks.push_back(std::make_shared<FollowPath>(
-        std::vector<frc::Pose2d>{
-        Locations::GetInstance().GetAutoCenterPositions(alliance, false)[3],
-        Locations::GetInstance().GetAutoCenterPositions(alliance, false)[5],
-        }, false, false));
-
-        m_tasks.push_back(std::make_shared<Delay>(0.5));
-
+        // delay to let intake process
+        m_tasks.push_back(std::make_shared<Delay>(Constants::kIntakeAutoProcessingTime));
+        
+        // cross ramp and go to shooting position
         m_tasks.push_back(std::make_shared<FollowPath>(
             std::vector<frc::Pose2d>{
                 Locations::GetInstance().GetAutoCenterPositions(alliance, false)[5],
                 Locations::GetInstance().GetAutoCenterPositions(alliance, true)[0],
             }, false, false));
         
-        m_tasks.push_back(std::make_shared<StartShooter>());
-        m_tasks.push_back(std::make_shared<Delay>(2.0));
-        m_tasks.push_back(std::make_shared<StopShooter>());
-
-        m_tasks.push_back(std::make_shared<FollowPath>(
-            std::vector<frc::Pose2d>{
-            Locations::GetInstance().GetAutoCenterPositions(alliance, true)[0], 
-            Locations::GetInstance().GetDepotPosition(alliance)[0]
-            }, false, false));
-        
-        
     }
-  
+
+    // shoot everything collected from the ball island
+    m_tasks.push_back(std::make_shared<StartShooter>());
+    m_tasks.push_back(std::make_shared<Delay>(2.0));
+    m_tasks.push_back(std::make_shared<StopShooter>());
+
+    // Move in front of depot
+    m_tasks.push_back(std::make_shared<FollowPath>(
+        std::vector<frc::Pose2d>{
+            Locations::GetInstance().GetAutoCenterPositions(alliance, true)[0],
+            Locations::GetInstance().GetDepotPosition(alliance)[0]
+        }, false, false));
+
+    // Move forward to collect balls
     m_tasks.push_back(std::make_shared<StartIntake>());
     m_tasks.push_back(std::make_shared<FollowPath>(
         std::vector<frc::Pose2d>{
-        Locations::GetInstance().GetDepotPosition(alliance)[0], 
-        Locations::GetInstance().GetDepotPosition(alliance)[1]
+            Locations::GetInstance().GetDepotPosition(alliance)[0], 
+            Locations::GetInstance().GetDepotPosition(alliance)[1]
         }, false, false));
-    m_tasks.push_back(std::make_shared<Delay>(0.5));
+    
+    // Delay for intake processing
+    m_tasks.push_back(std::make_shared<Delay>(Constants::kIntakeAutoProcessingTime));
+
+    // Move back, turn around
     m_tasks.push_back(std::make_shared<FollowPath>(
         std::vector<frc::Pose2d>{
-        Locations::GetInstance().GetDepotPosition(alliance)[1],
-        Locations::GetInstance().GetDepotPosition(alliance)[0]
+            Locations::GetInstance().GetDepotPosition(alliance)[1],
+            Locations::GetInstance().GetDepotPosition(alliance)[0],
+            Locations::GetInstance().GetDepotPosition(alliance)[2]
         }, false, false));
-    m_tasks.push_back(std::make_shared<FollowPath>(
-        std::vector<frc::Pose2d>{
-        Locations::GetInstance().GetDepotPosition(alliance)[0], 
-        frc::Pose2d{
-            Locations::GetInstance().GetDepotPosition(alliance)[0].Translation(),
-            (alliance == frc::DriverStation::Alliance::kRed ? 180_deg : 0_deg)
-        }
-    }, false, false));
-  
-  // give time for intake to finish intaking
-  
 
-
+    // Shoot
+    m_tasks.push_back(std::make_shared<StartShooter>());
 }
