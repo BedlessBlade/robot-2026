@@ -104,13 +104,13 @@ public:
   static constexpr frc::Translation2d kFieldCenter = {units::meter_t{kFieldLength / 2}, units::meter_t{kFieldWidth / 2}};
   static constexpr units::inch_t kHubOffset = 12_in;
 
-  //TODO: update probably
+  // start offsets
   static constexpr double kStartLineOffset = 156.06 / kInchesPerMeter;
   static constexpr double kStartOffsetX = kRobotWidth / 2;    // meters   
   static constexpr double kStartOffsetY = 60 / kInchesPerMeter;
   static constexpr double kStartOffsetYFar = 132.7 / kInchesPerMeter;
 
-  //field object positions/sizes
+  // field object positions/sizes
   static constexpr double kHubWidth = 47.00 / kInchesPerMeter;
   static constexpr double kBlueHubX = 181.56 / kInchesPerMeter;
   static constexpr double kBlueHubY = 158.32 / kInchesPerMeter;
@@ -175,6 +175,7 @@ public:
   static constexpr double kIntakeForce = 0.75;
 
   static constexpr double kStartIntakeThresh = 0.5;
+  static constexpr double kIntakeAutoProcessingTime = 0.25;
 
   //Shooter ------------------------------------------------------
   // Shooter motor CANIDs
