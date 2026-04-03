@@ -147,7 +147,7 @@ class LEDs : public System {
     void LEDsInit();
     void LEDsSetPattern(LEDs::LEDSstates state);
     void Update(Robot::Mode mode, std::string alliance);
-    void updateXButtonToggle();
+
 
 
 };

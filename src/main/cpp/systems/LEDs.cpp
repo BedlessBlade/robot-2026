@@ -40,10 +40,10 @@ void LEDs::Update(Robot::Mode mode, std::string alliance) {
 } 
 
 
-void LEDsSetPattern(LEDs::LEDSstates state) {
-  LEDs::GetInstance().State = state;
-}
 
+void LEDs::LEDsSetPattern(LEDs::LEDSstates state){
+    LEDs::GetInstance().State = state;
+}
 
 
 
