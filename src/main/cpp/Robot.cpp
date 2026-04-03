@@ -75,7 +75,6 @@ Robot::Robot()
   SwerveDrive::GetInstance();
   Indexer::GetInstance();
   LEDs::GetInstance();
-  LEDs::GetInstance().LEDsInit();
   Shooter::GetInstance();
 
 
@@ -158,22 +157,15 @@ Robot::Robot()
     if (mode == kAuto) {
       if (m_auto) {
         m_auto->Update(t);
-      }
-      if(alliance == frc::DriverStation::Alliance::kRed){
-        LEDs::GetInstance().LEDsSetPattern(LEDs::LEDSstates::BREATHERED);
-      } else if(alliance == frc::DriverStation::Alliance::kBlue){
-        LEDs::GetInstance().LEDsSetPattern(LEDs::LEDSstates::BREATHBLUE);
-      }
+      }      
+      LEDs::GetInstance().SetPattern(alliance ? LEDs::LEDstates::BREATHBLUE : LEDs::LEDstates::BREATHERED);
 
     } else if (mode == kTeleop) {
       if (m_braking) {
         SwerveDrive::GetInstance().Coast();
         m_braking = false;
-        if(alliance == frc::DriverStation::Alliance::kRed){
-        LEDs::GetInstance().LEDsSetPattern(LEDs::LEDSstates::RED);
-      } else if(alliance == frc::DriverStation::Alliance::kBlue){
-        LEDs::GetInstance().LEDsSetPattern(LEDs::LEDSstates::BLUE);
-      }
+
+        LEDs::GetInstance().SetPattern(alliance ? LEDs::LEDstates::BLUE : LEDs::LEDstates::RED);
       }
 
       // The auto will reset the pose to be facing towards the driver on the red
@@ -335,52 +327,31 @@ Robot::Robot()
       //Dpad up - Intake up
       if (Controllers::GetInstance().GetOperatorController().GetPOV() == 0) {
         SupaIntake::GetInstance().SetIntake(0);
-        if(alliance == frc::DriverStation::Alliance::kRed){
-        LEDs::GetInstance().LEDsSetPattern(LEDs::LEDSstates::RED);
-        } else if(alliance == frc::DriverStation::Alliance::kBlue){
-        LEDs::GetInstance().LEDsSetPattern(LEDs::LEDSstates::BLUE);
-        }
+        LEDs::GetInstance().SetPattern(alliance ? LEDs::LEDstates::BLUE : LEDs::LEDstates::RED);
 
       //Dpad down - Intake down
       } else if (Controllers::GetInstance().GetOperatorController().GetPOV() == 180) {
         SupaIntake::GetInstance().SetIntake(1);
-        if(alliance == frc::DriverStation::Alliance::kRed){
-        LEDs::GetInstance().LEDsSetPattern(LEDs::LEDSstates::REDYELLOW);
-        } else if(alliance == frc::DriverStation::Alliance::kBlue){
-        LEDs::GetInstance().LEDsSetPattern(LEDs::LEDSstates::BLUEYELLOW);
-        }
-        
+        LEDs::GetInstance().SetPattern(alliance ? LEDs::LEDstates::BLUEYELLOW : LEDs::LEDstates::REDYELLOW);
 
       } 
       
       //intake motor if/else
       if (Controllers::GetInstance().GetOperatorController().GetLeftTriggerAxis() > 0.5) {
         SupaIntake::GetInstance().SetMotors(0.75);
-        if(alliance == frc::DriverStation::Alliance::kRed){
-        LEDs::GetInstance().LEDsSetPattern(LEDs::LEDSstates::REDYELLOWSCROLL);
-        } else if(alliance == frc::DriverStation::Alliance::kBlue){
-        LEDs::GetInstance().LEDsSetPattern(LEDs::LEDSstates::BLUEYELLOWSCROLL);
-        }
+        LEDs::GetInstance().SetPattern(alliance ? LEDs::LEDstates::BLUEYELLOWSCROLL : LEDs::LEDstates::REDYELLOWSCROLL);
 
       } else if (Controllers::GetInstance().GetOperatorController().GetLeftBumperButton()) {
         SupaIntake::GetInstance().SetMotors(-0.75);
-        if(alliance == frc::DriverStation::Alliance::kRed){
-        LEDs::GetInstance().LEDsSetPattern(LEDs::LEDSstates::REDYELLOWREVERSE);
-        } else if(alliance == frc::DriverStation::Alliance::kBlue){
-        LEDs::GetInstance().LEDsSetPattern(LEDs::LEDSstates::BLUEYELLOWREVERSE);
-        }
+        LEDs::GetInstance().SetPattern(alliance ? LEDs::LEDstates::BLUEYELLOWREVERSE : LEDs::LEDstates::REDYELLOWREVERSE);
       
       } else {
         SupaIntake::GetInstance().SetMotors(0.0);
-        if(alliance == frc::DriverStation::Alliance::kRed){
-        LEDs::GetInstance().LEDsSetPattern(LEDs::LEDSstates::RED);
-        } else if(alliance == frc::DriverStation::Alliance::kBlue){
-        LEDs::GetInstance().LEDsSetPattern(LEDs::LEDSstates::BLUE);
-        }
+        LEDs::GetInstance().SetPattern(alliance ? LEDs::LEDstates::BLUE : LEDs::LEDstates::RED);
       }
 
     } else if (mode == kDisabled) {
-      LEDs::GetInstance().LEDsSetPattern(LEDs::LEDSstates::OFF);
+      LEDs::GetInstance().SetPattern(LEDs::LEDstates::OFF);
       if (std::abs(
               SwerveDrive::GetInstance().GetPose2d().Translation().X().value() -
               Constants::kFieldLength / 2) <= Constants::kBrakeDistance &&
