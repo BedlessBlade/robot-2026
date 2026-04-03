@@ -1,6 +1,6 @@
 #pragma once
 
-#include <rev/SparkMax.h>
+#include <ctre/phoenix6/TalonFX.hpp>
 #include <frc/DoubleSolenoid.h>
 
 #include "Constants.h"
@@ -25,7 +25,7 @@ public:
     void Update(Robot::Mode mode, double t) override;   // Set Values to hardware
 
 private:
-    rev::spark::SparkMax m_intakeMotor{Constants::kIntakeMotorId, rev::spark::SparkMax::MotorType::kBrushless};
+    ctre::phoenix6::hardware::TalonFX m_intakeMotor{Constants::kIntakeMotorId};
 
     frc::DoubleSolenoid m_intakeSolenoid{Constants::kIntakePneumCanId,
         frc::PneumaticsModuleType::REVPH,
