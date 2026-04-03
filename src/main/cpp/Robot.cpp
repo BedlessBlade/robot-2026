@@ -22,7 +22,6 @@
 #include "systems/QuestNav.h"
 #include "systems/LEDs.h"
 #include "systems/Indexer.h"
-#include "systems/Climber.h"
 #include "systems/Shooter.h"
 #include "systems/ShotCalculator.h"
 
@@ -75,7 +74,6 @@ Robot::Robot()
   Cameras::GetInstance();
   SwerveDrive::GetInstance();
   Indexer::GetInstance();
-  Climber::GetInstance();
   LEDs::GetInstance();
   LEDs::GetInstance().LEDsInit();
   Shooter::GetInstance();
@@ -324,16 +322,14 @@ Robot::Robot()
       }
 
       // intake up/down if/else
+      //Dpad up - Intake up
       if (Controllers::GetInstance().GetOperatorController().GetPOV() == 0) {
         SupaIntake::GetInstance().SetIntake(0);
 
-      //Dpad down - Stow climb
+      //Dpad down - Intake down
       } else if (Controllers::GetInstance().GetOperatorController().GetPOV() == 180) {
         SupaIntake::GetInstance().SetIntake(1);
 
-      //Dpad left - Climb
-      } else if (Controllers::GetInstance().GetOperatorController().GetPOV() == 270) {
-        //Climber::GetInstance().SetClimber(1);
       } 
       
       //intake motor if/else
