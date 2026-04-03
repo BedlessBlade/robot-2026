@@ -17,24 +17,26 @@
 
 
 AutoCenterDefence::AutoCenterDefence(frc::DriverStation::Alliance alliance, int position){  
+  // todo: adjust delay for movement
+
   // alliance - red = 0, blue = 1
   
   bool onLeft = position < 3;
 
   // safeguard to prevent auto from running when not in the right position
-  if (position != 2 && position != 4) {
-    return;
-  }
+  if (position != 2 && position != 4) { 
+    // m_tasks.push_back(std::make_shared<FollowPath>(
+    //   std::vector<frc::Pose2d>{
+    //     Locations::GetInstance().GetStartPosition(alliance, position),
+    //     Locations::GetInstance().GetStartPosition(alliance, position + (onLeft ? 1 : -1))
+    //   }, false, false));  
+  return; }
 
-  // goes to a position half a robot width past the edge of the ramp
+  // goes straight forward to the center of the field
   m_tasks.push_back(std::make_shared<FollowPath>(
     std::vector<frc::Pose2d>{
       Locations::GetInstance().GetStartPosition(alliance, position),
-      frc::Pose2d{
-        units::meter_t{Constants::kFieldLength / 2},
-        Locations::GetInstance().GetStartPosition(alliance, position).Translation().Y(),
-        (alliance ? 0_deg : 180_deg)
-      },
+      Locations::GetInstance().GetCenterPosition(alliance, onLeft)[5]
     }, false, false));
   
   // Moves forward to disturb fuel + other robots

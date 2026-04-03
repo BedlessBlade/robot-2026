@@ -22,20 +22,24 @@
 
 AutoCenterDepot::AutoCenterDepot(frc::DriverStation::Alliance alliance, int position) {
 
-  bool onLeft = position < 3;
+    bool onLeft = position < 3;
 
-  // safeguard to prevent auto from running when not in the right position
-  if (position != 2 && position != 4) {
-    return;
-  }
+    // safeguard to prevent auto from running when not in the right position
+    if (position != 2 && position != 4) { 
+        // m_tasks.push_back(std::make_shared<FollowPath>(
+        //   std::vector<frc::Pose2d>{
+        //     Locations::GetInstance().GetStartPosition(alliance, position),
+        //     Locations::GetInstance().GetStartPosition(alliance, position + (onLeft ? 1 : -1))
+        //   }, false, false));
+    return; }
 
     // Go over ramp, move above/below ball island
     m_tasks.push_back(std::make_shared<FollowPath>(
         std::vector<frc::Pose2d>{
             Locations::GetInstance().GetStartPosition(alliance, position),
-            Locations::GetInstance().GetAutoCenterPositions(alliance, onLeft)[1],
-            Locations::GetInstance().GetAutoCenterPositions(alliance, onLeft)[2],
-            Locations::GetInstance().GetAutoCenterPositions(alliance, onLeft)[3]
+            Locations::GetInstance().GetCenterPosition(alliance, onLeft)[0],
+            Locations::GetInstance().GetCenterPosition(alliance, onLeft)[1],
+            Locations::GetInstance().GetCenterPosition(alliance, onLeft)[2]
         }, false, false));
     
 
@@ -47,8 +51,8 @@ AutoCenterDepot::AutoCenterDepot(frc::DriverStation::Alliance alliance, int posi
     if (onLeft) {
         m_tasks.push_back(std::make_shared<FollowPath>(
             std::vector<frc::Pose2d>{
-                Locations::GetInstance().GetAutoCenterPositions(alliance, true)[3],
-                Locations::GetInstance().GetAutoCenterPositions(alliance, true)[4],
+                Locations::GetInstance().GetCenterPosition(alliance, true)[2],
+                Locations::GetInstance().GetCenterPosition(alliance, true)[3],
             }, false, false));
         
         // delay to let intake process
@@ -58,17 +62,17 @@ AutoCenterDepot::AutoCenterDepot(frc::DriverStation::Alliance alliance, int posi
         m_tasks.push_back(std::make_shared<StopIntake>());
         m_tasks.push_back(std::make_shared<FollowPath>(
             std::vector<frc::Pose2d>{
-                Locations::GetInstance().GetAutoCenterPositions(alliance, true)[4],
-                Locations::GetInstance().GetAutoCenterPositions(alliance, true)[1],
-                Locations::GetInstance().GetAutoCenterPositions(alliance, true)[0],
+                Locations::GetInstance().GetCenterPosition(alliance, true)[3],
+                Locations::GetInstance().GetCenterPosition(alliance, true)[0],
+                Locations::GetInstance().GetShootingPosition(alliance, true),
             }, false, false));
 
     // path for right side - crosses neutral zone to get to left side, then follows left center to end
     } else {
         m_tasks.push_back(std::make_shared<FollowPath>(
             std::vector<frc::Pose2d>{
-                Locations::GetInstance().GetAutoCenterPositions(alliance, false)[3],
-                Locations::GetInstance().GetAutoCenterPositions(alliance, false)[5],
+                Locations::GetInstance().GetCenterPosition(alliance, false)[2],
+                Locations::GetInstance().GetCenterPosition(alliance, false)[4],
             }, false, false));
 
         // delay to let intake process
@@ -77,21 +81,21 @@ AutoCenterDepot::AutoCenterDepot(frc::DriverStation::Alliance alliance, int posi
         // cross ramp and go to shooting position
         m_tasks.push_back(std::make_shared<FollowPath>(
             std::vector<frc::Pose2d>{
-                Locations::GetInstance().GetAutoCenterPositions(alliance, false)[5],
-                Locations::GetInstance().GetAutoCenterPositions(alliance, true)[0],
+                Locations::GetInstance().GetCenterPosition(alliance, false)[4],
+                Locations::GetInstance().GetShootingPosition(alliance, true),
             }, false, false));
         
     }
 
     // shoot everything collected from the ball island
     m_tasks.push_back(std::make_shared<StartShooter>());
-    m_tasks.push_back(std::make_shared<Delay>(2.0));
+    m_tasks.push_back(std::make_shared<Delay>(Constants::kAutoShootFullTime));
     m_tasks.push_back(std::make_shared<StopShooter>());
 
     // Move in front of depot
     m_tasks.push_back(std::make_shared<FollowPath>(
         std::vector<frc::Pose2d>{
-            Locations::GetInstance().GetAutoCenterPositions(alliance, true)[0],
+            Locations::GetInstance().GetShootingPosition(alliance, true),
             Locations::GetInstance().GetDepotPosition(alliance)[0]
         }, false, false));
 

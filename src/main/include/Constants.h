@@ -166,7 +166,7 @@ public:
 
   //Intake ------------------------------------------------------
   static constexpr int kIntakeMotorId = 25;
-  static constexpr double kIntakeForward = 0.85; // 0.7 was too slow during testing, test 0.9 and adjust f
+  static constexpr double kIntakeForward = 0.85; // 0.7 was too slow during testing, test 0.9
   static constexpr double kIntakeReverse = -0.85;
   static constexpr int kIntakePneumCanId = 22;
   static constexpr int kIntakePneumId1 = 3;
@@ -190,9 +190,8 @@ public:
   static constexpr double kShooterMotorS = 0.1;
 
   // Shooter azimuth maxmotion gains
-
   static constexpr double kShooterAzimuthCV = 8250; //RPS --> RPM conversion for CV
-  static constexpr double kShooterAzimuthAcc = 8520*3; //Units in RPM/second
+  static constexpr double kShooterAzimuthAcc = 8520 * 3; //Units in RPM/second
   static constexpr double kShooterAzimuthTol = 10; //Units in rotations
 
   // Shooter limits and misc
@@ -240,15 +239,16 @@ public:
   static constexpr int kLeftHoodServoPort = 9;
   static constexpr int kRightHoodServoPort = 8;
 
-  //Compressor
+  // auto 
+  static constexpr int kAutoShootPreloadTime = 1.0; // seconds
+  static constexpr int kAutoShootFullTime = 2.0; 
+
+  //Compressor ------------------------------------------------------
   static constexpr double kMinPressure = 100;
   static constexpr double kMaxPressure = 120;
   static constexpr int kPneumaticCanId = 22;
 
-  // Hood limits
-
-
-  //LEDs constants
+  //LEDs ------------------------------------------------------
   static constexpr int kLEDSportid = 7;
   static constexpr int kLEDSlength = 300;
   static constexpr units::second_t kLEDSbreathetime{1.5_s};

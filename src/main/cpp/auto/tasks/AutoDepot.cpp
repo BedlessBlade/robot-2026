@@ -29,7 +29,7 @@ AutoDepot::AutoDepot(frc::DriverStation::Alliance alliance, int position) {
       Locations::GetInstance().GetDepotPosition(alliance)[0]
     }, false, false));
   m_tasks.push_back(std::make_shared<DeployIntake>());
-  // m_tasks.push_back(std::make_shared<StartIntake>());
+  m_tasks.push_back(std::make_shared<StartIntake>());
   m_tasks.push_back(std::make_shared<FollowPath>(
     std::vector<frc::Pose2d>{
       Locations::GetInstance().GetDepotPosition(alliance)[0], 
@@ -41,15 +41,11 @@ AutoDepot::AutoDepot(frc::DriverStation::Alliance alliance, int position) {
       Locations::GetInstance().GetDepotPosition(alliance)[1],
       Locations::GetInstance().GetDepotPosition(alliance)[0]
     }, false, false));
-  // m_tasks.push_back(std::make_shared<StopIntake>());
-  // m_tasks.push_back(std::make_shared<StowIntake>());
+  m_tasks.push_back(std::make_shared<StopIntake>());
   m_tasks.push_back(std::make_shared<FollowPath>(
     std::vector<frc::Pose2d>{
       Locations::GetInstance().GetDepotPosition(alliance)[0], 
-      frc::Pose2d{
-        Locations::GetInstance().GetDepotPosition(alliance)[0].Translation(),
-        (alliance == frc::DriverStation::Alliance::kRed ? 180_deg : 0_deg)
-      }
+      Locations::GetInstance().GetDepotPosition(alliance)[2], 
     }, false, false));
   // m_tasks.push_back(std::make_shared<StartShooter>());
 }
