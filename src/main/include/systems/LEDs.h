@@ -18,6 +18,9 @@ class LEDs : public System {
     }
     //Initializes the LEDs object.
 
+    enum LEDSstates {OFF,RED,BLUE,BREATHERED,BREATHBLUE,REDYELLOW,BLUEYELLOW,REDYELLOWSCROLL,BLUEYELLOWSCROLL,REDYELLOWREVERSE,BLUEYELLOWREVERSE};
+    LEDSstates State;
+
     frc::AddressableLED m_led{Constants::kLEDSportid}; //change this when adding LEDs to the robot to the rio port they are plugged into 
     std::array<frc::AddressableLED::LEDData, Constants::kLEDSlength> m_ledBuffer;
     units::meter_t kLedSpacing{1 / 60.0};
@@ -142,7 +145,9 @@ class LEDs : public System {
     
     //Creates functions defined in LEDs.cpp
     void LEDsInit();
+    void LEDsSetPattern(LEDs::LEDSstates state);
     void Update(Robot::Mode mode, std::string alliance);
     void updateXButtonToggle();
-    bool intaking = false;
+
+
 };
