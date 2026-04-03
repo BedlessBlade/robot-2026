@@ -18,21 +18,22 @@ class LEDs : public System {
     }
     //Initializes the LEDs object.
 
-    enum LEDSstates {OFF,RED,BLUE,BREATHERED,BREATHBLUE,REDYELLOW,BLUEYELLOW,REDYELLOWSCROLL,BLUEYELLOWSCROLL,REDYELLOWREVERSE,BLUEYELLOWREVERSE};
+    enum LEDSstates { OFF, RED, BLUE, BREATHERED, BREATHBLUE, REDYELLOW, BLUEYELLOW, REDYELLOWSCROLL, BLUEYELLOWSCROLL, REDYELLOWREVERSE, BLUEYELLOWREVERSE };
     LEDSstates State;
 
     frc::AddressableLED m_led{Constants::kLEDSportid}; //change this when adding LEDs to the robot to the rio port they are plugged into 
     std::array<frc::AddressableLED::LEDData, Constants::kLEDSlength> m_ledBuffer;
     units::meter_t kLedSpacing{1 / 60.0};
+    
 
     //Defines static patterns.
     frc::LEDPattern m_off = frc::LEDPattern::Off();
     frc::LEDPattern m_red = frc::LEDPattern::Solid(frc::Color::kRed);
     frc::LEDPattern m_blue = frc::LEDPattern::Solid(frc::Color::kBlue);
-    frc::LEDPattern m_breatheRed = m_red.Breathe(Constants::kLEDSbreathetime);
-    frc::LEDPattern m_breatheBlue = m_blue.Breathe(Constants::kLEDSbreathetime);
+    frc::LEDPattern m_redBreathe = m_red.Breathe(Constants::kLEDSbreathetime);
+    frc::LEDPattern m_blueBreathe = m_blue.Breathe(Constants::kLEDSbreathetime);
     //Defines multicolor patterns.
-    frc::LEDPattern m_redAndYellow = frc::LEDPattern::Steps({
+    frc::LEDPattern m_redYellow = frc::LEDPattern::Steps({
         {0, frc::Color::kRed},
         {0.02, frc::Color::kOrange},
         {0.04, frc::Color::kRed},
@@ -84,9 +85,9 @@ class LEDs : public System {
         {0.96, frc::Color::kRed},
         {0.98, frc::Color::kOrange}
     });
-    frc::LEDPattern m_scrollingRedAndYellow = m_redAndYellow.ScrollAtRelativeSpeed(0.15_Hz);
-    frc::LEDPattern m_scrollingRedAndYellowReverse = m_redAndYellow.ScrollAtRelativeSpeed(-0.15_Hz);
-    frc::LEDPattern m_blueAndYellow = frc::LEDPattern::Steps({
+    frc::LEDPattern m_redYellowScroll = m_redYellow.ScrollAtRelativeSpeed(0.15_Hz);
+    frc::LEDPattern m_redYellowReverse = m_redYellow.ScrollAtRelativeSpeed(-0.15_Hz);
+    frc::LEDPattern m_blueYellow = frc::LEDPattern::Steps({
         {0, frc::Color::kBlue},
         {0.02, frc::Color::kOrange},
         {0.04, frc::Color::kBlue},
@@ -124,28 +125,28 @@ class LEDs : public System {
         {0.68, frc::Color::kBlue},
         {0.7, frc::Color::kOrange},
         {0.72, frc::Color::kBlue},
-        {0.74, frc::Color :: kOrange },
-        {0.76 ,  frc :: Color :: kBlue },
-        {0.78 ,  frc :: Color :: kOrange },
-      	{0.8,  frc::Color ::kBlue},
-      	{0.82,  frc::Color::kOrange},
-      	{0.84,  frc::Color::kBlue},
-      	{0.86,  frc::Color::kOrange},
-      	{0.88,  frc::Color::kBlue},
-      	{0.9,  frc::Color::kOrange},
-      	{0.92,  frc::Color::kBlue},
-      	{0.94,  frc::Color::kOrange},
-      	{0.96,  frc::Color::kBlue},
-      	{0.98,  frc::Color::kOrange}  
+        {0.74, frc::Color::kOrange },
+        {0.76, frc::Color::kBlue },
+        {0.78, frc::Color::kOrange },
+      	{0.8, frc::Color::kBlue},
+      	{0.82, frc::Color::kOrange},
+      	{0.84, frc::Color::kBlue},
+      	{0.86, frc::Color::kOrange},
+      	{0.88, frc::Color::kBlue},
+      	{0.9, frc::Color::kOrange},
+      	{0.92, frc::Color::kBlue},
+      	{0.94, frc::Color::kOrange},
+      	{0.96, frc::Color::kBlue},
+      	{0.98, frc::Color::kOrange}  
     });
-    frc::LEDPattern m_scrollingBlueAndYellow = m_blueAndYellow.ScrollAtRelativeSpeed(0.15_Hz);
-    frc::LEDPattern m_scrollingBlueAndYellowReverse = m_blueAndYellow.ScrollAtRelativeSpeed(-0.15_Hz);
+    frc::LEDPattern m_blueYellowScroll = m_blueYellow.ScrollAtRelativeSpeed(0.15_Hz);
+    frc::LEDPattern m_blueYellowReverse = m_blueYellow.ScrollAtRelativeSpeed(-0.15_Hz);
 
     
     
     //Creates functions defined in LEDs.cpp
     void LEDsInit();
-    void LEDsSetPattern(LEDs::LEDSstates state);
+    void SetPattern(LEDs::LEDSstates state);
     void Update(Robot::Mode mode, std::string alliance);
 
 
