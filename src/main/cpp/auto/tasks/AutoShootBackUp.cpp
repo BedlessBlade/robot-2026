@@ -1,11 +1,14 @@
-#include "auto/AutoShootBackUp.h"
-#include "auto/TaskList.h"
+#include "auto/tasks/AutoShootBackUp.h"
+
 #include <frc/DriverStation.h>
+
+#include "Locations.h"
+
 #include "auto/FollowPath.h"
 #include "auto/DriveVelocity.h"
-#include "systems/SwerveDrive.h"
-#include "Locations.h"
 #include "auto/StartShooter.h"
+
+#include "systems/SwerveDrive.h"
 
 
 AutoShootBackUp::AutoShootBackUp(frc::DriverStation::Alliance alliance, int position) {

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "TaskList.h"
+#include "auto/TaskList.h"
 
 #include <frc/DriverStation.h>
 

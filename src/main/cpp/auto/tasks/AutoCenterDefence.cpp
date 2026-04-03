@@ -1,4 +1,4 @@
-#include "auto/AutoCenterDefence.h"
+#include "auto/tasks/AutoCenterDefence.h"
 
 #include <frc/DriverStation.h>
 #include <frc/geometry/Pose2d.h>
@@ -10,10 +10,10 @@
 #include "Util.h"
 
 #include "auto/FollowPath.h"
-#include "auto/TaskList.h"
-#include "auto/Delay.h"
-#include "systems/SwerveDrive.h"
 #include "auto/DriveVelocity.h"
+#include "auto/Delay.h"
+
+#include "systems/SwerveDrive.h"
 
 
 AutoCenterDefence::AutoCenterDefence(frc::DriverStation::Alliance alliance, int position){  

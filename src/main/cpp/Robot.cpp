@@ -26,13 +26,13 @@
 #include "systems/Shooter.h"
 #include "systems/ShotCalculator.h"
 
-#include "auto/AutoDoNothing.h"
-#include "auto/AutoDepot.h"
-#include "auto/AutoCenterDepot.h"
-#include "auto/AutoCenterOne.h"
-#include "auto/AutoCenterTwo.h"
-#include "auto/AutoShoot.h"
-#include "auto/AutoShootBackUp.h"
+#include "auto/tasks/AutoDoNothing.h"
+#include "auto/tasks/AutoDepot.h"
+#include "auto/tasks/AutoCenterDepot.h"
+#include "auto/tasks/AutoCenterOne.h"
+#include "auto/tasks/AutoCenterTwo.h"
+#include "auto/tasks/AutoShoot.h"
+#include "auto/tasks/AutoShootBackUp.h"
 
 
 // This gets called first. So, initialize everything here.
