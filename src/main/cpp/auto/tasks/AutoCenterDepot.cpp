@@ -1,4 +1,4 @@
-#include "auto/AutoCenterDepot.h"
+#include "auto/tasks/AutoCenterDepot.h"
 
 #include <frc/DriverStation.h>
 #include <frc/geometry/Pose2d.h>
@@ -9,7 +9,6 @@
 #include "Locations.h"
 
 #include "auto/FollowPath.h"
-#include "auto/TaskList.h"
 #include "auto/Delay.h"
 
 #include "auto/StartShooter.h"

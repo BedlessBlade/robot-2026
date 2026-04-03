@@ -1,9 +1,11 @@
-#include "auto/AutoShoot.h"
-#include "auto/TaskList.h"
+#include "auto/tasks/AutoShoot.h"
+
 #include <frc/DriverStation.h>
+
 #include "auto/FollowPath.h"
-#include "systems/SwerveDrive.h"
 #include "auto/StartShooter.h"
+
+#include "systems/SwerveDrive.h"
 
 
 AutoShoot::AutoShoot(frc::DriverStation::Alliance alliance, int position)  {

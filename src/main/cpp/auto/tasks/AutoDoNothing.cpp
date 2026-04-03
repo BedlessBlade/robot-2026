@@ -1,4 +1,4 @@
-#include "auto/AutoDoNothing.h"
+#include "auto/tasks/AutoDoNothing.h"
 
 void AutoDoNothing::Start(double t) {}
 

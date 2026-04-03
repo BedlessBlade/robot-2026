@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Task.h"
+#include "auto/Task.h"
 
 class AutoDoNothing : public Task {
 public:
