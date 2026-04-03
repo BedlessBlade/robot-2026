@@ -183,15 +183,9 @@ void SwerveDrive::Update(Robot::Mode mode, double t) {
     // Use the WPILib kinematics class to determine the individual wheel
     // angles and velocities.
     frc::ChassisSpeeds speeds;
-    if(mode == Robot::kTeleop) {
-      speeds = frc::ChassisSpeeds::FromFieldRelativeSpeeds(
-        units::meters_per_second_t{vx}, units::meters_per_second_t{vy},
-        units::radians_per_second_t{w}, GetPose2d().Rotation());
-    } else if(mode == Robot::kAuto) {
-      speeds = frc::ChassisSpeeds::FromRobotRelativeSpeeds(
-        units::meters_per_second_t{vx}, units::meters_per_second_t{vy},
-        units::radians_per_second_t{w}, GetPose2d().Rotation());
-    }; 
+    speeds = frc::ChassisSpeeds::FromFieldRelativeSpeeds(
+      units::meters_per_second_t{vx}, units::meters_per_second_t{vy},
+      units::radians_per_second_t{w}, GetPose2d().Rotation());
     auto states = m_kinematics.ToSwerveModuleStates(speeds);
 
     // Prevent velocities from clipping

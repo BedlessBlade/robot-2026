@@ -82,12 +82,20 @@ public:
 
   // Vision
   static constexpr frc::Transform3d kRightCameraTransform{
-      frc::Translation3d{-6.229_in, 12.359_in, 26.747_in},
+      frc::Translation3d{-6.229_in, 12.941_in, 26.747_in},
       frc::Rotation3d{0_rad, 0_rad, -35_deg}};
+
   static constexpr frc::Transform3d kLeftCameraTransform{
-      frc::Translation3d{-6.229_in, 11.25_in, 26.747_in},
+      frc::Translation3d{-6.229_in, 10.058_in, 26.747_in},
       frc::Rotation3d{0_rad, 0_rad, 35_deg}};
-  static constexpr auto kBlockedTags = {0};
+
+  static constexpr frc::Transform3d kBackRightCameraTransform{
+      frc::Translation3d{-8.707_in, 13.228_in, 22.794_in},
+      frc::Rotation3d{0_rad, 0_rad, -145_deg}};
+
+  static constexpr frc::Transform3d kBackLeftCameraTransform{
+      frc::Translation3d{-8.707_in, 9.772_in, 22.794_in},
+      frc::Rotation3d{0_rad, 0_rad, 145_deg}};
 
 
   // Locations
@@ -96,13 +104,13 @@ public:
   static constexpr frc::Translation2d kFieldCenter = {units::meter_t{kFieldLength / 2}, units::meter_t{kFieldWidth / 2}};
   static constexpr units::inch_t kHubOffset = 12_in;
 
-  //TODO: update probably
+  // start offsets
   static constexpr double kStartLineOffset = 156.06 / kInchesPerMeter;
   static constexpr double kStartOffsetX = kRobotWidth / 2;    // meters   
   static constexpr double kStartOffsetY = 60 / kInchesPerMeter;
   static constexpr double kStartOffsetYFar = 132.7 / kInchesPerMeter;
 
-  //field object positions/sizes
+  // field object positions/sizes
   static constexpr double kHubWidth = 47.00 / kInchesPerMeter;
   static constexpr double kBlueHubX = 181.56 / kInchesPerMeter;
   static constexpr double kBlueHubY = 158.32 / kInchesPerMeter;
@@ -111,15 +119,16 @@ public:
 
 
   // Path following
-  static constexpr double kPathFollowingKp = 3.0;
+  static constexpr double kPathFollowingKp = 6.0;
   static constexpr double kPathFollowingKi = 0.0;
   static constexpr double kPathFollowingKd = 0;
   static constexpr double kPathFollowingAngleKp = 3.0;
   static constexpr double kPathFollowingAngleKi = 0.0;
   static constexpr double kPathFollowingAngleKd = 0.0;
-  static constexpr double kPathFollowingMaxV = 0.2;       // meters per second
-  static constexpr double kPathFollowingMaxW = 0.2;       // radians per second
-  static constexpr double kPathFollowingTolerance = 0.3; // meters
+  static constexpr double kPathFollowingMaxV = 2;       // meters per second
+  static constexpr double kPathFollowingMaxW = 5;       // radians per second
+  static constexpr double kPathFollowingTolerance = 0.15; // meters
+  static constexpr double kPathFollowingAngleTolerance = 1; // degrees
   static constexpr double kPathFollowingVelocityTolerance = 0.1; // meters per second
 
   static constexpr auto kFeederDistance = 0.515_m;
@@ -166,6 +175,7 @@ public:
   static constexpr double kIntakeForce = 0.75;
 
   static constexpr double kStartIntakeThresh = 0.5;
+  static constexpr double kIntakeAutoProcessingTime = 0.25;
 
   //Shooter ------------------------------------------------------
   // Shooter motor CANIDs
@@ -196,8 +206,8 @@ public:
   static constexpr double kShooterAzimuthP = 0.15;
   static constexpr double kShooterAzimuthI = 0.0;
   static constexpr double kShooterAzimuthD = 1.5;
-  static constexpr double kMinAzimuthOutput = -0.4;
-  static constexpr double kMaxAzimuthOutput = 0.4;
+  static constexpr double kMinAzimuthOutput = -1;
+  static constexpr double kMaxAzimuthOutput = 1;
 
   static constexpr double kShooterAzimuthS = 0.0;
   static constexpr double kShooterAzimuthV = 0.00109;
@@ -205,10 +215,10 @@ public:
 
   // Turret limits and misc
   static constexpr double kMinShooterAzimuth = 0.0;
-  static constexpr double kMaxShooterAzimuth = 270.0;
+  static constexpr double kMaxShooterAzimuth = 320.0;
   static constexpr double kAzimuthMotorRevsToRevs = 233.5 / 1;
   static constexpr frc::Transform2d kTurretOffset{-4_in, -9.5_in, 0_deg}; // turret is 4" back in x, 9.5" over
-  static constexpr units::second_t kPhaseDelay = 0.0_s;
+  static constexpr units::second_t kPhaseDelay = 0.1_s;
   
   // Distance to TPS power series constants
   static constexpr double kDist2TPSA = 23.2;

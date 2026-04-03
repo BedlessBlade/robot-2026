@@ -22,16 +22,16 @@
 #include "systems/QuestNav.h"
 #include "systems/LEDs.h"
 #include "systems/Indexer.h"
-#include "systems/Climber.h"
 #include "systems/Shooter.h"
 #include "systems/ShotCalculator.h"
 
-#include "auto/AutoDoNothing.h"
-#include "auto/AutoDepot.h"
-#include "auto/AutoOutpost.h"
-#include "auto/AutoCenter.h"
-#include "auto/AutoShoot.h"
-#include "auto/AutoShootBackUp.h"
+#include "auto/tasks/AutoDoNothing.h"
+#include "auto/tasks/AutoDepot.h"
+#include "auto/tasks/AutoCenterDepot.h"
+#include "auto/tasks/AutoCenterOne.h"
+#include "auto/tasks/AutoCenterTwo.h"
+#include "auto/tasks/AutoShoot.h"
+#include "auto/tasks/AutoShootBackUp.h"
 
 
 // This gets called first. So, initialize everything here.
@@ -51,12 +51,15 @@ Robot::Robot()
   m_startChooser.AddOption("5", 5);
 
   m_autoChooser.SetDefaultOption("Do Nothing", "DoNothing");
-  m_autoChooser.AddOption("To Depot", "Outpost");
-  m_autoChooser.AddOption("To Outpost", "Outpost");
-  m_autoChooser.AddOption("To Neutral Zone", "Center");
+
+  m_autoChooser.AddOption("To Depot", "Depot");
+  m_autoChooser.AddOption("To Neutral Zone", "CenterOne");
+  // m_autoChooser.AddOption("To Neutral Zone (1 Sweep)", "CenterOne");
+  // m_autoChooser.AddOption("To Neutral Zone (2 Sweeps)", "CenterTwo");
+  m_autoChooser.AddOption("To Neutral & Depot", "CenterDepot");
+
   m_autoChooser.AddOption("Shoot", "Shoot");
   m_autoChooser.AddOption("Shoot & Back Up", "ShootBackUp");
-  // m_autoChooser.AddOption("To Neutral & Depot", "CenterDepot");
   
 
   frc::SmartDashboard::PutData("Start Location", &m_startChooser);
@@ -71,7 +74,6 @@ Robot::Robot()
   Cameras::GetInstance();
   SwerveDrive::GetInstance();
   Indexer::GetInstance();
-  Climber::GetInstance();
   LEDs::GetInstance();
   LEDs::GetInstance().LEDsInit();
   Shooter::GetInstance();
@@ -330,6 +332,7 @@ Robot::Robot()
       }
 
       // intake up/down if/else
+      //Dpad up - Intake up
       if (Controllers::GetInstance().GetOperatorController().GetPOV() == 0) {
         SupaIntake::GetInstance().SetIntake(0);
         if(alliance == frc::DriverStation::Alliance::kRed){
@@ -338,7 +341,7 @@ Robot::Robot()
         LEDs::GetInstance().LEDsSetPattern(LEDs::LEDSstates::BLUE);
         }
 
-      //Dpad down - Stow climb
+      //Dpad down - Intake down
       } else if (Controllers::GetInstance().GetOperatorController().GetPOV() == 180) {
         SupaIntake::GetInstance().SetIntake(1);
         if(alliance == frc::DriverStation::Alliance::kRed){
@@ -348,9 +351,6 @@ Robot::Robot()
         }
         
 
-      //Dpad left - Climb
-      } else if (Controllers::GetInstance().GetOperatorController().GetPOV() == 270) {
-        //Climber::GetInstance().SetClimber(1);
       } 
       
       //intake motor if/else
@@ -401,12 +401,6 @@ Robot::Robot()
     //   std::cout << "Recalibrated" << std::endl;
     // };
     
-    // m_QuestNavField.SetRobotPose(QuestPose);
-    // std::cout << "X:Y:Pitch : " << QuestPose.X().value() << ", "
-    //                             << QuestPose.Y().value() << ", "
-    //                             << QuestPose.Rotation().Degrees().value()
-    //                             << std::endl;
-
     
     // Call update functions for subsystems instances
     Cameras::GetInstance().Update(mode, t);
@@ -443,15 +437,19 @@ void Robot::DisabledExit() {
     std::string autoName = m_autoChooser.GetSelected();
     double t = frc::Timer::GetFPGATimestamp().value();
     
-    // //go to places
-    if(autoName == "Depot") { 
-      m_auto = std::make_shared<AutoDepot>(alliance.value(), m_startChooser.GetSelected()); 
-    } else if(autoName == "Outpost") { 
-      m_auto = std::make_shared<AutoOutpost>(alliance.value(), m_startChooser.GetSelected()); 
-    } else if(autoName == "Center") { 
-      m_auto = std::make_shared<AutoCenter>(alliance.value(), m_startChooser.GetSelected()); 
+    // go to places
 
-    //shoot
+
+    if (autoName == "Depot") { 
+      m_auto = std::make_shared<AutoDepot>(alliance.value(), m_startChooser.GetSelected()); 
+    } else if (autoName == "CenterOne") { 
+      m_auto = std::make_shared<AutoCenterOne>(alliance.value(), m_startChooser.GetSelected()); 
+    } else if (autoName == "CenterTwo") { 
+      m_auto = std::make_shared<AutoCenterTwo>(alliance.value(), m_startChooser.GetSelected());
+    } else if (autoName == "CenterDepot") {
+      m_auto = std::make_shared<AutoCenterDepot>(alliance.value(), m_startChooser.GetSelected());
+
+    // shoot
     } else if (autoName == "Shoot") { 
       m_auto = std::make_shared<AutoShoot>(alliance.value(), m_startChooser.GetSelected()); 
     } else if (autoName == "ShootBackUp") { 
