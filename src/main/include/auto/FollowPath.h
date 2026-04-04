@@ -25,11 +25,11 @@ private:
 
   PIDController m_controllers[3]{
       {Constants::kPathFollowingKp, Constants::kPathFollowingKi,
-       Constants::kPathFollowingKd},
+       Constants::kPathFollowingKd, Constants::kPathFollowingTau},
       {Constants::kPathFollowingKp, Constants::kPathFollowingKi,
-       Constants::kPathFollowingKd},
+       Constants::kPathFollowingKd, Constants::kPathFollowingTau},
       {Constants::kPathFollowingAngleKp, Constants::kPathFollowingAngleKi,
-       Constants::kPathFollowingAngleKd}};
+       Constants::kPathFollowingAngleKd, Constants::kPathFollowingTau}};
 
   bool AtPoint() const;
 };

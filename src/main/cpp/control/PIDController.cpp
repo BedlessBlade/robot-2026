@@ -2,10 +2,11 @@
 
 #include <frc/Timer.h>
 
-PIDController::PIDController(double kP, double kI, double kD) {
+PIDController::PIDController(double kP, double kI, double kD, double Tau) {
   m_kP = kP;
   m_kI = kI;
   m_kD = kD;
+  m_Tau = Tau;
 
   Reset();
 }
@@ -27,7 +28,7 @@ double PIDController::Update(double current, double setpoint, double dt) {
 
   m_integral += error * dt;
 
-  double rate = (error - m_lastError) / dt;
+  double rate = dTermFilter.Calculate((error - m_lastError) / dt);
   m_lastError = error;
 
   return m_kP * error + m_kI * m_integral + m_kD * rate;
