@@ -27,6 +27,8 @@ AutoCenterOne::AutoCenterOne(frc::DriverStation::Alliance alliance, int position
   // todos: clean up and make more readable
   //        tune shooting time
   
+  // alliance - red = 0, blue = 1
+
   bool onLeft = position < 3;
 
   // safeguard to prevent auto from running when not in the right position

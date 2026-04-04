@@ -21,31 +21,46 @@
 
 
 AutoDepot::AutoDepot(frc::DriverStation::Alliance alliance, int position) {
-  // // this is test pseudo code for autos,  uses set points which still need to be made and this one has move shoot and climb
-  
+  // alliance - red = 0, blue = 1
+
+  bool onLeft = position < 3;
+
+  // start intake deploy and move in front of depot
+  m_tasks.push_back(std::make_shared<DeployIntake>());
   m_tasks.push_back(std::make_shared<FollowPath>(
     std::vector<frc::Pose2d>{
       Locations::GetInstance().GetStartPosition(alliance, position), 
       Locations::GetInstance().GetDepotPosition(alliance)[0]
     }, false, false));
-  m_tasks.push_back(std::make_shared<DeployIntake>());
+  
+  // start the intake and move forward to collect balls
   m_tasks.push_back(std::make_shared<StartIntake>());
   m_tasks.push_back(std::make_shared<FollowPath>(
     std::vector<frc::Pose2d>{
       Locations::GetInstance().GetDepotPosition(alliance)[0], 
       Locations::GetInstance().GetDepotPosition(alliance)[1]
     }, false, false));
+  
+  // give time to process
   m_tasks.push_back(std::make_shared<Delay>(Constants::kIntakeAutoProcessingTime));
+  m_tasks.push_back(std::make_shared<StopIntake>());
+
+  // move back and spin around
   m_tasks.push_back(std::make_shared<FollowPath>(
     std::vector<frc::Pose2d>{
       Locations::GetInstance().GetDepotPosition(alliance)[1],
-      Locations::GetInstance().GetDepotPosition(alliance)[0]
+      Locations::GetInstance().GetDepotPosition(alliance)[0],
+      Locations::GetInstance().GetDepotPosition(alliance)[2] 
     }, false, false));
-  m_tasks.push_back(std::make_shared<StopIntake>());
+  
+  // shoot collected balls
+  m_tasks.push_back(std::make_shared<StartShooter>());
+  m_tasks.push_back(std::make_shared<Delay>(Constants::kAutoShootFullTime));
+
+  // move into center
   m_tasks.push_back(std::make_shared<FollowPath>(
     std::vector<frc::Pose2d>{
-      Locations::GetInstance().GetDepotPosition(alliance)[0], 
-      Locations::GetInstance().GetDepotPosition(alliance)[2], 
+      Locations::GetInstance().GetStartPosition(alliance, 2),
+      Locations::GetInstance().GetCenterPosition(alliance, true)[0]
     }, false, false));
-  // m_tasks.push_back(std::make_shared<StartShooter>());
 }

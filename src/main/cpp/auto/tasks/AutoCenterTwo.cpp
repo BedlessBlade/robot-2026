@@ -75,4 +75,11 @@ AutoCenterTwo::AutoCenterTwo(frc::DriverStation::Alliance alliance, int position
     m_tasks.push_back(std::make_shared<Delay>(Constants::kAutoShootFullTime));
     m_tasks.push_back(std::make_shared<StopShooter>());
   }
+
+  // Go back over ramp & start teleop in neutral zone
+  m_tasks.push_back(std::make_shared<FollowPath>(
+    std::vector<frc::Pose2d>{
+      Locations::GetInstance().GetShootingPosition(alliance, onLeft),
+      Locations::GetInstance().GetCenterPosition(alliance, onLeft)[0],
+    }, false, false));
 }
