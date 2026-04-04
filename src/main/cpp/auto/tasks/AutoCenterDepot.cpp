@@ -120,4 +120,12 @@ AutoCenterDepot::AutoCenterDepot(frc::DriverStation::Alliance alliance, int posi
 
     // Shoot
     m_tasks.push_back(std::make_shared<StartShooter>());
+    m_tasks.push_back(std::make_shared<Delay>(Constants::kAutoShootFullTime));
+    
+    // move into center
+    m_tasks.push_back(std::make_shared<FollowPath>(
+        std::vector<frc::Pose2d>{
+        Locations::GetInstance().GetStartPosition(alliance, 2),
+        Locations::GetInstance().GetCenterPosition(alliance, true)[0]
+        }, false, false));
 }

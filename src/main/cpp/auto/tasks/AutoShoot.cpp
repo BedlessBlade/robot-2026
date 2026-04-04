@@ -9,5 +9,6 @@
 
 
 AutoShoot::AutoShoot(frc::DriverStation::Alliance alliance, int position)  {
+    // shoot
     m_tasks.push_back(std::make_shared<StartShooter>());
 }
