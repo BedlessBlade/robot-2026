@@ -9,8 +9,9 @@
 
 class FollowPath : public Task {
 public:
+  // todo: reorder NEXT YEAR
   FollowPath(std::vector<frc::Pose2d> points, bool resetPose = false,
-             bool persist = false);
+             bool persist = false, bool slow = false);
 
   void Start(double t) override;
   void Update(double t) override;
@@ -19,7 +20,7 @@ public:
 
 private:
   std::vector<frc::Pose2d> m_points;
-  bool m_resetPose, m_persist;
+  bool m_resetPose, m_persist, m_slow;
   int m_pointIndex = 0;
   bool m_started = false;
 

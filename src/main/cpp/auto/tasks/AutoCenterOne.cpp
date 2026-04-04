@@ -57,10 +57,15 @@ AutoCenterOne::AutoCenterOne(frc::DriverStation::Alliance alliance, int position
   m_tasks.push_back(std::make_shared<FollowPath>(
     std::vector<frc::Pose2d>{
       Locations::GetInstance().GetShootingPosition(alliance, onLeft),
+      Locations::GetInstance().GetCenterPosition(alliance, onLeft)[0]
+    }, false, false, true));
+    
+  m_tasks.push_back(std::make_shared<FollowPath>(
+    std::vector<frc::Pose2d>{
       Locations::GetInstance().GetCenterPosition(alliance, onLeft)[0],
       Locations::GetInstance().GetCenterPosition(alliance, onLeft)[1],
       Locations::GetInstance().GetCenterPosition(alliance, onLeft)[2]
-    }, false, false));
+    }));
   
   // starts intake & moves forward to collect balls
   m_tasks.push_back(std::make_shared<StartIntake>());
@@ -68,7 +73,7 @@ AutoCenterOne::AutoCenterOne(frc::DriverStation::Alliance alliance, int position
     std::vector<frc::Pose2d>{
       Locations::GetInstance().GetCenterPosition(alliance, onLeft)[2],
       Locations::GetInstance().GetCenterPosition(alliance, onLeft)[3],
-    }, false, false));
+    }));
   
   // give time for intake to finish intaking
   m_tasks.push_back(std::make_shared<Delay>(Constants::kIntakeAutoProcessingTime));
@@ -78,9 +83,14 @@ AutoCenterOne::AutoCenterOne(frc::DriverStation::Alliance alliance, int position
   m_tasks.push_back(std::make_shared<FollowPath>(
     std::vector<frc::Pose2d>{
       Locations::GetInstance().GetCenterPosition(alliance, onLeft)[3],
+      Locations::GetInstance().GetCenterPosition(alliance, onLeft)[0]
+    }));
+  
+  m_tasks.push_back(std::make_shared<FollowPath>(
+    std::vector<frc::Pose2d>{
       Locations::GetInstance().GetCenterPosition(alliance, onLeft)[0],
       Locations::GetInstance().GetShootingPosition(alliance, onLeft),
-    }, false, false));
+    }, false, false, true));
   
   // shoot balls for 2 seconds - should be enough to empty hopper
   m_tasks.push_back(std::make_shared<StartShooter>());
@@ -92,6 +102,5 @@ AutoCenterOne::AutoCenterOne(frc::DriverStation::Alliance alliance, int position
     std::vector<frc::Pose2d>{
       Locations::GetInstance().GetShootingPosition(alliance, onLeft),
       Locations::GetInstance().GetCenterPosition(alliance, onLeft)[0],
-    }, false, false));
-  m_tasks.push_back(std::make_shared<Delay>(1.0));
+    }, false, false, true));
 }

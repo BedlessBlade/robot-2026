@@ -54,7 +54,12 @@ AutoOutpost::AutoOutpost(frc::DriverStation::Alliance alliance, int position) {
   m_tasks.push_back(std::make_shared<FollowPath>(
     std::vector<frc::Pose2d>{
       Locations::GetInstance().GetOutpostPosition(alliance)[1],
+      Locations::GetInstance().GetStartPosition(alliance, 4)
+    }, false, false));
+
+  m_tasks.push_back(std::make_shared<FollowPath>(
+    std::vector<frc::Pose2d>{
       Locations::GetInstance().GetStartPosition(alliance, 4),
       Locations::GetInstance().GetCenterPosition(alliance, false)[0]
-    }, false, false));
+    }, false, false, true));
 }
