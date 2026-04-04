@@ -32,6 +32,7 @@
 #include "auto/tasks/AutoCenterTwo.h"
 #include "auto/tasks/AutoShoot.h"
 #include "auto/tasks/AutoShootBackUp.h"
+#include "auto/tasks/AutoOutpost.h"
 
 
 // This gets called first. So, initialize everything here.
@@ -60,6 +61,7 @@ Robot::Robot()
 
   m_autoChooser.AddOption("Shoot", "Shoot");
   m_autoChooser.AddOption("Shoot & Back Up", "ShootBackUp");
+  m_autoChooser.AddOption("To Outpost", "Outpost");
   
 
   frc::SmartDashboard::PutData("Start Location", &m_startChooser);
@@ -425,6 +427,9 @@ void Robot::DisabledExit() {
       m_auto = std::make_shared<AutoShoot>(alliance.value(), m_startChooser.GetSelected()); 
     } else if (autoName == "ShootBackUp") { 
       m_auto = std::make_shared<AutoShootBackUp>(alliance.value(), m_startChooser.GetSelected()); 
+
+    } else if (autoName == "Outpost") { 
+      m_auto = std::make_shared<AutoOutpost>(alliance.value(), m_startChooser.GetSelected()); 
 
     //autodonothing!!!
     } else { 

@@ -10,14 +10,22 @@
 
 void Locations::Generate(frc::DriverStation::Alliance alliance) { }
 
-frc::Pose2d Locations::GetOutpostPosition(frc::DriverStation::Alliance alliance) const {
-  // Something idk. keep cuz yeah
-  return frc::Pose2d{ 20_in, 25.62_in, 180_deg }
-    .RotateAround(Constants::kFieldCenter, (alliance ? 0_deg : 180_deg));
+std::vector<frc::Pose2d> Locations::GetOutpostPosition(frc::DriverStation::Alliance alliance) const {
+  return std::vector<frc::Pose2d>{
+    //0: In front of Outpost
+    frc::Pose2d{ 60_in, 25.62_in, 180_deg}
+      .RotateAround(Constants::kFieldCenter, (alliance ? 0_deg : 180_deg)),
+
+    //1: Actual Outpost
+    frc::Pose2d{
+      units::meter_t{(Constants::kRobotWidth / 2) + Constants::kBumperLength},
+      25.62_in,
+      180_deg 
+    }.RotateAround(Constants::kFieldCenter, (alliance ? 0_deg : 180_deg))
+  };
 }
 
 std::vector<frc::Pose2d> Locations::GetDepotPosition(frc::DriverStation::Alliance alliance) const {
-  // 0 - In front of depot
   return std::vector<frc::Pose2d>{
     // 0 - In front of depot
     frc::Pose2d{

@@ -26,8 +26,9 @@ public:
   static constexpr double kMediumMode = 0.5;
 
   //todo: update robot length
-  static constexpr auto kRobotWidth = 28.625 / kInchesPerMeter;
-  static constexpr auto kRobotLength = 40 / kInchesPerMeter;
+  static constexpr double kRobotWidth = 28.625 / kInchesPerMeter;
+  static constexpr double kRobotLength = 40.0 / kInchesPerMeter;
+  static constexpr double kBumperLength = 3.75 / kInchesPerMeter;
 
   static constexpr auto kWheelBaseWidth = 26.75_in; //left to right
   static constexpr auto kWheelBaseLength = 15.75_in; //front to back
