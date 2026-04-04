@@ -40,11 +40,11 @@ Robot::Robot()
   : m_compressor{frc::PneumaticsModuleType::REVPH},
     m_alignControllers{
       {Constants::kPathFollowingKp, Constants::kPathFollowingKi,
-       Constants::kPathFollowingKd},
+       Constants::kPathFollowingKd, Constants::kPathFollowingTau},
       {Constants::kPathFollowingKp, Constants::kPathFollowingKi,
-       Constants::kPathFollowingKd},
+       Constants::kPathFollowingKd, Constants::kPathFollowingTau},
       {Constants::kPathFollowingAngleKp, Constants::kPathFollowingAngleKi,
-       Constants::kPathFollowingAngleKd}} {
+       Constants::kPathFollowingAngleKd, Constants::kPathFollowingTau}} {
   m_startChooser.SetDefaultOption("1", 1);
   m_startChooser.AddOption("2", 2);
   m_startChooser.AddOption("3", 3);
