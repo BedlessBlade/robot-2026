@@ -23,6 +23,8 @@ public:
     return instance;
   }
 
+  enum SpeedMode { Slow, Medium, Fast };
+
   void Update(Robot::Mode mode, double t) override;
   frc::Rotation2d GetGyroRotation2d() const;
   units::angular_velocity::degrees_per_second_t GetGyroAngVelocity2d();
@@ -36,6 +38,8 @@ public:
   void EnableRamp();
   void DisableRamp();
   double VelocityMagnitude();
+  void SetMode(SwerveDrive::SpeedMode mode);
+  SwerveDrive::SpeedMode GetMode();
   frc::ChassisSpeeds GetStates();
 
 
@@ -82,6 +86,7 @@ private:
 
   bool m_rampEnabled = true;
   bool m_fastFilter = true;
+  SpeedMode m_mode;
 
 
   // Make the constructor private so that the GetInstance() function must be

@@ -178,6 +178,20 @@ void SwerveDrive::Update(Robot::Mode mode, double t) {
         w = m_filterWSlow.Calculate(units::radians_per_second_t{m_w}).value();
         
       }
+
+      if (m_mode == SwerveDrive::SpeedMode::Medium) {
+        vx *= Constants::kMediumMode;
+        vy *= Constants::kMediumMode;
+      } else if (m_mode == SwerveDrive::SpeedMode::Slow) {
+        vx *= Constants::kSlowMode;
+        vy *= Constants::kSlowMode;
+      }
+
+      if (Shooter::GetInstance().GetShooterState() != Shooter::shooterStates::IDLE) {
+        vx = std::clamp(vx, -Constants::kShootingMode, Constants::kShootingMode);
+        vy = std::clamp(vx, -Constants::kShootingMode, Constants::kShootingMode);
+      }
+
     }
 
     // Use the WPILib kinematics class to determine the individual wheel
@@ -206,32 +220,20 @@ void SwerveDrive::Update(Robot::Mode mode, double t) {
 
     // Decrease the speed of modules that aren't pointing in the correct
     // direction.
-    fl.speed *= (fl.angle - frc::Rotation2d{units::radian_t{
-                                m_encoders[0].GetPosition().GetValue()}})
-                    .Cos();
-    fr.speed *= (fr.angle - frc::Rotation2d{units::radian_t{
-                                m_encoders[1].GetPosition().GetValue()}})
-                    .Cos();
-    bl.speed *= (bl.angle - frc::Rotation2d{units::radian_t{
-                                m_encoders[2].GetPosition().GetValue()}})
-                    .Cos();
-    br.speed *= (br.angle - frc::Rotation2d{units::radian_t{
-                                m_encoders[3].GetPosition().GetValue()}})
-                    .Cos();
+    fl.speed *= (fl.angle - frc::Rotation2d{units::radian_t{ m_encoders[0].GetPosition().GetValue() }}).Cos();
+    fr.speed *= (fr.angle - frc::Rotation2d{units::radian_t{ m_encoders[1].GetPosition().GetValue() }}).Cos();
+    bl.speed *= (bl.angle - frc::Rotation2d{units::radian_t{ m_encoders[2].GetPosition().GetValue() }}).Cos();
+    br.speed *= (br.angle - frc::Rotation2d{units::radian_t{ m_encoders[3].GetPosition().GetValue() }}).Cos();
 
     // Set the positions for the wheel angles
     m_steeringMotors[0].SetControl(controls::PositionVoltage{
-        units::turn_t{fl.angle.Radians().value() / 2 /
-                      M_PI}}.WithSlot(0));
+        units::turn_t{fl.angle.Radians().value() / 2 / M_PI}}.WithSlot(0));
     m_steeringMotors[1].SetControl(controls::PositionVoltage{
-        units::turn_t{fr.angle.Radians().value() / 2 /
-                      M_PI}}.WithSlot(0));
+        units::turn_t{fr.angle.Radians().value() / 2 / M_PI}}.WithSlot(0));
     m_steeringMotors[2].SetControl(controls::PositionVoltage{
-        units::turn_t{bl.angle.Radians().value() / 2 /
-                      M_PI}}.WithSlot(0));
+        units::turn_t{bl.angle.Radians().value() / 2 / M_PI}}.WithSlot(0));
     m_steeringMotors[3].SetControl(controls::PositionVoltage{
-        units::turn_t{br.angle.Radians().value() / 2 /
-                      M_PI}}.WithSlot(0));
+        units::turn_t{br.angle.Radians().value() / 2 / M_PI}}.WithSlot(0));
 
     // Use open loop control on the drive motors to get close enough
     // Using closed-loop velocity control with CTRE devices at lower speeds
@@ -313,4 +315,11 @@ void SwerveDrive::DisableRamp() { m_rampEnabled = false; }
 double SwerveDrive::VelocityMagnitude() {
   return std::sqrt(m_vx * m_vx + m_vy * m_vy);
 }
-  
+
+void SwerveDrive::SetMode(SwerveDrive::SpeedMode mode) {
+  m_mode = mode;
+}
+
+SwerveDrive::SpeedMode SwerveDrive::GetMode() {
+  return m_mode;
+}

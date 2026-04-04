@@ -24,6 +24,7 @@ public:
   static constexpr int kPigeonCanId = 13;
   static constexpr double kSlowMode = 0.3;
   static constexpr double kMediumMode = 0.5;
+  static constexpr double kShootingMode = 1.0; // meters per second
 
   //todo: update robot length
   static constexpr double kRobotWidth = 28.625 / kInchesPerMeter;

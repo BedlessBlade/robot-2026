@@ -225,12 +225,11 @@ Robot::Robot()
 
       // Slow/ Medium Mode
       if (Controllers::GetInstance().GetDriverController().GetRightTriggerAxis() > 0.5) {
-        vy *= Constants::kSlowMode;
-        vx *= Constants::kSlowMode;
-
+        SwerveDrive::GetInstance().SetMode(SwerveDrive::SpeedMode::Slow);
       } else if (Controllers::GetInstance().GetDriverController().GetLeftTriggerAxis() > 0.5) {
-        vx *= Constants::kMediumMode;
-        vy *= Constants::kMediumMode;
+        SwerveDrive::GetInstance().SetMode(SwerveDrive::SpeedMode::Medium);
+      } else {
+        SwerveDrive::GetInstance().SetMode(SwerveDrive::SpeedMode::Fast);
       }
 
       // Brake Mode
@@ -242,8 +241,7 @@ Robot::Robot()
       }
 
       // Invert driver controls when on red
-      if (alliance.has_value() &&
-          alliance.value() == frc::DriverStation::Alliance::kRed) {
+      if (alliance.has_value() && alliance.value() == frc::DriverStation::Alliance::kRed) {
         vx *= -1;
         vy *= -1;
       }
