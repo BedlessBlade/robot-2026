@@ -127,11 +127,12 @@ public:
   static constexpr double kPathFollowingAngleKp = 3.0;
   static constexpr double kPathFollowingAngleKi = 0.0;
   static constexpr double kPathFollowingAngleKd = 0.0;
-  static constexpr double kPathFollowingMaxV = 2;       // meters per second
-  static constexpr double kPathFollowingMaxW = 5;       // radians per second
-  static constexpr double kPathFollowingTolerance = 0.15; // meters
-  static constexpr double kPathFollowingAngleTolerance = 1; // degrees
-  static constexpr double kPathFollowingVelocityTolerance = 0.1; // meters per second
+  static constexpr double kPathFollowingTau = 0.05;
+  static constexpr double kPathFollowingMaxV = 2;                   // meters per second
+  static constexpr double kPathFollowingMaxW = 5;                   // radians per second
+  static constexpr double kPathFollowingTolerance = 0.15;           // meters
+  static constexpr double kPathFollowingAngleTolerance = 1;         // degrees
+  static constexpr double kPathFollowingVelocityTolerance = 0.1;    // meters per second
 
   static constexpr auto kFeederDistance = 0.515_m;
   static constexpr double kBrakeDistance = 0.25; // meters  
@@ -140,31 +141,7 @@ public:
   static constexpr int kIndexerSpinMotorID = 14;
   static constexpr int kIndexerUpMotorID = 15;
   static constexpr double kIndexerSpinMotorSpeed = 0.75;
-  static constexpr double kIndexerUpMotorSpeed = -1;
-
-  //Climber ------------------------------------------------------
-  static constexpr int kClimbMotorID = 24;
-  static constexpr double kClimbStowed = 0.0;
-  static constexpr double kClimbClimbed = 0.5;
-  static constexpr double kClimbExtended = 1.0;
-
-  static constexpr double kClimberP = 0.0;
-  static constexpr double kClimberI = 0.0;
-  static constexpr double kClimberD = 0.0;
-  static constexpr double kMinClimberOutput = -0.1;
-  static constexpr double kMaxClimberOutput = 0.1;
-  
-  static constexpr double kClimberS = 0.0;
-  static constexpr double kClimberV = 0.0;
-  static constexpr double kClimberA = 0.0;
-  static constexpr double kClimberG = 0.0;
-  static constexpr double kClimberCos = 0.0;
-  static constexpr double kClimberCosRatio = 0.0;
-
-  static constexpr double kClimberCruiseVel = 0.0;
-  static constexpr double kClimberMaxAccel = 0.0;
-  static constexpr double kClimberAllowedErr = 0.0;
-  
+  static constexpr double kIndexerUpMotorSpeed = -1; 
 
   //Intake ------------------------------------------------------
   static constexpr int kIntakeMotorId = 25;
