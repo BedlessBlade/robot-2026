@@ -125,7 +125,7 @@ AutoCenterDepot::AutoCenterDepot(frc::DriverStation::Alliance alliance, int posi
     // move into center
     m_tasks.push_back(std::make_shared<FollowPath>(
         std::vector<frc::Pose2d>{
-        Locations::GetInstance().GetStartPosition(alliance, 2),
-        Locations::GetInstance().GetCenterPosition(alliance, true)[0]
+        Locations::GetInstance().GetStartPosition(alliance, 4),
+        Locations::GetInstance().GetCenterPosition(alliance, false)[0]
         }, false, false));
 }
