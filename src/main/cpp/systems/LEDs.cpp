@@ -4,8 +4,10 @@
 
 LEDs::LEDs() {
   //Initializes the LEDs.
+  m_off.ApplyTo(m_ledBuffer);
+  
   m_led.SetLength(Constants::kLEDSlength);
-  m_led.SetData(LEDs::GetInstance().m_ledBuffer);
+  m_led.SetData(m_ledBuffer);
   m_led.Start();
 }
 
