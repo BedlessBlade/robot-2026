@@ -91,11 +91,11 @@ public:
       frc::Translation3d{-6.229_in, 10.058_in, 26.747_in},
       frc::Rotation3d{0_rad, 0_rad, 35_deg}};
 
-  static constexpr frc::Transform3d kBackRightCameraTransform{
+  static constexpr frc::Transform3d kBackLeftCameraTransform{
       frc::Translation3d{-8.707_in, 13.228_in, 22.794_in},
       frc::Rotation3d{0_rad, 0_rad, -145_deg}};
 
-  static constexpr frc::Transform3d kBackLeftCameraTransform{
+  static constexpr frc::Transform3d kBackRightCameraTransform{
       frc::Translation3d{-8.707_in, 9.772_in, 22.794_in},
       frc::Rotation3d{0_rad, 0_rad, 145_deg}};
 
@@ -162,7 +162,7 @@ public:
   static constexpr int kShooterMotorLeftId = 18;
 
   // Shooter motor PID/ FF gains
-  static constexpr double kShooterMotorP = 0.15;
+  static constexpr double kShooterMotorP = 0.4; // was 0.15
   static constexpr double kShooterMotorI = 0.0;
   static constexpr double kShooterMotorD = 0.0;
   static constexpr double kShooterMotorV = 0.12;

@@ -48,7 +48,7 @@ private:
   std::shared_ptr<Task> m_auto;
 
   frc::Field2d m_field;
-  frc::Field2d m_QuestNavField;
+  std::string m_positionString;
 
   AutoAlignMode m_autoAlignMode = kNone;
   frc::Pose2d m_autoAlignSetpoint;
@@ -68,9 +68,4 @@ private:
       m_alignControllers[i].Reset();
     }
   }
-
-  //frc::Pose2d NearestLeftCoral(frc::Pose2d robotPose, int *i = nullptr);
-  //frc::Pose2d NearestRightCoral(frc::Pose2d robotPose, int *i = nullptr);
-  //frc::Pose2d NearestAlgae(frc::Pose2d robotPose, int *i = nullptr);
-  //frc::Pose2d NearestFeeder(frc::Pose2d robotPose, int *i = nullptr);
 };

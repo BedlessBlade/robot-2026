@@ -96,7 +96,8 @@
     "typeindex": "cpp",
     "valarray": "cpp",
     "variant": "cpp",
-    "xhash": "cpp"
+    "xhash": "cpp",
+    "charconv": "cpp"
   },
   "C_Cpp.errorSquiggles": "enabled"
 }

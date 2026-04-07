@@ -60,10 +60,11 @@ Robot::Robot()
   m_autoChooser.AddOption("To Neutral Zone (2 Sweeps)", "CenterTwo");
   m_autoChooser.AddOption("To Neutral & Depot", "CenterDepot");
 
+  m_positionString = "(0, 0, 0)";
   frc::SmartDashboard::PutData("Start Location", &m_startChooser);
-  frc::SmartDashboard::PutBoolean("Calibrate Pose", false);
   frc::SmartDashboard::PutData("Auto", &m_autoChooser);
   frc::SmartDashboard::PutData("Field", &m_field);
+  frc::SmartDashboard::PutString("Pose (Inches)", "(0,0,0)");
 
   // Call GetInstance() so the constructors get called
   //Intake::GetInstance();
@@ -92,11 +93,18 @@ Robot::Robot()
         mode = kTeleop;
       }
     }
-
+    
+    // update variables used throughout the loop
     double t = frc::Timer::GetFPGATimestamp().value();
     auto alliance = frc::DriverStation::GetAlliance();
 
-  
+    m_field.SetRobotPose(SwerveDrive::GetInstance().GetPose2d());
+    m_currentPose = SwerveDrive::GetInstance().GetPose2d();
+    frc::SmartDashboard::PutString("Pose (Inches)", 
+      "(" + std::to_string(m_currentPose.X().value() * Constants::kInchesPerMeter) + ", " + 
+            std::to_string(m_currentPose.Y().value() * Constants::kInchesPerMeter) + ", " +
+            std::to_string(m_currentPose.Rotation().Degrees().value()) + ")"); 
+
     if (mode != kDisabled) {
       if (alliance.has_value() && alliance.value() == frc::DriverStation::Alliance::kRed) {
         globalAlliance = "Red";
@@ -138,13 +146,7 @@ Robot::Robot()
         globalAlliance = "None";
       }
       
-      // std::cout << SwerveDrive::GetInstance().GetPose2d().X().value() * Constants::kInchesPerMeter << ", " << 
-      //             SwerveDrive::GetInstance().GetPose2d().Y().value()  * Constants::kInchesPerMeter << ", " <<
-      //             SwerveDrive::GetInstance().GetPose2d().Rotation().Degrees().value() << "\n";
     }
-
-    // Get Current State
-    m_currentPose = SwerveDrive::GetInstance().GetPose2d();
 
     //Calculate shot at current state
     ShotCalculator::GetInstance().CalculateShotParams(m_goalPosition, Constants::kPhaseDelay);
@@ -167,9 +169,6 @@ Robot::Robot()
 
       // The auto will reset the pose to be facing towards the driver on the red
       // alliance so it needs to be corrected
-      auto alliance = frc::DriverStation::GetAlliance();
-
-      m_field.SetRobotPose(SwerveDrive::GetInstance().GetPose2d());
 
       // Ramp auto align logic
       if (Controllers::GetInstance().GetDriverController().GetXButtonPressed()) {
@@ -203,8 +202,6 @@ Robot::Robot()
         SwerveDrive::GetInstance().EnableRamp();
 
       }
-
-      std::cout << m_autoAlignMode << std::endl;
 
       // Get the inputs from the controller during teleop mode. Note this uses
       // the split setup where the left joystick controls velocity, and the
