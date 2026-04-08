@@ -65,6 +65,7 @@ Robot::Robot()
   frc::SmartDashboard::PutData("Auto", &m_autoChooser);
   frc::SmartDashboard::PutData("Field", &m_field);
   frc::SmartDashboard::PutString("Pose (Inches)", "(0,0,0)");
+  frc::SmartDashboard::PutBoolean("Intake Down?", SupaIntake::GetInstance().GetIntakeDown());
 
   // Call GetInstance() so the constructors get called
   //Intake::GetInstance();
@@ -465,3 +466,13 @@ bool Robot::HubActive() {
 #ifndef RUNNING_FRC_TESTS
 int main(int argc, char **argv) { frc::StartRobot<Robot>(); }
 #endif
+
+
+
+
+
+// display outputdpwm
+
+// camera feed front and back
+
+// image of james like how poeple put iamges of god in there car
