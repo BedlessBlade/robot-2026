@@ -96,6 +96,7 @@ Robot::Robot()
     
     // update variables used throughout the loop
     double t = frc::Timer::GetFPGATimestamp().value();
+    double t_match = frc::DriverStation::GetMatchTime().value();
     auto alliance = frc::DriverStation::GetAlliance();
 
     m_field.SetRobotPose(SwerveDrive::GetInstance().GetPose2d());
@@ -153,18 +154,18 @@ Robot::Robot()
     Controllers::GetInstance().GetDriverController().SetRumble(frc::GenericHID::RumbleType::kBothRumble, 0);
     Controllers::GetInstance().GetOperatorController().SetRumble(frc::GenericHID::RumbleType::kBothRumble, 0);
 
+    LEDs::GetInstance().SetPattern(alliance ? LEDs::LEDstates::BLUE : LEDs::LEDstates::RED);
+
     if (mode == kAuto) {
       if (m_auto) {
         m_auto->Update(t);
       }      
-      LEDs::GetInstance().SetPattern(alliance ? LEDs::LEDstates::BREATHBLUE : LEDs::LEDstates::BREATHERED);
 
     } else if (mode == kTeleop) {
       if (m_braking) {
         SwerveDrive::GetInstance().Coast();
         m_braking = false;
 
-        LEDs::GetInstance().SetPattern(alliance ? LEDs::LEDstates::BLUE : LEDs::LEDstates::RED);
       }
 
       // The auto will reset the pose to be facing towards the driver on the red
@@ -319,35 +320,36 @@ Robot::Robot()
       //Dpad up - Intake up
       if (Controllers::GetInstance().GetOperatorController().GetPOV() == 0) {
         SupaIntake::GetInstance().SetIntake(0);
-        LEDs::GetInstance().SetPattern(alliance ? LEDs::LEDstates::BLUE : LEDs::LEDstates::RED);
 
       //Dpad down - Intake down
       } else if (Controllers::GetInstance().GetOperatorController().GetPOV() == 180) {
         SupaIntake::GetInstance().SetIntake(1);
-        LEDs::GetInstance().SetPattern(alliance ? LEDs::LEDstates::BLUEYELLOW : LEDs::LEDstates::REDYELLOW);
-
       } 
       
       //intake motor if/else
       if (Controllers::GetInstance().GetOperatorController().GetLeftTriggerAxis() > 0.5) {
         SupaIntake::GetInstance().SetMotors(0.75);
-        LEDs::GetInstance().SetPattern(alliance ? LEDs::LEDstates::BLUEYELLOWSCROLL : LEDs::LEDstates::REDYELLOWSCROLL);
 
       } else if (Controllers::GetInstance().GetOperatorController().GetLeftBumperButton()) {
         SupaIntake::GetInstance().SetMotors(-0.75);
-        LEDs::GetInstance().SetPattern(alliance ? LEDs::LEDstates::BLUEYELLOWREVERSE : LEDs::LEDstates::REDYELLOWREVERSE);
       
       } else {
         SupaIntake::GetInstance().SetMotors(0.0);
+      }
+
+
+      // led handler
+      if (HubActive()) {
+        LEDs::GetInstance().SetPattern(alliance ? LEDs::LEDstates::BREATHBLUE : LEDs::LEDstates::BREATHERED);
+      } else if (SupaIntake::GetInstance().GetIntakeDown()) {
+        LEDs::GetInstance().SetPattern(alliance ? LEDs::LEDstates::BLUEYELLOW : LEDs::LEDstates::REDYELLOW);
+      } else {
         LEDs::GetInstance().SetPattern(alliance ? LEDs::LEDstates::BLUE : LEDs::LEDstates::RED);
       }
 
     } else if (mode == kDisabled) {
       LEDs::GetInstance().SetPattern(LEDs::LEDstates::OFF);
-      if (std::abs(
-              SwerveDrive::GetInstance().GetPose2d().Translation().X().value() -
-              Constants::kFieldLength / 2) <= Constants::kBrakeDistance &&
-          !m_braking) {
+      if (std::abs(SwerveDrive::GetInstance().GetPose2d().Translation().X().value() - Constants::kFieldLength / 2) <= Constants::kBrakeDistance && !m_braking) {
         SwerveDrive::GetInstance().Brake();
         m_braking = true;
       } else if (m_braking) {
@@ -421,6 +423,43 @@ void Robot::DisabledExit() {
 void Robot::TeleopInit() {
   // Make sure that ramping is enabled for the driver motors even if auto is incomplete
   SwerveDrive::GetInstance().EnableRamp();
+}
+
+bool Robot::HubActive() {
+  auto alliance = frc::DriverStation::GetAlliance();
+  // If we have no alliance, we cannot be enabled, therefore no hub.
+  if (!alliance.has_value()) { return false; }
+  // Hub is always enabled in autonomous.
+  if (frc::DriverStation::IsAutonomousEnabled()) { return true; }
+  // At this point, if we're not teleop enabled, there is no hub.
+  if (!frc::DriverStation::IsTeleopEnabled()) { return false; }
+
+  // We're teleop enabled, compute.
+  double t_match = frc::DriverStation::GetMatchTime().value();
+  auto gameData = frc::DriverStation::GetGameSpecificMessage();
+  // If we have no game data, we cannot compute, assume hub is active, as its likely early in teleop.
+  if (gameData.empty()) { return true; }
+  
+  bool redInactiveFirst = false;
+  switch (gameData[0]) {
+    case 'R': redInactiveFirst = true;
+      break;
+    case 'B': redInactiveFirst = false;
+      break;
+    default:
+      // If we have invalid game data, assume hub is active.
+      return true;
+    }
+
+  // Shift was is active for blue if red won auto, or red if blue won auto.
+  bool shift1Active = (alliance.value() ? redInactiveFirst : !redInactiveFirst);
+
+  if (t_match > 130) { return true; } 
+  else if (t_match > 105) { return shift1Active; } 
+  else if (t_match > 80) { return !shift1Active; } 
+  else if (t_match > 55) { return shift1Active; } 
+  else if (t_match > 30) { return !shift1Active; } 
+  else { return true; }
 }
 
 #ifndef RUNNING_FRC_TESTS

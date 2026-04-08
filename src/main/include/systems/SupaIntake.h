@@ -16,11 +16,8 @@ public:
     }
 
     void SetMotors(double speed);   // Motors Function
-    //void ToggleIntake();   // Pnuematics Function
     void SetIntake(bool state);
-
-    void StartAll();    // Enable and Disable all motors associated with the intake system 
-    void EndAll();      // only allow use during auto & is not usable during teleop
+    bool GetIntakeDown();
 
     void Update(Robot::Mode mode, double t) override;   // Set Values to hardware
 

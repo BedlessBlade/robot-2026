@@ -33,6 +33,8 @@ public:
   void DisabledExit() override;
   void TeleopInit() override;
 
+  bool HubActive();
+
   std::string globalAlliance = "None";
   bool isXButtonPressed = false;
 

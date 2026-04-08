@@ -21,6 +21,10 @@ void SupaIntake::SetIntake(bool state) {
     }
 }
 
+bool SupaIntake::GetIntakeDown() {
+    return m_intakeDown;
+}
+
 // deploy updates to the hardware
 void SupaIntake::Update(Robot::Mode mode, double t) {
 
