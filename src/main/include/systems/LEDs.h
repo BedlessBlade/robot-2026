@@ -17,7 +17,7 @@ class LEDs : public System {
       return instance;
     }
 
-    enum LEDstates { OFF, RED, BLUE, BREATHERED, BREATHBLUE, REDYELLOW, BLUEYELLOW, REDYELLOWSCROLL, BLUEYELLOWSCROLL, REDYELLOWREVERSE, BLUEYELLOWREVERSE };
+    enum LEDstates { OFF, RED, BLUE, BREATHERED, BREATHBLUE, REDYELLOW, BLUEYELLOW, REDYELLOWSCROLL, BLUEYELLOWSCROLL, REDYELLOWREVERSE, BLUEYELLOWREVERSE, GREEN};
     
     //Creates functions defined in LEDs.cpp
     void SetPattern(LEDs::LEDstates state);
@@ -146,6 +146,7 @@ class LEDs : public System {
     });
     frc::LEDPattern m_blueYellowScroll = m_blueYellow.ScrollAtRelativeSpeed(0.15_Hz);
     frc::LEDPattern m_blueYellowReverse = m_blueYellow.ScrollAtRelativeSpeed(-0.15_Hz);
+    frc::LEDPattern m_green = frc::LEDPattern::Solid(frc::Color::kGreen);
 
     LEDs();
 };

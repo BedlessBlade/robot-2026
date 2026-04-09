@@ -92,7 +92,11 @@ Robot::Robot()
     
     // update variables used throughout the loop
     double t = frc::Timer::GetFPGATimestamp().value();
-    auto alliance = frc::DriverStation::GetAlliance();
+    if (frc::DriverStation::GetAlliance().has_value()) {
+      m_alliance = (frc::DriverStation::GetAlliance().value() == frc::DriverStation::Alliance::kRed ? 'R' : 'B');
+    } else {
+      m_alliance = 'N';
+    }
 
     m_field.SetRobotPose(SwerveDrive::GetInstance().GetPose2d());
     m_currentPose = SwerveDrive::GetInstance().GetPose2d();
@@ -104,7 +108,7 @@ Robot::Robot()
 
 
     if (mode != kDisabled) {
-      if (GetAlliance() == 'R') {
+      if (m_alliance == 'R') {
 
         // Pose selection logic
         if (m_currentPose.X() >= units::meter_t{Constants::kRedHubX}) {
@@ -121,7 +125,7 @@ Robot::Robot()
           }
         }
 
-      } else if (GetAlliance() == 'B') {
+      } else if (m_alliance == 'B') {
         
         // Pose selection logic
         if (m_currentPose.X() <= units::meter_t{Constants::kBlueHubX}) {
@@ -146,7 +150,7 @@ Robot::Robot()
     Controllers::GetInstance().GetDriverController().SetRumble(frc::GenericHID::RumbleType::kBothRumble, 0);
     Controllers::GetInstance().GetOperatorController().SetRumble(frc::GenericHID::RumbleType::kBothRumble, 0);
 
-    LEDs::GetInstance().SetPattern(GetAlliance() == 'B' ? LEDs::LEDstates::BLUE : LEDs::LEDstates::RED);
+    LEDs::GetInstance().SetPattern(m_alliance == 'B' ? LEDs::LEDstates::BLUE : LEDs::LEDstates::RED);
 
     if (mode == kAuto) {
       if (m_auto) {
@@ -226,7 +230,7 @@ Robot::Robot()
       }
 
       // Invert driver controls when on red
-      if (GetAlliance() == 'R') {
+      if (m_alliance == 'R') {
         vx *= -1;
         vy *= -1;
       }
@@ -235,7 +239,7 @@ Robot::Robot()
       if (Controllers::GetInstance().GetDriverController().GetRawButton(9) &&
           Controllers::GetInstance().GetDriverController().GetRawButton(10)) {
         if (leftX >= 0.5 && rightX <= -0.5) {
-          if (GetAlliance() == 'R') {
+          if (m_alliance == 'R') {
             SwerveDrive::GetInstance().ResetPose(frc::Pose2d{frc::Translation2d{}, frc::Rotation2d{units::radian_t{M_PI}}});
           } else {
             SwerveDrive::GetInstance().ResetPose(frc::Pose2d{});
@@ -325,12 +329,14 @@ Robot::Robot()
 
 
       // led handler
-      if (HubActive()) {
-        LEDs::GetInstance().SetPattern(GetAlliance() == 'B' ? LEDs::LEDstates::BREATHBLUE : LEDs::LEDstates::BREATHERED);
+      if (code_index == 11) {
+        LEDs::GetInstance().SetPattern(LEDs::LEDstates::GREEN);
+      } else if (HubActive()) {
+        LEDs::GetInstance().SetPattern(m_alliance == 'B' ? LEDs::LEDstates::BREATHBLUE : LEDs::LEDstates::BREATHERED);
       } else if (SupaIntake::GetInstance().GetIntakeDown()) {
-        LEDs::GetInstance().SetPattern(GetAlliance() == 'B' ? LEDs::LEDstates::BLUEYELLOW : LEDs::LEDstates::REDYELLOW);
+        LEDs::GetInstance().SetPattern(m_alliance == 'B' ? LEDs::LEDstates::BLUEYELLOW : LEDs::LEDstates::REDYELLOW);
       } else {
-        LEDs::GetInstance().SetPattern(GetAlliance() == 'B' ? LEDs::LEDstates::BLUE : LEDs::LEDstates::RED);
+        LEDs::GetInstance().SetPattern(m_alliance == 'B' ? LEDs::LEDstates::BLUE : LEDs::LEDstates::RED);
       }
 
     } else if (mode == kDisabled) {
@@ -344,6 +350,36 @@ Robot::Robot()
       }
     }
 
+      // secret
+    if (!code_next && code_index < 11) { 
+      if (code_index > 0 && code_index < 9) {
+        if (Controllers::GetInstance().GetDriverController().GetPOV() == -1) { code_next = true; }
+      } else if (code_index == 9) {
+        if (!Controllers::GetInstance().GetDriverController().GetBButton()) { code_next = true; }
+      } else if (code_index == 10) {
+        if (!Controllers::GetInstance().GetDriverController().GetAButton()) { code_next = true; }
+      }
+    }
+
+    if (code_next) {
+      if (code_index == 0 || code_index == 1) {
+        if (Controllers::GetInstance().GetDriverController().GetPOV() == 0) { code_index++; }
+      } else if (code_index == 2 || code_index == 3) {
+        if (Controllers::GetInstance().GetDriverController().GetPOV() == 180) { code_index++; }
+      } else if (code_index == 4 || code_index == 6) {
+        if (Controllers::GetInstance().GetDriverController().GetPOV() == 270) { code_index++; }
+      } else if (code_index == 5 || code_index == 7) {
+        if (Controllers::GetInstance().GetDriverController().GetPOV() == 90) { code_index++; }
+      } else if (code_index == 8) {
+        if (Controllers::GetInstance().GetDriverController().GetBButtonPressed()) { code_index++; }
+      } else if (code_index == 9) {
+        if (Controllers::GetInstance().GetDriverController().GetAButtonPressed()) { code_index++; }
+      } else if (code_index == 10) {
+        if (Controllers::GetInstance().GetDriverController().GetStartButtonPressed()) { code_index++; }
+      } 
+      code_next = false;
+    }
+
     // Call update functions for subsystems instances
     Cameras::GetInstance().Update(mode, t);
     SwerveDrive::GetInstance().Update(mode, t);
@@ -353,7 +389,7 @@ Robot::Robot()
     Indexer::GetInstance().Update(mode);
   }};
 
-};
+ };
 
 // This destructor gets called when the robot program shuts down.
 // Cleanup any resources (especially files) before the robot code gets restarted.
@@ -447,16 +483,6 @@ bool Robot::HubActive() {
   else if (t_match > 30) { return !shift1Active; } 
   else { return true; }
 }
-
-char GetAlliance() {
-  auto alliance = frc::DriverStation::GetAlliance();
-  if (alliance.has_value()) {
-    return (alliance.value() == frc::DriverStation::Alliance::kRed ? 'R' : 'B');
-  } else {
-    return 'N';
-  }
-}
-
 
 #ifndef RUNNING_FRC_TESTS
 int main(int argc, char **argv) { frc::StartRobot<Robot>(); }

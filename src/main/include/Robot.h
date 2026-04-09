@@ -34,7 +34,6 @@ public:
   void TeleopInit() override;
 
   bool HubActive();
-  char GetAlliance();
 
   bool isXButtonPressed = false;
 
@@ -51,6 +50,7 @@ private:
 
   frc::Field2d m_field;
   std::string m_positionString;
+  char m_alliance = 'N';
 
   AutoAlignMode m_autoAlignMode = kNone;
   frc::Pose2d m_autoAlignSetpoint;
@@ -64,6 +64,9 @@ private:
 
   bool m_braking = false;
   bool m_intaking = false;
+
+  int code_index;
+  bool code_next = true;
 
   inline void ResetAlignControllers() {
     for (int i = 0; i < 3; i++) {
