@@ -21,7 +21,7 @@ class LEDs : public System {
     
     //Creates functions defined in LEDs.cpp
     void SetPattern(LEDs::LEDstates state);
-    void Update(Robot::Mode mode, std::string alliance);
+    void Update(Robot::Mode mode);
 
   private:
     //Initializes the LEDs object.

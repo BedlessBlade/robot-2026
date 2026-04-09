@@ -60,15 +60,13 @@ Robot::Robot()
   m_autoChooser.AddOption("To Neutral Zone (2 Sweeps)", "CenterTwo");
   m_autoChooser.AddOption("To Neutral & Depot", "CenterDepot");
 
-  m_positionString = "(0, 0, 0)";
   frc::SmartDashboard::PutData("Start Location", &m_startChooser);
   frc::SmartDashboard::PutData("Auto", &m_autoChooser);
   frc::SmartDashboard::PutData("Field", &m_field);
-  frc::SmartDashboard::PutString("Pose (Inches)", "(0,0,0)");
+  frc::SmartDashboard::PutString("Pose (Inches)", "(0, 0, 0)");
   frc::SmartDashboard::PutBoolean("Intake Down?", SupaIntake::GetInstance().GetIntakeDown());
 
   // Call GetInstance() so the constructors get called
-  //Intake::GetInstance();
   SupaIntake::GetInstance();
   Cameras::GetInstance();
   SwerveDrive::GetInstance();
@@ -77,10 +75,7 @@ Robot::Robot()
   Shooter::GetInstance();
 
 
-  m_compressor.EnableDigital(
-    // units::pounds_per_square_inch_t{Constants::kMinPressure},
-    // units::pounds_per_square_inch_t{Constants::kMaxPressure}
-  );
+  m_compressor.EnableDigital();
 
   
   // This initializes the main looper. What you put here will run @200 Hz while
@@ -97,7 +92,6 @@ Robot::Robot()
     
     // update variables used throughout the loop
     double t = frc::Timer::GetFPGATimestamp().value();
-    double t_match = frc::DriverStation::GetMatchTime().value();
     auto alliance = frc::DriverStation::GetAlliance();
 
     m_field.SetRobotPose(SwerveDrive::GetInstance().GetPose2d());
@@ -106,10 +100,11 @@ Robot::Robot()
       "(" + std::to_string(m_currentPose.X().value() * Constants::kInchesPerMeter) + ", " + 
             std::to_string(m_currentPose.Y().value() * Constants::kInchesPerMeter) + ", " +
             std::to_string(m_currentPose.Rotation().Degrees().value()) + ")"); 
+    frc::SmartDashboard::PutBoolean("Intake Down?", SupaIntake::GetInstance().GetIntakeDown());
+
 
     if (mode != kDisabled) {
-      if (alliance.has_value() && alliance.value() == frc::DriverStation::Alliance::kRed) {
-        globalAlliance = "Red";
+      if (GetAlliance() == 'R') {
 
         // Pose selection logic
         if (m_currentPose.X() >= units::meter_t{Constants::kRedHubX}) {
@@ -126,8 +121,7 @@ Robot::Robot()
           }
         }
 
-      } else if (alliance.has_value() && alliance.value() == frc::DriverStation::Alliance::kBlue) {
-        globalAlliance = "Blue";
+      } else if (GetAlliance() == 'B') {
         
         // Pose selection logic
         if (m_currentPose.X() <= units::meter_t{Constants::kBlueHubX}) {
@@ -144,10 +138,7 @@ Robot::Robot()
 
           }
         }
-      } else {
-        globalAlliance = "None";
       }
-      
     }
 
     //Calculate shot at current state
@@ -155,7 +146,7 @@ Robot::Robot()
     Controllers::GetInstance().GetDriverController().SetRumble(frc::GenericHID::RumbleType::kBothRumble, 0);
     Controllers::GetInstance().GetOperatorController().SetRumble(frc::GenericHID::RumbleType::kBothRumble, 0);
 
-    LEDs::GetInstance().SetPattern(alliance ? LEDs::LEDstates::BLUE : LEDs::LEDstates::RED);
+    LEDs::GetInstance().SetPattern(GetAlliance() == 'B' ? LEDs::LEDstates::BLUE : LEDs::LEDstates::RED);
 
     if (mode == kAuto) {
       if (m_auto) {
@@ -166,7 +157,6 @@ Robot::Robot()
       if (m_braking) {
         SwerveDrive::GetInstance().Coast();
         m_braking = false;
-
       }
 
       // The auto will reset the pose to be facing towards the driver on the red
@@ -209,17 +199,13 @@ Robot::Robot()
       // the split setup where the left joystick controls velocity, and the
       // right joystick controls the rotation. The Util::exp() function squares
       // the input while keeping the sign.
-      double leftY =
-          Controllers::GetInstance().GetDriverController().GetLeftY();
+      double leftY = Controllers::GetInstance().GetDriverController().GetLeftY();
       double vx = Util::Exp(-leftY) * Constants::kDriveControlMultipler;
 
-      double leftX =
-          Controllers::GetInstance().GetDriverController().GetLeftX();
+      double leftX = Controllers::GetInstance().GetDriverController().GetLeftX();
       double vy = Util::Exp(-leftX) * Constants::kDriveControlMultipler;
 
-      // GetRightX() doesn't work in the Linux simulation for some reason
-      double rightX =
-          Controllers::GetInstance().GetDriverController().GetRightX();
+      double rightX = Controllers::GetInstance().GetDriverController().GetRightX();
       double w = Util::Exp(-rightX) * Constants::kDriveAngularControlMultiplier;
 
       // Slow/ Medium Mode
@@ -240,7 +226,7 @@ Robot::Robot()
       }
 
       // Invert driver controls when on red
-      if (alliance.has_value() && alliance.value() == frc::DriverStation::Alliance::kRed) {
+      if (GetAlliance() == 'R') {
         vx *= -1;
         vy *= -1;
       }
@@ -249,10 +235,8 @@ Robot::Robot()
       if (Controllers::GetInstance().GetDriverController().GetRawButton(9) &&
           Controllers::GetInstance().GetDriverController().GetRawButton(10)) {
         if (leftX >= 0.5 && rightX <= -0.5) {
-          if (alliance.has_value() &&
-              alliance.value() == frc::DriverStation::Alliance::kRed) {
-            SwerveDrive::GetInstance().ResetPose(frc::Pose2d{
-                frc::Translation2d{}, frc::Rotation2d{units::radian_t{M_PI}}});
+          if (GetAlliance() == 'R') {
+            SwerveDrive::GetInstance().ResetPose(frc::Pose2d{frc::Translation2d{}, frc::Rotation2d{units::radian_t{M_PI}}});
           } else {
             SwerveDrive::GetInstance().ResetPose(frc::Pose2d{});
           }
@@ -336,16 +320,17 @@ Robot::Robot()
       
       } else {
         SupaIntake::GetInstance().SetMotors(0.0);
+
       }
 
 
       // led handler
       if (HubActive()) {
-        LEDs::GetInstance().SetPattern(alliance ? LEDs::LEDstates::BREATHBLUE : LEDs::LEDstates::BREATHERED);
+        LEDs::GetInstance().SetPattern(GetAlliance() == 'B' ? LEDs::LEDstates::BREATHBLUE : LEDs::LEDstates::BREATHERED);
       } else if (SupaIntake::GetInstance().GetIntakeDown()) {
-        LEDs::GetInstance().SetPattern(alliance ? LEDs::LEDstates::BLUEYELLOW : LEDs::LEDstates::REDYELLOW);
+        LEDs::GetInstance().SetPattern(GetAlliance() == 'B' ? LEDs::LEDstates::BLUEYELLOW : LEDs::LEDstates::REDYELLOW);
       } else {
-        LEDs::GetInstance().SetPattern(alliance ? LEDs::LEDstates::BLUE : LEDs::LEDstates::RED);
+        LEDs::GetInstance().SetPattern(GetAlliance() == 'B' ? LEDs::LEDstates::BLUE : LEDs::LEDstates::RED);
       }
 
     } else if (mode == kDisabled) {
@@ -364,7 +349,7 @@ Robot::Robot()
     SwerveDrive::GetInstance().Update(mode, t);
     Shooter::GetInstance().Update(mode, t);
     SupaIntake::GetInstance().Update(mode, t);
-    LEDs::GetInstance().Update(mode, globalAlliance);
+    LEDs::GetInstance().Update(mode);
     Indexer::GetInstance().Update(mode);
   }};
 
@@ -462,6 +447,16 @@ bool Robot::HubActive() {
   else if (t_match > 30) { return !shift1Active; } 
   else { return true; }
 }
+
+char GetAlliance() {
+  auto alliance = frc::DriverStation::GetAlliance();
+  if (alliance.has_value()) {
+    return (alliance.value() == frc::DriverStation::Alliance::kRed ? 'R' : 'B');
+  } else {
+    return 'N';
+  }
+}
+
 
 #ifndef RUNNING_FRC_TESTS
 int main(int argc, char **argv) { frc::StartRobot<Robot>(); }

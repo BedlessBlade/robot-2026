@@ -34,8 +34,8 @@ public:
   void TeleopInit() override;
 
   bool HubActive();
+  char GetAlliance();
 
-  std::string globalAlliance = "None";
   bool isXButtonPressed = false;
 
 private:

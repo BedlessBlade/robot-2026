@@ -16,7 +16,7 @@ void LEDs::SetPattern(LEDs::LEDstates state){
 }
 
 //Main function; causes the LEDs to change in accordance with inputs.
-void LEDs::Update(Robot::Mode mode, std::string alliance) {
+void LEDs::Update(Robot::Mode mode) {
   if (m_state > 0 && m_state < 10) {
     std::vector<frc::LEDPattern>{ 
       m_off, m_red, m_blue, m_redBreathe, m_blueBreathe, m_redYellow, m_blueYellow, m_redYellowScroll, m_blueYellowScroll, m_redYellowReverse, m_blueYellowReverse
