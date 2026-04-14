@@ -46,7 +46,7 @@ AutoCenterTwo::AutoCenterTwo(frc::DriverStation::Alliance alliance, int position
       std::vector<frc::Pose2d>{
         Locations::GetInstance().GetStartPosition(alliance, position),
         Locations::GetInstance().GetCenterPosition(alliance, onLeft)[0]
-      }, false, false, true));
+      }, false, false));
 
     m_tasks.push_back(std::make_shared<FollowPath>(
       std::vector<frc::Pose2d>{
@@ -78,7 +78,7 @@ AutoCenterTwo::AutoCenterTwo(frc::DriverStation::Alliance alliance, int position
       std::vector<frc::Pose2d>{
         Locations::GetInstance().GetCenterPosition(alliance, onLeft)[0],
         Locations::GetInstance().GetShootingPosition(alliance, onLeft),
-      }, false, false, true));
+      }, false, false));
 
     // empty the hopper
     m_tasks.push_back(std::make_shared<StartShooter>());
@@ -91,5 +91,5 @@ AutoCenterTwo::AutoCenterTwo(frc::DriverStation::Alliance alliance, int position
     std::vector<frc::Pose2d>{
       Locations::GetInstance().GetShootingPosition(alliance, onLeft),
       Locations::GetInstance().GetCenterPosition(alliance, onLeft)[0],
-    }, false, false, true));
+    }, false, false));
 }

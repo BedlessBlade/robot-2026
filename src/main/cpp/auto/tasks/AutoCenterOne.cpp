@@ -57,15 +57,22 @@ AutoCenterOne::AutoCenterOne(frc::DriverStation::Alliance alliance, int position
   m_tasks.push_back(std::make_shared<FollowPath>(
     std::vector<frc::Pose2d>{
       Locations::GetInstance().GetShootingPosition(alliance, onLeft),
+      Locations::GetInstance().GetStartPosition(alliance, onLeft ? 2 : 4),
       Locations::GetInstance().GetCenterPosition(alliance, onLeft)[0]
-    }, false, false, true));
+    }, false, false));
     
   m_tasks.push_back(std::make_shared<FollowPath>(
     std::vector<frc::Pose2d>{
       Locations::GetInstance().GetCenterPosition(alliance, onLeft)[0],
       Locations::GetInstance().GetCenterPosition(alliance, onLeft)[1],
+    }, false, false));
+
+  //fails here
+  m_tasks.push_back(std::make_shared<FollowPath>(
+    std::vector<frc::Pose2d>{
+      Locations::GetInstance().GetCenterPosition(alliance, onLeft)[1],
       Locations::GetInstance().GetCenterPosition(alliance, onLeft)[2]
-    }));
+    }, false, false));
   
   // starts intake & moves forward to collect balls
   m_tasks.push_back(std::make_shared<StartIntake>());
@@ -90,7 +97,7 @@ AutoCenterOne::AutoCenterOne(frc::DriverStation::Alliance alliance, int position
     std::vector<frc::Pose2d>{
       Locations::GetInstance().GetCenterPosition(alliance, onLeft)[0],
       Locations::GetInstance().GetShootingPosition(alliance, onLeft),
-    }, false, false, true));
+    }, false, false));
   
   // shoot balls for 2 seconds - should be enough to empty hopper
   m_tasks.push_back(std::make_shared<StartShooter>());
@@ -102,5 +109,5 @@ AutoCenterOne::AutoCenterOne(frc::DriverStation::Alliance alliance, int position
     std::vector<frc::Pose2d>{
       Locations::GetInstance().GetShootingPosition(alliance, onLeft),
       Locations::GetInstance().GetCenterPosition(alliance, onLeft)[0],
-    }, false, false, true));
+    }, false, false));
 }

@@ -4,7 +4,9 @@
 #include "systems/SupaIntake.h"
 #include "systems/System.h"
 
-SupaIntake::SupaIntake() {}
+SupaIntake::SupaIntake() {
+    // m_intakeDown = (m_intakeSolenoid.Get() == frc::DoubleSolenoid::kReverse);
+}
 
 // Single-use functions
 void SupaIntake::SetMotors(double speed) {

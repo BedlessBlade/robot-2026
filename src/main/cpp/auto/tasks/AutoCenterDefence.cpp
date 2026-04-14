@@ -37,10 +37,10 @@ AutoCenterDefence::AutoCenterDefence(frc::DriverStation::Alliance alliance, int 
     std::vector<frc::Pose2d>{
       Locations::GetInstance().GetStartPosition(alliance, position),
       Locations::GetInstance().GetCenterPosition(alliance, onLeft)[5]
-    }, false, false, true));
+    }, false, false));
   
   // Moves forward to disturb fuel + other robots
     m_tasks.push_back(std::make_shared<DriveVelocity>(0, (onLeft ? -1 : 1) * 0.5, (onLeft ? -1 : 1) * Constants::kPathFollowingMaxW));
-    m_tasks.push_back(std::make_shared<Delay>(1));
+    m_tasks.push_back(std::make_shared<Delay>(4));
     m_tasks.push_back(std::make_shared<DriveVelocity>(0, 0, 0));
 }

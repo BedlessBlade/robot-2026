@@ -83,11 +83,11 @@ public:
 
 
   // Vision
-  static constexpr frc::Transform3d kRightCameraTransform{
+  static constexpr frc::Transform3d kLeftCameraTransform{
       frc::Translation3d{-6.229_in, 12.941_in, 26.747_in},
       frc::Rotation3d{0_rad, 0_rad, -35_deg}};
 
-  static constexpr frc::Transform3d kLeftCameraTransform{
+  static constexpr frc::Transform3d kRightCameraTransform{
       frc::Translation3d{-6.229_in, 10.058_in, 26.747_in},
       frc::Rotation3d{0_rad, 0_rad, 35_deg}};
 
@@ -127,7 +127,7 @@ public:
   static constexpr double kPathFollowingAngleKp = 3.0;
   static constexpr double kPathFollowingAngleKi = 0.0;
   static constexpr double kPathFollowingAngleKd = 0.0;
-  static constexpr double kPathFollowingTau = 0.05;
+  static constexpr double kPathFollowingTau = 0.0;
   static constexpr double kPathFollowingMaxV = 2;                   // meters per second
   static constexpr double kPathFollowingMaxW = 5;                   // radians per second
   static constexpr double kPathFollowingTolerance = 0.15;           // meters
@@ -162,7 +162,7 @@ public:
   static constexpr int kShooterMotorLeftId = 18;
 
   // Shooter motor PID/ FF gains
-  static constexpr double kShooterMotorP = 0.4; // was 0.15
+  static constexpr double kShooterMotorP = 0.2; // was 0.15
   static constexpr double kShooterMotorI = 0.0;
   static constexpr double kShooterMotorD = 0.0;
   static constexpr double kShooterMotorV = 0.12;
@@ -184,8 +184,8 @@ public:
   static constexpr double kShooterAzimuthP = 0.15;
   static constexpr double kShooterAzimuthI = 0.0;
   static constexpr double kShooterAzimuthD = 1.5;
-  static constexpr double kMinAzimuthOutput = -1;
-  static constexpr double kMaxAzimuthOutput = 1;
+  static constexpr double kMinAzimuthOutput = -0.75;
+  static constexpr double kMaxAzimuthOutput = 0.75;
 
   static constexpr double kShooterAzimuthS = 0.0;
   static constexpr double kShooterAzimuthV = 0.00109;

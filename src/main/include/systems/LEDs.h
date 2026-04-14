@@ -17,7 +17,7 @@ class LEDs : public System {
       return instance;
     }
 
-    enum LEDstates { OFF, RED, BLUE, BREATHERED, BREATHBLUE, REDYELLOW, BLUEYELLOW, REDYELLOWSCROLL, BLUEYELLOWSCROLL, REDYELLOWREVERSE, BLUEYELLOWREVERSE, GREEN};
+    enum LEDstates { OFF, RED, BLUE, BREATHERED, BREATHBLUE, REDYELLOW, BLUEYELLOW, REDYELLOWSCROLL, BLUEYELLOWSCROLL, REDYELLOWREVERSE, BLUEYELLOWREVERSE };
     
     //Creates functions defined in LEDs.cpp
     void SetPattern(LEDs::LEDstates state);
@@ -29,7 +29,7 @@ class LEDs : public System {
 
     frc::AddressableLED m_led{Constants::kLEDSportid}; //change this when adding LEDs to the robot to the rio port they are plugged into 
     std::array<frc::AddressableLED::LEDData, Constants::kLEDSlength> m_ledBuffer;
-    // units::meter_t kLedSpacing{1 / 60.0};
+    units::meter_t kLedSpacing{1 / 60.0};
 
     //Defines static patterns.
     frc::LEDPattern m_off = frc::LEDPattern::Off();
@@ -146,7 +146,6 @@ class LEDs : public System {
     });
     frc::LEDPattern m_blueYellowScroll = m_blueYellow.ScrollAtRelativeSpeed(0.15_Hz);
     frc::LEDPattern m_blueYellowReverse = m_blueYellow.ScrollAtRelativeSpeed(-0.15_Hz);
-    frc::LEDPattern m_green = frc::LEDPattern::Solid(frc::Color::kGreen);
 
     LEDs();
 };

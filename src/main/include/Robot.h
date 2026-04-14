@@ -65,9 +65,6 @@ private:
   bool m_braking = false;
   bool m_intaking = false;
 
-  int code_index;
-  bool code_next = true;
-
   inline void ResetAlignControllers() {
     for (int i = 0; i < 3; i++) {
       m_alignControllers[i].Reset();

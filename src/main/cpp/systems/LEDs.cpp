@@ -4,7 +4,8 @@
 
 LEDs::LEDs() {
   //Initializes the LEDs.
-  m_off.ApplyTo(m_ledBuffer);
+  m_state = LEDstates::RED;
+  m_red.ApplyTo(m_ledBuffer);
   
   m_led.SetLength(Constants::kLEDSlength);
   m_led.SetData(m_ledBuffer);
@@ -17,9 +18,9 @@ void LEDs::SetPattern(LEDs::LEDstates state){
 
 //Main function; causes the LEDs to change in accordance with inputs.
 void LEDs::Update(Robot::Mode mode) {
-  if (m_state > 0 && m_state < 10) {
+  if (m_state > 0 && m_state < 12) {
     std::vector<frc::LEDPattern>{ 
-      m_off, m_red, m_blue, m_redBreathe, m_blueBreathe, m_redYellow, m_blueYellow, m_redYellowScroll, m_blueYellowScroll, m_redYellowReverse, m_blueYellowReverse, m_green
+      m_off, m_red, m_blue, m_redBreathe, m_blueBreathe, m_redYellow, m_blueYellow, m_redYellowScroll, m_blueYellowScroll, m_redYellowReverse, m_blueYellowReverse
     }[m_state].ApplyTo(m_ledBuffer);
   }
   //Pushes the new color to the LEDs.

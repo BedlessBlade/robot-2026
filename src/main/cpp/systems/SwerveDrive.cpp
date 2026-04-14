@@ -150,49 +150,49 @@ void SwerveDrive::Update(Robot::Mode mode, double t) {
     double vy = m_vy;
     double w = m_w;
 
-    if (mode == Robot::kTeleop && m_rampEnabled) {
-      if (Shooter::GetInstance().GetShooterState() != Shooter::shooterStates::IDLE) {
-        if (m_fastFilter) {
-          m_fastFilter = false;
-          m_filterXFast.Reset(units::meters_per_second_t{m_vx});
-          m_filterYFast.Reset(units::meters_per_second_t{m_vy});
-          m_filterWFast.Reset(units::radians_per_second_t{m_w});
+    // if (mode == Robot::kTeleop && m_rampEnabled) {
+    //   if (Shooter::GetInstance().GetShooterState() != Shooter::shooterStates::IDLE) {
+    //     if (m_fastFilter) {
+    //       m_fastFilter = false;
+    //       m_filterXFast.Reset(units::meters_per_second_t{m_vx});
+    //       m_filterYFast.Reset(units::meters_per_second_t{m_vy});
+    //       m_filterWFast.Reset(units::radians_per_second_t{m_w});
 
-        }
-      } else if (!m_fastFilter) {
-        m_fastFilter = true;
-        m_filterXSlow.Reset(units::meters_per_second_t{m_vx});
-        m_filterYSlow.Reset(units::meters_per_second_t{m_vy});
-        m_filterWSlow.Reset(units::radians_per_second_t{m_w});
+    //     }
+    //   } else if (!m_fastFilter) {
+    //     m_fastFilter = true;
+    //     m_filterXSlow.Reset(units::meters_per_second_t{m_vx});
+    //     m_filterYSlow.Reset(units::meters_per_second_t{m_vy});
+    //     m_filterWSlow.Reset(units::radians_per_second_t{m_w});
 
-      }
+    //   }
 
-      if (m_fastFilter) {
-        vx = m_filterXFast.Calculate(units::meters_per_second_t{m_vx}).value();
-        vy = m_filterYFast.Calculate(units::meters_per_second_t{m_vy}).value();
-        w = m_filterWFast.Calculate(units::radians_per_second_t{m_w}).value();
+    //   if (m_fastFilter) {
+    //     vx = m_filterXFast.Calculate(units::meters_per_second_t{m_vx}).value();
+    //     vy = m_filterYFast.Calculate(units::meters_per_second_t{m_vy}).value();
+    //     w = m_filterWFast.Calculate(units::radians_per_second_t{m_w}).value();
 
-      } else {
-        vx = m_filterXSlow.Calculate(units::meters_per_second_t{m_vx}).value();
-        vy = m_filterYSlow.Calculate(units::meters_per_second_t{m_vy}).value();
-        w = m_filterWSlow.Calculate(units::radians_per_second_t{m_w}).value();
+    //   } else {
+    //     vx = m_filterXSlow.Calculate(units::meters_per_second_t{m_vx}).value();
+    //     vy = m_filterYSlow.Calculate(units::meters_per_second_t{m_vy}).value();
+    //     w = m_filterWSlow.Calculate(units::radians_per_second_t{m_w}).value();
         
-      }
+    //   }
 
-      if (m_mode == SwerveDrive::SpeedMode::Medium) {
-        vx *= Constants::kMediumMode;
-        vy *= Constants::kMediumMode;
-      } else if (m_mode == SwerveDrive::SpeedMode::Slow) {
-        vx *= Constants::kSlowMode;
-        vy *= Constants::kSlowMode;
-      }
+    //   if (m_speedMode == SwerveDrive::SpeedMode::Medium) {
+    //     vx *= Constants::kMediumMode;
+    //     vy *= Constants::kMediumMode;
+    //   } else if (m_speedMode == SwerveDrive::SpeedMode::Slow) {
+    //     vx *= Constants::kSlowMode;
+    //     vy *= Constants::kSlowMode;
+    //   }
 
-      if (Shooter::GetInstance().GetShooterState() != Shooter::shooterStates::IDLE) {
-        vx = std::clamp(vx, -Constants::kShootingMode, Constants::kShootingMode);
-        vy = std::clamp(vx, -Constants::kShootingMode, Constants::kShootingMode);
-      }
+    //   if (Shooter::GetInstance().GetShooterState() != Shooter::shooterStates::IDLE) {
+    //     vx = std::clamp(vx, -Constants::kShootingMode, Constants::kShootingMode);
+    //     vy = std::clamp(vx, -Constants::kShootingMode, Constants::kShootingMode);
+    //   }
 
-    }
+    // }
 
     // Use the WPILib kinematics class to determine the individual wheel
     // angles and velocities.
@@ -317,9 +317,9 @@ double SwerveDrive::VelocityMagnitude() {
 }
 
 void SwerveDrive::SetMode(SwerveDrive::SpeedMode mode) {
-  m_mode = mode;
+  m_speedMode = mode;
 }
 
 SwerveDrive::SpeedMode SwerveDrive::GetMode() {
-  return m_mode;
+  return m_speedMode;
 }

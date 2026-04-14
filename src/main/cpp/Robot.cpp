@@ -33,6 +33,7 @@
 #include "auto/tasks/AutoCenterDepot.h"
 #include "auto/tasks/AutoCenterOne.h"
 #include "auto/tasks/AutoCenterTwo.h"
+#include "auto/tasks/AutoCenterDefence.h"
 
 
 // This gets called first. So, initialize everything here.
@@ -59,6 +60,7 @@ Robot::Robot()
   m_autoChooser.AddOption("To Neutral Zone (1 Sweep)", "CenterOne");
   m_autoChooser.AddOption("To Neutral Zone (2 Sweeps)", "CenterTwo");
   m_autoChooser.AddOption("To Neutral & Depot", "CenterDepot");
+  m_autoChooser.AddOption("spin", "CenterDefence");
 
   frc::SmartDashboard::PutData("Start Location", &m_startChooser);
   frc::SmartDashboard::PutData("Auto", &m_autoChooser);
@@ -92,6 +94,7 @@ Robot::Robot()
     
     // update variables used throughout the loop
     double t = frc::Timer::GetFPGATimestamp().value();
+
     if (frc::DriverStation::GetAlliance().has_value()) {
       m_alliance = (frc::DriverStation::GetAlliance().value() == frc::DriverStation::Alliance::kRed ? 'R' : 'B');
     } else {
@@ -100,6 +103,7 @@ Robot::Robot()
 
     m_field.SetRobotPose(SwerveDrive::GetInstance().GetPose2d());
     m_currentPose = SwerveDrive::GetInstance().GetPose2d();
+    
     frc::SmartDashboard::PutString("Pose (Inches)", 
       "(" + std::to_string(m_currentPose.X().value() * Constants::kInchesPerMeter) + ", " + 
             std::to_string(m_currentPose.Y().value() * Constants::kInchesPerMeter) + ", " +
@@ -249,14 +253,12 @@ Robot::Robot()
         SwerveDrive::GetInstance().DriveVelocity(0, 0, 0);
       } else {
         if (m_autoAlignMode == kRamp) {
-          auto robotPose = SwerveDrive::GetInstance().GetPose2d();
-
-          vy = std::clamp(m_alignControllers[1].Update(robotPose.Translation().Y().value(), m_autoAlignSetpoint.Translation().Y().value()), 
+          vy = std::clamp(m_alignControllers[1].Update(m_currentPose.Translation().Y().value(), m_autoAlignSetpoint.Translation().Y().value()), 
             -Constants::kPathFollowingMaxV, Constants::kPathFollowingMaxV);
             
           double angleSetpoint = m_autoAlignSetpoint.Rotation().Radians().value();
           
-          double currentAngle = robotPose.Rotation().Radians().value();
+          double currentAngle = m_currentPose.Rotation().Radians().value();
           double angleError = angleSetpoint - currentAngle;
           if (angleError > M_PI) {
             angleSetpoint -= 2 * M_PI;
@@ -329,9 +331,7 @@ Robot::Robot()
 
 
       // led handler
-      if (code_index == 11) {
-        LEDs::GetInstance().SetPattern(LEDs::LEDstates::GREEN);
-      } else if (HubActive()) {
+      if (HubActive()) {
         LEDs::GetInstance().SetPattern(m_alliance == 'B' ? LEDs::LEDstates::BREATHBLUE : LEDs::LEDstates::BREATHERED);
       } else if (SupaIntake::GetInstance().GetIntakeDown()) {
         LEDs::GetInstance().SetPattern(m_alliance == 'B' ? LEDs::LEDstates::BLUEYELLOW : LEDs::LEDstates::REDYELLOW);
@@ -348,36 +348,6 @@ Robot::Robot()
         SwerveDrive::GetInstance().Coast();
         m_braking = false;
       }
-    }
-
-      // secret
-    if (!code_next && code_index < 11) { 
-      if (code_index > 0 && code_index < 9) {
-        if (Controllers::GetInstance().GetDriverController().GetPOV() == -1) { code_next = true; }
-      } else if (code_index == 9) {
-        if (!Controllers::GetInstance().GetDriverController().GetBButton()) { code_next = true; }
-      } else if (code_index == 10) {
-        if (!Controllers::GetInstance().GetDriverController().GetAButton()) { code_next = true; }
-      }
-    }
-
-    if (code_next) {
-      if (code_index == 0 || code_index == 1) {
-        if (Controllers::GetInstance().GetDriverController().GetPOV() == 0) { code_index++; }
-      } else if (code_index == 2 || code_index == 3) {
-        if (Controllers::GetInstance().GetDriverController().GetPOV() == 180) { code_index++; }
-      } else if (code_index == 4 || code_index == 6) {
-        if (Controllers::GetInstance().GetDriverController().GetPOV() == 270) { code_index++; }
-      } else if (code_index == 5 || code_index == 7) {
-        if (Controllers::GetInstance().GetDriverController().GetPOV() == 90) { code_index++; }
-      } else if (code_index == 8) {
-        if (Controllers::GetInstance().GetDriverController().GetBButtonPressed()) { code_index++; }
-      } else if (code_index == 9) {
-        if (Controllers::GetInstance().GetDriverController().GetAButtonPressed()) { code_index++; }
-      } else if (code_index == 10) {
-        if (Controllers::GetInstance().GetDriverController().GetStartButtonPressed()) { code_index++; }
-      } 
-      code_next = false;
     }
 
     // Call update functions for subsystems instances
@@ -405,8 +375,6 @@ void Robot::DisabledExit() {
 
   auto alliance = frc::DriverStation::GetAlliance();
   if (alliance.has_value()) {
-    Locations::GetInstance().Generate(alliance.value());
-
     frc::Pose2d start = Locations::GetInstance().GetStartPosition(alliance.value(), m_startChooser.GetSelected());
     SwerveDrive::GetInstance().ResetPose(start);
 
@@ -432,6 +400,8 @@ void Robot::DisabledExit() {
       m_auto = std::make_shared<AutoCenterTwo>(alliance.value(), m_startChooser.GetSelected());
     } else if (autoName == "CenterDepot") {
       m_auto = std::make_shared<AutoCenterDepot>(alliance.value(), m_startChooser.GetSelected());
+    } else if (autoName == "CenterDefence") {
+      m_auto = std::make_shared<AutoCenterDefence>(alliance.value(), m_startChooser.GetSelected());
 
     // autodonothing!!!
     } else { 

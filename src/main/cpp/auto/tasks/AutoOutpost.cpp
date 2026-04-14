@@ -61,5 +61,5 @@ AutoOutpost::AutoOutpost(frc::DriverStation::Alliance alliance, int position) {
     std::vector<frc::Pose2d>{
       Locations::GetInstance().GetStartPosition(alliance, 4),
       Locations::GetInstance().GetCenterPosition(alliance, false)[0]
-    }, false, false, true));
+    }, false, false));
 }

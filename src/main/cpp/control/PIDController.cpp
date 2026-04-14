@@ -28,8 +28,8 @@ double PIDController::Update(double current, double setpoint, double dt) {
 
   m_integral += error * dt;
 
-  double rate = dTermFilter.Calculate((error - m_lastError) / dt);
+  double rate = (error - m_lastError) / dt;
   m_lastError = error;
 
-  return m_kP * error + m_kI * m_integral + m_kD * rate;
+  return m_kP * error + m_kI * m_integral;// + m_kD * rate;
 }

@@ -50,7 +50,7 @@ void ShotCalculator::CalculateShotParams(frc::Translation2d goalPosition, units:
     m_turretAngle = angleFilter.Calculate(units::degree_t{std::fmod(goalAngle.value(), 360.0)});
     m_turretVelocity = velocityFilter.Calculate((m_turretAngle - m_lastTurretAngle)/0.005_s); // Backwards difference method, turret velocity setpoint
     m_lastTurretAngle = m_turretAngle;
-    m_shooterVelocity = units::turns_per_second_t{Constants::kDist2TPSA * 0.98 * pow(lookAheadDistanceToGoal.value(), Constants::kDist2TPSB)}; // Fudge added at comp, need to retune
+    m_shooterVelocity = units::turns_per_second_t{Constants::kDist2TPSA * 0.97 * pow(lookAheadDistanceToGoal.value(), Constants::kDist2TPSB)}; // Fudge added at comp, need to retune
 }
 
 // Shooter wheel velocity getter (RPS or Rev/s)

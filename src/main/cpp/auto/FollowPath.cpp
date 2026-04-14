@@ -4,8 +4,8 @@
 #include "systems/SwerveDrive.h"
 #include <iostream>
 
-FollowPath::FollowPath(std::vector<frc::Pose2d> points, bool resetPose, bool persist, bool slow)
-  : m_points{points}, m_resetPose{resetPose}, m_persist{persist}, m_slow{slow} {}
+FollowPath::FollowPath(std::vector<frc::Pose2d> points, bool resetPose, bool persist)
+  : m_points{points}, m_resetPose{resetPose}, m_persist{persist} {}
 
 void FollowPath::Start(double t) {
   if (m_resetPose && m_points.size() > 0) {
@@ -31,12 +31,10 @@ void FollowPath::Update(double t) {
 
   auto robotPose = SwerveDrive::GetInstance().GetPose2d();
   
-  auto vx = (m_slow ? Constants::kSlowMode : 1) * 
-    std::clamp(m_controllers[0].Update(robotPose.Translation().X().value(), m_points[m_pointIndex].Translation().X().value()), 
+  auto vx = std::clamp(m_controllers[0].Update(robotPose.Translation().X().value(), m_points[m_pointIndex].Translation().X().value()), 
       -Constants::kPathFollowingMaxV, Constants::kPathFollowingMaxV);
 
-  auto vy = (m_slow ? Constants::kSlowMode : 1) * 
-    std::clamp(m_controllers[1].Update(robotPose.Translation().Y().value(), m_points[m_pointIndex].Translation().Y().value()), 
+  auto vy = std::clamp(m_controllers[1].Update(robotPose.Translation().Y().value(), m_points[m_pointIndex].Translation().Y().value()), 
       -Constants::kPathFollowingMaxV, Constants::kPathFollowingMaxV);
     
   double angleSetpoint = m_points[m_pointIndex].Rotation().Radians().value();
@@ -59,14 +57,13 @@ void FollowPath::Update(double t) {
 }
 
 void FollowPath::Stop() {
-  SwerveDrive::GetInstance().DriveVelocity(0, 0, 0);
+  SwerveDrive::GetInstance().DriveVelocity();
   SwerveDrive::GetInstance().EnableRamp();
 }
 
 bool FollowPath::IsDone() const {
-  if (m_started && !m_persist && AtPoint() &&
-         SwerveDrive::GetInstance().VelocityMagnitude() < Constants::kPathFollowingVelocityTolerance) {
-    SwerveDrive::GetInstance().DriveVelocity(0.0, 0.0, 0.0);
+  if (m_started && !m_persist && AtPoint() && SwerveDrive::GetInstance().VelocityMagnitude() < Constants::kPathFollowingVelocityTolerance) {
+    SwerveDrive::GetInstance().DriveVelocity();
     std::cout << "done!\n";
     return true;
   } else {

@@ -86,7 +86,7 @@ private:
 
   bool m_rampEnabled = true;
   bool m_fastFilter = true;
-  SpeedMode m_mode;
+  SpeedMode m_speedMode;
 
 
   // Make the constructor private so that the GetInstance() function must be
