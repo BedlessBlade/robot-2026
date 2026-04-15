@@ -109,6 +109,7 @@ Robot::Robot()
             std::to_string(m_currentPose.Y().value() * Constants::kInchesPerMeter) + ", " +
             std::to_string(m_currentPose.Rotation().Degrees().value()) + ")"); 
     frc::SmartDashboard::PutBoolean("Intake Down?", SupaIntake::GetInstance().GetIntakeDown());
+    frc::SmartDashboard::PutString("alliance yuh", std::to_string(frc::DriverStation::GetAlliance().value()) + ", " + m_alliance);
 
 
     if (mode != kDisabled) {
@@ -218,11 +219,12 @@ Robot::Robot()
 
       // Slow/ Medium Mode
       if (Controllers::GetInstance().GetDriverController().GetRightTriggerAxis() > 0.5) {
-        SwerveDrive::GetInstance().SetMode(SwerveDrive::SpeedMode::Slow);
+        vy *= Constants::kSlowMode;
+        vx *= Constants::kSlowMode;
+
       } else if (Controllers::GetInstance().GetDriverController().GetLeftTriggerAxis() > 0.5) {
-        SwerveDrive::GetInstance().SetMode(SwerveDrive::SpeedMode::Medium);
-      } else {
-        SwerveDrive::GetInstance().SetMode(SwerveDrive::SpeedMode::Fast);
+        vx *= Constants::kMediumMode;
+        vy *= Constants::kMediumMode;
       }
 
       // Brake Mode
@@ -458,11 +460,6 @@ bool Robot::HubActive() {
 int main(int argc, char **argv) { frc::StartRobot<Robot>(); }
 #endif
 
-
-
-
-
-// display outputdpwm
 
 // camera feed front and back
 

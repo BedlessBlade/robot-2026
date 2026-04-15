@@ -32,10 +32,10 @@ void FollowPath::Update(double t) {
   auto robotPose = SwerveDrive::GetInstance().GetPose2d();
   
   auto vx = std::clamp(m_controllers[0].Update(robotPose.Translation().X().value(), m_points[m_pointIndex].Translation().X().value()), 
-      -Constants::kPathFollowingMaxV, Constants::kPathFollowingMaxV);
+    -Constants::kPathFollowingMaxV, Constants::kPathFollowingMaxV);
 
   auto vy = std::clamp(m_controllers[1].Update(robotPose.Translation().Y().value(), m_points[m_pointIndex].Translation().Y().value()), 
-      -Constants::kPathFollowingMaxV, Constants::kPathFollowingMaxV);
+    -Constants::kPathFollowingMaxV, Constants::kPathFollowingMaxV);
     
   double angleSetpoint = m_points[m_pointIndex].Rotation().Radians().value();
   
@@ -49,32 +49,23 @@ void FollowPath::Update(double t) {
     -Constants::kPathFollowingMaxW, Constants::kPathFollowingMaxW);
 
   SwerveDrive::GetInstance().DriveVelocity(vx, vy, w);
-
-  std::cout << m_points[m_pointIndex].X().value() << ", "
-            << m_points[m_pointIndex].Y().value() << ", "
-            << m_points[m_pointIndex].Rotation().Degrees().value() << " - " 
-            << angleSetpoint << "\n";
 }
 
 void FollowPath::Stop() {
-  SwerveDrive::GetInstance().DriveVelocity();
+  SwerveDrive::GetInstance().DriveVelocity(0, 0, 0);
   SwerveDrive::GetInstance().EnableRamp();
 }
 
 bool FollowPath::IsDone() const {
-  if (m_started && !m_persist && AtPoint() && SwerveDrive::GetInstance().VelocityMagnitude() < Constants::kPathFollowingVelocityTolerance) {
-    SwerveDrive::GetInstance().DriveVelocity();
-    std::cout << "done!\n";
-    return true;
-  } else {
-    return false;
-  }
+  return m_started && !m_persist && AtPoint() &&
+         SwerveDrive::GetInstance().VelocityMagnitude() <
+             Constants::kPathFollowingVelocityTolerance;
 }
 
 bool FollowPath::AtPoint() const {
-  return (SwerveDrive::GetInstance().GetPose2d().Translation()
+  return SwerveDrive::GetInstance()
+             .GetPose2d()
+             .Translation()
              .Distance(m_points[m_pointIndex].Translation())
-             .value() < Constants::kPathFollowingTolerance //&& 
-          // std::abs(SwerveDrive::GetInstance().GetPose2d().Rotation().Degrees().value() - m_points[m_pointIndex].Rotation().Degrees().value()) < Constants::kPathFollowingAngleTolerance
-        );
+             .value() < Constants::kPathFollowingTolerance;
 }

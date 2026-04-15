@@ -6,6 +6,8 @@
 #include "Constants.h"
 #include "System.h"
 
+using namespace ctre::phoenix6;
+
 class SupaIntake : public System {
 
 public:

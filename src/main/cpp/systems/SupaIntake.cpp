@@ -4,8 +4,13 @@
 #include "systems/SupaIntake.h"
 #include "systems/System.h"
 
+
+
 SupaIntake::SupaIntake() {
-    // m_intakeDown = (m_intakeSolenoid.Get() == frc::DoubleSolenoid::kReverse);
+    //m_intakeDown = (m_intakeSolenoid.Get() == frc::DoubleSolenoid::kForward);
+    // Create a current limit config to apply to the drive motors
+    //auto currentLimitConfig = configs::CurrentLimitsConfigs{}.WithSupplyCurrentLimitEnable(true).WithSupplyCurrentLimit(units::ampere_t{30});
+    //m_intakeMotor.GetConfigurator().Apply(configs::TalonFXConfiguration{}.WithCurrentLimits(currentLimitConfig));
 }
 
 // Single-use functions

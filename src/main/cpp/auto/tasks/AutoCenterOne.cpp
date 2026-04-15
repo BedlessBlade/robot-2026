@@ -32,13 +32,13 @@ AutoCenterOne::AutoCenterOne(frc::DriverStation::Alliance alliance, int position
   bool onLeft = position < 3;
 
   // safeguard to prevent auto from running when not in the right position
-  if (position != 2 && position != 4) {
-    // m_tasks.push_back(std::make_shared<FollowPath>(
-    //   std::vector<frc::Pose2d>{
-    //     Locations::GetInstance().GetStartPosition(alliance, position),
-    //     Locations::GetInstance().GetStartPosition(alliance, position + (onLeft ? 1 : -1))
-    //   }, false, false));
-  return; }
+  // if (position != 2 && position != 4) {
+  //   // m_tasks.push_back(std::make_shared<FollowPath>(
+  //   //   std::vector<frc::Pose2d>{
+  //   //     Locations::GetInstance().GetStartPosition(alliance, position),
+  //   //     Locations::GetInstance().GetStartPosition(alliance, position + (onLeft ? 1 : -1))
+  //   //   }, false, false));
+  // return; }
 
   // back up to shoot
   m_tasks.push_back(std::make_shared<DeployIntake>());
@@ -80,7 +80,7 @@ AutoCenterOne::AutoCenterOne(frc::DriverStation::Alliance alliance, int position
     std::vector<frc::Pose2d>{
       Locations::GetInstance().GetCenterPosition(alliance, onLeft)[2],
       Locations::GetInstance().GetCenterPosition(alliance, onLeft)[3],
-    }));
+    }, false, false));
   
   // give time for intake to finish intaking
   m_tasks.push_back(std::make_shared<Delay>(Constants::kIntakeAutoProcessingTime));
@@ -91,7 +91,7 @@ AutoCenterOne::AutoCenterOne(frc::DriverStation::Alliance alliance, int position
     std::vector<frc::Pose2d>{
       Locations::GetInstance().GetCenterPosition(alliance, onLeft)[3],
       Locations::GetInstance().GetCenterPosition(alliance, onLeft)[0]
-    }));
+    }, false, false));
   
   m_tasks.push_back(std::make_shared<FollowPath>(
     std::vector<frc::Pose2d>{
