@@ -109,7 +109,6 @@ Robot::Robot()
             std::to_string(m_currentPose.Y().value() * Constants::kInchesPerMeter) + ", " +
             std::to_string(m_currentPose.Rotation().Degrees().value()) + ")"); 
     frc::SmartDashboard::PutBoolean("Intake Down?", SupaIntake::GetInstance().GetIntakeDown());
-    frc::SmartDashboard::PutString("alliance yuh", std::to_string(frc::DriverStation::GetAlliance().value()) + ", " + m_alliance);
 
 
     if (mode != kDisabled) {
@@ -368,8 +367,7 @@ Robot::Robot()
 Robot::~Robot() {}
 
 // Ensure this matches the declaration in Robot.h (typically: void DisabledInit();)
-void Robot::DisabledInit() {
-}
+void Robot::DisabledInit() { }
 
 void Robot::DisabledExit() {
   SwerveDrive::GetInstance().Coast();
@@ -445,7 +443,7 @@ bool Robot::HubActive() {
       return true;
     }
 
-  // Shift was is active for blue if red won auto, or red if blue won auto.
+  // Shift is active for blue if red won auto, or red if blue won auto.
   bool shift1Active = (alliance.value() ? redInactiveFirst : !redInactiveFirst);
 
   if (t_match > 130) { return true; } 

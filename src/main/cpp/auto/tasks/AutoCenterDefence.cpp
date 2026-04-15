@@ -40,7 +40,7 @@ AutoCenterDefence::AutoCenterDefence(frc::DriverStation::Alliance alliance, int 
     }, false, false));
   
   // Moves forward to disturb fuel + other robots
-    m_tasks.push_back(std::make_shared<DriveVelocity>(0, (onLeft ? -1 : 1) * 0.5, (onLeft ? -1 : 1) * Constants::kPathFollowingMaxW));
+    m_tasks.push_back(std::make_shared<DriveVelocity>(0, (onLeft ? -0.5 : 0.5), (onLeft ? -1 : 1) * Constants::kPathFollowingMaxW));
     m_tasks.push_back(std::make_shared<Delay>(4));
-    m_tasks.push_back(std::make_shared<DriveVelocity>(0, 0, 0));
+    m_tasks.push_back(std::make_shared<DriveVelocity>());
 }

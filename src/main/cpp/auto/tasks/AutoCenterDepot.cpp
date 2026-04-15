@@ -37,11 +37,6 @@ AutoCenterDepot::AutoCenterDepot(frc::DriverStation::Alliance alliance, int posi
     m_tasks.push_back(std::make_shared<FollowPath>(
         std::vector<frc::Pose2d>{
             Locations::GetInstance().GetStartPosition(alliance, position),
-            Locations::GetInstance().GetCenterPosition(alliance, onLeft)[0]
-        }, false, false));
-
-    m_tasks.push_back(std::make_shared<FollowPath>(
-        std::vector<frc::Pose2d>{
             Locations::GetInstance().GetCenterPosition(alliance, onLeft)[0],
             Locations::GetInstance().GetCenterPosition(alliance, onLeft)[1],
             Locations::GetInstance().GetCenterPosition(alliance, onLeft)[2]
@@ -68,13 +63,8 @@ AutoCenterDepot::AutoCenterDepot(frc::DriverStation::Alliance alliance, int posi
         m_tasks.push_back(std::make_shared<FollowPath>(
             std::vector<frc::Pose2d>{
                 Locations::GetInstance().GetCenterPosition(alliance, true)[3],
-                Locations::GetInstance().GetCenterPosition(alliance, true)[0]
-            }, false, false));
-        
-        m_tasks.push_back(std::make_shared<FollowPath>(
-            std::vector<frc::Pose2d>{
                 Locations::GetInstance().GetCenterPosition(alliance, true)[0],
-                Locations::GetInstance().GetShootingPosition(alliance, true),
+                Locations::GetInstance().GetShootingPosition(alliance, true)
             }, false, false));
 
     // path for right side - crosses neutral zone to get to left side, then follows left center to end
@@ -134,14 +124,8 @@ AutoCenterDepot::AutoCenterDepot(frc::DriverStation::Alliance alliance, int posi
     
     m_tasks.push_back(std::make_shared<FollowPath>(
         std::vector<frc::Pose2d>{
-        Locations::GetInstance().GetDepotPosition(alliance)[2],
-        Locations::GetInstance().GetStartPosition(alliance, 2)
-        }, false, false));
-
-    // move into center
-    m_tasks.push_back(std::make_shared<FollowPath>(
-        std::vector<frc::Pose2d>{
-        Locations::GetInstance().GetStartPosition(alliance, 2),
-        Locations::GetInstance().GetCenterPosition(alliance, true)[0]
+            Locations::GetInstance().GetDepotPosition(alliance)[2],
+            Locations::GetInstance().GetStartPosition(alliance, 2),
+            Locations::GetInstance().GetCenterPosition(alliance, true)[0]
         }, false, false));
 }
