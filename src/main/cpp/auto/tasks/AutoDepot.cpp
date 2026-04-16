@@ -35,6 +35,7 @@ AutoDepot::AutoDepot(frc::DriverStation::Alliance alliance, int position, bool e
   
   // start the intake and move forward to collect balls
   m_tasks.push_back(std::make_shared<StartIntake>());
+  m_tasks.push_back(std::make_shared<StartShooter>());
   m_tasks.push_back(std::make_shared<FollowPath>(
     std::vector<frc::Pose2d>{
       Locations::GetInstance().GetDepotPosition(alliance)[0], 
@@ -54,10 +55,11 @@ AutoDepot::AutoDepot(frc::DriverStation::Alliance alliance, int position, bool e
     }, false, false));
   
   // shoot collected balls
-  m_tasks.push_back(std::make_shared<StartShooter>());
-  m_tasks.push_back(std::make_shared<Delay>(Constants::kAutoShootFullTime));
+  m_tasks.push_back(std::make_shared<StowIntake>());
+  m_tasks.push_back(std::make_shared<Delay>(1.0));
+  m_tasks.push_back(std::make_shared<DeployIntake>());
+  m_tasks.push_back(std::make_shared<Delay>(1.0));
   m_tasks.push_back(std::make_shared<StopShooter>());
-
 
   // move into center
   if (endInCenter) {
