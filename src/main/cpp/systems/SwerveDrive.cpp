@@ -150,6 +150,12 @@ void SwerveDrive::Update(Robot::Mode mode, double t) {
     double vy = m_vy;
     double w = m_w;
 
+    if (Shooter::GetInstance().GetShooterState() != Shooter::shooterStates::IDLE) {
+        vx *= Constants::kShootingMode;
+        vy *= Constants::kShootingMode;
+        w *= Constants::kShootingMode;
+    }
+
    if (mode == Robot::kTeleop && m_rampEnabled) {
       if (Shooter::GetInstance().GetShooterState() != Shooter::shooterStates::IDLE) {
         if (m_fastFilter) {
@@ -174,11 +180,6 @@ void SwerveDrive::Update(Robot::Mode mode, double t) {
         w = m_filterWFast.Calculate(units::radians_per_second_t{m_w}).value();
 
       } else {
-        // modify x, y, and w when shooting, not using a clamp to respect full stick range
-        vx *= Constants::kShootingMode;
-        vy *= Constants::kShootingMode;
-        w *= Constants::kShootingMode;
-
         // limit acceleration when shooting
         vx = m_filterXSlow.Calculate(units::meters_per_second_t{m_vx}).value();
         vy = m_filterYSlow.Calculate(units::meters_per_second_t{m_vy}).value();
