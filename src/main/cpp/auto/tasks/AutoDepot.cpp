@@ -56,6 +56,8 @@ AutoDepot::AutoDepot(frc::DriverStation::Alliance alliance, int position, bool e
   // shoot collected balls
   m_tasks.push_back(std::make_shared<StartShooter>());
   m_tasks.push_back(std::make_shared<Delay>(Constants::kAutoShootFullTime));
+  m_tasks.push_back(std::make_shared<StopShooter>());
+
 
   // move into center
   if (endInCenter) {
