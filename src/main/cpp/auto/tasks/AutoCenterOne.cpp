@@ -48,7 +48,7 @@ AutoCenterOne::AutoCenterOne(frc::DriverStation::Alliance alliance, int position
     std::vector<frc::Pose2d>{
       Locations::GetInstance().GetCenterPosition(alliance, onLeft)[2],
       Locations::GetInstance().GetCenterPosition(alliance, onLeft)[3],
-    }, false, false));
+    }, false, false, true));
   
   // give time for intake to finish intaking
   m_tasks.push_back(std::make_shared<Delay>(Constants::kIntakeAutoProcessingTime));

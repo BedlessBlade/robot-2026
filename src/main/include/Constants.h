@@ -122,7 +122,7 @@ public:
   static constexpr double kPathFollowingAngleKi = 0.0;
   static constexpr double kPathFollowingAngleKd = 0.0;
   static constexpr double kPathFollowingTau = 0.0;
-  static constexpr double kPathFollowingMaxV = 1.5;                   // meters per second
+  static constexpr double kPathFollowingMaxV = 2;                   // meters per second
   static constexpr double kPathFollowingMaxW = 5;                   // radians per second
   static constexpr double kPathFollowingTolerance = 0.15;           // meters
   static constexpr double kPathFollowingAngleTolerance = 1;         // degrees

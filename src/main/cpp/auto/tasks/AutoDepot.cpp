@@ -35,12 +35,11 @@ AutoDepot::AutoDepot(frc::DriverStation::Alliance alliance, int position, bool e
   
   // start the intake and move forward to collect balls
   m_tasks.push_back(std::make_shared<StartIntake>());
-  m_tasks.push_back(std::make_shared<StartShooter>());
   m_tasks.push_back(std::make_shared<FollowPath>(
     std::vector<frc::Pose2d>{
       Locations::GetInstance().GetDepotPosition(alliance)[0], 
       Locations::GetInstance().GetDepotPosition(alliance)[1]
-    }, false, false));
+    }, false, false, true));
   
   // give time to process
   m_tasks.push_back(std::make_shared<Delay>(Constants::kIntakeAutoProcessingTime));
@@ -50,11 +49,17 @@ AutoDepot::AutoDepot(frc::DriverStation::Alliance alliance, int position, bool e
   m_tasks.push_back(std::make_shared<FollowPath>(
     std::vector<frc::Pose2d>{
       Locations::GetInstance().GetDepotPosition(alliance)[1],
+      Locations::GetInstance().GetDepotPosition(alliance)[0]
+    }, false, false, true));
+
+  m_tasks.push_back(std::make_shared<FollowPath>(
+    std::vector<frc::Pose2d>{
       Locations::GetInstance().GetDepotPosition(alliance)[0],
       Locations::GetInstance().GetDepotPosition(alliance)[2] 
     }, false, false));
   
   // shoot collected balls
+  m_tasks.push_back(std::make_shared<StartShooter>());
   m_tasks.push_back(std::make_shared<StowIntake>());
   m_tasks.push_back(std::make_shared<Delay>(1.0));
   m_tasks.push_back(std::make_shared<DeployIntake>());
