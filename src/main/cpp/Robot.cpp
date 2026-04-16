@@ -114,6 +114,7 @@ Robot::Robot()
             std::to_string(m_currentPose.Y().value() * Constants::kInchesPerMeter) + ", " +
             std::to_string(m_currentPose.Rotation().Degrees().value()) + ")"); 
     frc::SmartDashboard::PutBoolean("Intake Down?", SupaIntake::GetInstance().GetIntakeDown());
+    frc::SmartDashboard::PutBoolean("Shot Valid?", ShotCalculator::GetInstance().ShotValid());
 
 
     if (mode != kDisabled) {

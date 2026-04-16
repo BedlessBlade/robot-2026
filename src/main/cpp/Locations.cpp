@@ -39,6 +39,13 @@ std::vector<frc::Pose2d> Locations::GetDepotPosition(frc::DriverStation::Allianc
       13_in + units::meter_t{Constants::kRobotWidth / 2},
       units::meter_t{Constants::kFieldWidth} - 82.84_in,
       180_deg
+    }.RotateAround(Constants::kFieldCenter, (alliance == frc::DriverStation::Alliance::kRed ? 180_deg : 0_deg)),
+    
+    // 2 - outside depot rotated to face hub
+    frc::Pose2d{
+      13_in + units::meter_t{Constants::kRobotWidth / 2} + 27_in,
+      units::meter_t{Constants::kFieldWidth} - 82.84_in,
+      0_deg
     }.RotateAround(Constants::kFieldCenter, (alliance == frc::DriverStation::Alliance::kRed ? 180_deg : 0_deg))
   };
 }
