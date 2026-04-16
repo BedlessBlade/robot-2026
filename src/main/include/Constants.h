@@ -60,9 +60,9 @@ public:
 
   static constexpr double kDriveCurrentLimit = 60; // Amps
   static constexpr auto kDriveMaxAccelerationFast = units::meters_per_second_t{10} / 1_s;
-  static constexpr auto kDriveMaxAccelerationSlow = units::meters_per_second_t{2} / 1_s;
+  static constexpr auto kDriveMaxAccelerationSlow = units::meters_per_second_t{4} / 1_s;
   static constexpr auto kDriveMaxAngularAccelerationFast = units::radians_per_second_t{50} / 1_s;
-  static constexpr auto kDriveMaxAngularAccelerationSlow = units::radians_per_second_t{2} / 1_s;
+  static constexpr auto kDriveMaxAngularAccelerationSlow = units::radians_per_second_t{20} / 1_s;
   static constexpr double kDriveVelocityMultiplier = 1 / 4.65;
   static constexpr double kDriveGearRatio = 1.0 / 6.75;
   static constexpr double kDriveControlMultipler = 4.65; // meters per second
@@ -122,7 +122,7 @@ public:
   static constexpr double kPathFollowingAngleKi = 0.0;
   static constexpr double kPathFollowingAngleKd = 0.0;
   static constexpr double kPathFollowingTau = 0.0;
-  static constexpr double kPathFollowingMaxV = 2;                   // meters per second
+  static constexpr double kPathFollowingMaxV = 1.5;                   // meters per second
   static constexpr double kPathFollowingMaxW = 5;                   // radians per second
   static constexpr double kPathFollowingTolerance = 0.15;           // meters
   static constexpr double kPathFollowingAngleTolerance = 1;         // degrees
