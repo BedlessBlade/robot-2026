@@ -31,24 +31,12 @@ AutoCenterOne::AutoCenterOne(frc::DriverStation::Alliance alliance, int position
 
   bool onLeft = position < 3;
 
-  // back up to shoot
+  
+  // goes over the ramp and line up to collect balls
   m_tasks.push_back(std::make_shared<DeployIntake>());
   m_tasks.push_back(std::make_shared<FollowPath>(
     std::vector<frc::Pose2d>{
       Locations::GetInstance().GetStartPosition(alliance, position),
-      Locations::GetInstance().GetShootingPosition(alliance, onLeft)
-    }, false, false));
-
-  // shoot preloaded balls
-  m_tasks.push_back(std::make_shared<StartShooter>());
-  m_tasks.push_back(std::make_shared<Delay>(Constants::kAutoShootPreloadTime));  
-  m_tasks.push_back(std::make_shared<StopShooter>());
-  
-  // goes over the ramp and line up to collect balls
-  m_tasks.push_back(std::make_shared<FollowPath>(
-    std::vector<frc::Pose2d>{
-      Locations::GetInstance().GetShootingPosition(alliance, onLeft),
-      Locations::GetInstance().GetStartPosition(alliance, onLeft ? 2 : 4),
       Locations::GetInstance().GetCenterPosition(alliance, onLeft)[0],
       Locations::GetInstance().GetCenterPosition(alliance, onLeft)[1],
       Locations::GetInstance().GetCenterPosition(alliance, onLeft)[2]
