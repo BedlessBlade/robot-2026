@@ -175,9 +175,9 @@ void SwerveDrive::Update(Robot::Mode mode, double t) {
 
       } else {
         // modify x, y, and w when shooting, not using a clamp to respect full stick range
-        vx *= Constants::kShootingMode;
-        vy *= Constants::kShootingMode;
-        w *= Constants::kShootingMode;
+        // vx *= Constants::kShootingMode;
+        // vy *= Constants::kShootingMode;
+        // w *= Constants::kShootingMode;
 
         // limit acceleration when shooting
         vx = m_filterXSlow.Calculate(units::meters_per_second_t{m_vx}).value();
