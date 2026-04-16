@@ -79,14 +79,14 @@ std::vector<frc::Pose2d> Locations::GetCenterPosition(frc::DriverStation::Allian
     frc::Pose2d{
       units::meter_t{Constants::kFieldLength / 2} - 17.975_in, 
       (onLeft ? (units::meter_t{Constants::kFieldWidth} - 25.62_in) : 0_m + 25.62_in), 
-      (onLeft ? -1 : 1) * 75_deg
+      (onLeft ? -1 : 1) * 67.5_deg
     }.RotateAround(Constants::kFieldCenter, (alliance == frc::DriverStation::Alliance::kRed ? 180_deg : 0_deg)),
 
     // 3 - Inside ball island, slightly before field width center
     frc::Pose2d{
       units::meter_t{Constants::kFieldLength / 2} - 17.975_in,
       units::meter_t{(Constants::kFieldWidth / 2)} + (onLeft ? 1 : -1) * (13_in + units::meter_t{Constants::kRobotWidth / 2}), 
-      (onLeft ? -1 : 1) * 105_deg
+      (onLeft ? -1 : 1) * 112.5_deg
     }.RotateAround(Constants::kFieldCenter, (alliance == frc::DriverStation::Alliance::kRed ? 180_deg : 0_deg)),
 
     // 4 - Inside ball island, aligned with ramp
