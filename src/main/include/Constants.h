@@ -24,7 +24,7 @@ public:
   static constexpr int kPigeonCanId = 13;
   static constexpr double kSlowMode = 0.3;
   static constexpr double kMediumMode = 0.5;
-  static constexpr double kShootingMode = 1.0; // meters per second
+  static constexpr double kShootingMode = 0.3;
 
   //todo: update robot length
   static constexpr double kRobotWidth = 28.625 / kInchesPerMeter;
@@ -56,23 +56,17 @@ public:
   static constexpr std::tuple<double, double, double, double, double>
       kSteeringMotorGains{0.0, 0.0, 30.0, 0.0, 0.0};
 
-  static constexpr double kWheelRadius =
-      (3.875 / kInchesPerMeter) / 2; // meters
+  static constexpr double kWheelRadius = (3.875 / kInchesPerMeter) / 2; // meters
 
   static constexpr double kDriveCurrentLimit = 60; // Amps
-  static constexpr auto kDriveMaxAccelerationFast =
-      units::meters_per_second_t{13.3} / 1_s;
-  static constexpr auto kDriveMaxAccelerationSlow =
-      units::meters_per_second_t{5} / 1_s;
-  static constexpr auto kDriveMaxAngularAccelerationFast =
-      units::radians_per_second_t{50} / 1_s;
-  static constexpr auto kDriveMaxAngularAccelerationSlow =
-      units::radians_per_second_t{50} / 1_s;
+  static constexpr auto kDriveMaxAccelerationFast = units::meters_per_second_t{10} / 1_s;
+  static constexpr auto kDriveMaxAccelerationSlow = units::meters_per_second_t{2} / 1_s;
+  static constexpr auto kDriveMaxAngularAccelerationFast = units::radians_per_second_t{50} / 1_s;
+  static constexpr auto kDriveMaxAngularAccelerationSlow = units::radians_per_second_t{2} / 1_s;
   static constexpr double kDriveVelocityMultiplier = 1 / 4.65;
   static constexpr double kDriveGearRatio = 1.0 / 6.75;
   static constexpr double kDriveControlMultipler = 4.65; // meters per second
-  static constexpr double kDriveAngularControlMultiplier =
-      5.0;                              // radians per second
+  static constexpr double kDriveAngularControlMultiplier = 5.0; // radians per second
   static constexpr double kMaxV = 4.65; // meters per second
 
   static constexpr double kDefaultMaxV = 1.0; // meters per second
@@ -196,7 +190,7 @@ public:
   static constexpr double kMaxShooterAzimuth = 320.0;
   static constexpr double kAzimuthMotorRevsToRevs = 233.5 / 1;
   static constexpr frc::Transform2d kTurretOffset{-4_in, -9.5_in, 0_deg}; // turret is 4" back in x, 9.5" over
-  static constexpr units::second_t kPhaseDelay = 0.1_s;
+  static constexpr units::second_t kPhaseDelay = 0.05_s; // reduced from 0.1 s
   
   // Distance to TPS power series constants
   static constexpr double kDist2TPSA = 23.2;
