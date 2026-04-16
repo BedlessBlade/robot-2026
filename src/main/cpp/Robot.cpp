@@ -386,8 +386,8 @@ void Robot::DisabledExit() {
 
     std::string autoName = m_autoChooser.GetSelected();
     double t = frc::Timer::GetFPGATimestamp().value();
-    // bool endInCenter = m_autoEndChooser.GetSelected();
-    bool endInCenter = false;
+    bool endInCenter = m_autoEndChooser.GetSelected();
+    // bool endInCenter = false;
 
     // simple autos
     if (autoName == "Shoot") { 
