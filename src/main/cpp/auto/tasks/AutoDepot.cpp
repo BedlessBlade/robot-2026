@@ -20,7 +20,7 @@
 #include "auto/StowIntake.h"
 
 
-AutoDepot::AutoDepot(frc::DriverStation::Alliance alliance, int position) {
+AutoDepot::AutoDepot(frc::DriverStation::Alliance alliance, int position, bool endInCenter) {
   // alliance - red = 0, blue = 1
 
   bool onLeft = position < 3;
@@ -58,10 +58,12 @@ AutoDepot::AutoDepot(frc::DriverStation::Alliance alliance, int position) {
   m_tasks.push_back(std::make_shared<Delay>(Constants::kAutoShootFullTime));
 
   // move into center
-  m_tasks.push_back(std::make_shared<FollowPath>(
-    std::vector<frc::Pose2d>{
-      Locations::GetInstance().GetDepotPosition(alliance)[2],
-      Locations::GetInstance().GetStartPosition(alliance, 2),
-      Locations::GetInstance().GetCenterPosition(alliance, true)[0]
-    }, false, false));
+  if (endInCenter) {
+    m_tasks.push_back(std::make_shared<FollowPath>(
+      std::vector<frc::Pose2d>{
+        Locations::GetInstance().GetDepotPosition(alliance)[2],
+        Locations::GetInstance().GetStartPosition(alliance, 2),
+        Locations::GetInstance().GetCenterPosition(alliance, true)[0]
+      }, false, false));
+  }
 }

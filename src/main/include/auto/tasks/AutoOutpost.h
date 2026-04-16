@@ -7,6 +7,6 @@
 
 class AutoOutpost : public TaskList {
 public:
-    AutoOutpost(frc::DriverStation::Alliance alliance, int position);
+    AutoOutpost(frc::DriverStation::Alliance alliance, int position, bool endInCenter);
 
 };

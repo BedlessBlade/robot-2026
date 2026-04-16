@@ -23,7 +23,7 @@
 #include "systems/SwerveDrive.h"
 
 
-AutoCenterTwo::AutoCenterTwo(frc::DriverStation::Alliance alliance, int position){  
+AutoCenterTwo::AutoCenterTwo(frc::DriverStation::Alliance alliance, int position, bool endInCenter) {  
   // alliance - red = 0, blue = 1
   
   bool onLeft = position < 3;
@@ -76,10 +76,12 @@ AutoCenterTwo::AutoCenterTwo(frc::DriverStation::Alliance alliance, int position
     m_tasks.push_back(std::make_shared<StopShooter>());
   }
 
-  // Go back over ramp & start teleop in neutral zone
-  m_tasks.push_back(std::make_shared<FollowPath>(
-    std::vector<frc::Pose2d>{
-      Locations::GetInstance().GetShootingPosition(alliance, onLeft),
-      Locations::GetInstance().GetCenterPosition(alliance, onLeft)[0],
-    }, false, false));
+  if (endInCenter) {
+    // Go back over ramp & start teleop in neutral zone
+    m_tasks.push_back(std::make_shared<FollowPath>(
+      std::vector<frc::Pose2d>{
+        Locations::GetInstance().GetShootingPosition(alliance, onLeft),
+        Locations::GetInstance().GetCenterPosition(alliance, onLeft)[0],
+      }, false, false));
+  }
 }

@@ -20,7 +20,7 @@
 #include "auto/StowIntake.h"
 
 
-AutoCenterDepot::AutoCenterDepot(frc::DriverStation::Alliance alliance, int position) {
+AutoCenterDepot::AutoCenterDepot(frc::DriverStation::Alliance alliance, int position, bool endInCenter) {
 
     bool onLeft = position < 3;
 

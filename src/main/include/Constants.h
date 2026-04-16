@@ -219,8 +219,8 @@ public:
   static constexpr int kRightHoodServoPort = 8;
 
   // auto 
-  static constexpr int kAutoShootPreloadTime = 1.0; // seconds
-  static constexpr int kAutoShootFullTime = 2.0; 
+  static constexpr double kAutoShootPreloadTime = 1.0; // seconds
+  static constexpr double kAutoShootFullTime = 2.0; 
 
   //Compressor ------------------------------------------------------
   static constexpr double kMinPressure = 100;

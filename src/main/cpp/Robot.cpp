@@ -62,9 +62,14 @@ Robot::Robot()
   m_autoChooser.AddOption("To Neutral & Depot", "CenterDepot");
   m_autoChooser.AddOption("spin", "CenterDefence");
 
+  m_autoEndChooser.SetDefaultOption("Center", true);
+  m_autoEndChooser.AddOption("Alliance Zone", false);
+
+
   frc::SmartDashboard::PutData("Start Location", &m_startChooser);
   frc::SmartDashboard::PutData("Auto", &m_autoChooser);
   frc::SmartDashboard::PutData("Field", &m_field);
+  frc::SmartDashboard::PutData("Auto End Position", &m_autoEndChooser);
   frc::SmartDashboard::PutString("Pose (Inches)", "(0, 0, 0)");
   frc::SmartDashboard::PutBoolean("Intake Down?", SupaIntake::GetInstance().GetIntakeDown());
 
@@ -380,7 +385,9 @@ void Robot::DisabledExit() {
 
     std::string autoName = m_autoChooser.GetSelected();
     double t = frc::Timer::GetFPGATimestamp().value();
-    
+    // bool endInCenter = m_autoEndChooser.GetSelected();
+    bool endInCenter = false;
+
     // simple autos
     if (autoName == "Shoot") { 
       m_auto = std::make_shared<AutoShoot>(alliance.value(), m_startChooser.GetSelected()); 
@@ -389,17 +396,17 @@ void Robot::DisabledExit() {
 
     // location autos
     } else if (autoName == "Depot") { 
-      m_auto = std::make_shared<AutoDepot>(alliance.value(), m_startChooser.GetSelected()); 
+      m_auto = std::make_shared<AutoDepot>(alliance.value(), m_startChooser.GetSelected(), endInCenter); 
     } else if (autoName == "Outpost") { 
-      m_auto = std::make_shared<AutoOutpost>(alliance.value(), m_startChooser.GetSelected()); 
+      m_auto = std::make_shared<AutoOutpost>(alliance.value(), m_startChooser.GetSelected(), endInCenter); 
     
     // center autos
     } else if (autoName == "CenterOne") { 
-      m_auto = std::make_shared<AutoCenterOne>(alliance.value(), m_startChooser.GetSelected()); 
+      m_auto = std::make_shared<AutoCenterOne>(alliance.value(), m_startChooser.GetSelected(), endInCenter); 
     } else if (autoName == "CenterTwo") { 
-      m_auto = std::make_shared<AutoCenterTwo>(alliance.value(), m_startChooser.GetSelected());
+      m_auto = std::make_shared<AutoCenterTwo>(alliance.value(), m_startChooser.GetSelected(), endInCenter);
     } else if (autoName == "CenterDepot") {
-      m_auto = std::make_shared<AutoCenterDepot>(alliance.value(), m_startChooser.GetSelected());
+      m_auto = std::make_shared<AutoCenterDepot>(alliance.value(), m_startChooser.GetSelected(), endInCenter);
     } else if (autoName == "CenterDefence") {
       m_auto = std::make_shared<AutoCenterDefence>(alliance.value(), m_startChooser.GetSelected());
 
