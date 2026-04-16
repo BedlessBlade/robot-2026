@@ -326,10 +326,10 @@ Robot::Robot()
       
       //intake motor if/else
       if (Controllers::GetInstance().GetOperatorController().GetLeftTriggerAxis() > 0.5) {
-        SupaIntake::GetInstance().SetMotors(0.75);
+        SupaIntake::GetInstance().SetMotors(Constants::kIntakeForward);
 
       } else if (Controllers::GetInstance().GetOperatorController().GetLeftBumperButton()) {
-        SupaIntake::GetInstance().SetMotors(-0.75);
+        SupaIntake::GetInstance().SetMotors(Constants::kIntakeReverse);
       
       } else {
         SupaIntake::GetInstance().SetMotors(0.0);
