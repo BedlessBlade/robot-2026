@@ -148,7 +148,6 @@ public:
   static constexpr double kIntakeForce = 0.75;
 
   static constexpr double kStartIntakeThresh = 0.5;
-  static constexpr double kIntakeAutoProcessingTime = 0.05;
 
   //Shooter ------------------------------------------------------
   // Shooter motor CANIDs
@@ -213,8 +212,10 @@ public:
   static constexpr int kRightHoodServoPort = 8;
 
   // auto 
-  static constexpr double kAutoShootPreloadTime = 1.0; // seconds
-  static constexpr double kAutoShootFullTime = 2.0; 
+  static constexpr double kAutoShootPreloadTime = 1.5; // seconds
+  static constexpr double kAutoShootFullTime = 4.0; 
+  static constexpr double kAutoIntakeToggleDelay = 1.5; 
+  static constexpr double kAutoIntakeProcessingTime = 0.05;
 
   //Compressor ------------------------------------------------------
   static constexpr double kMinPressure = 100;

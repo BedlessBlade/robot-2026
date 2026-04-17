@@ -56,7 +56,7 @@ AutoCenterDepot::AutoCenterDepot(frc::DriverStation::Alliance alliance, int posi
             }, false, false));
         
         // delay to let intake process
-        m_tasks.push_back(std::make_shared<Delay>(Constants::kIntakeAutoProcessingTime));
+        m_tasks.push_back(std::make_shared<Delay>(Constants::kAutoIntakeProcessingTime));
     
         // stop intaking balls, go to ramp & go over ramp and get in shooting position
         m_tasks.push_back(std::make_shared<StopIntake>());
@@ -76,7 +76,7 @@ AutoCenterDepot::AutoCenterDepot(frc::DriverStation::Alliance alliance, int posi
             }, false, false));
 
         // delay to let intake process
-        m_tasks.push_back(std::make_shared<Delay>(Constants::kIntakeAutoProcessingTime));
+        m_tasks.push_back(std::make_shared<Delay>(Constants::kAutoIntakeProcessingTime));
         
         // cross ramp and go to shooting position
         m_tasks.push_back(std::make_shared<FollowPath>(
@@ -108,7 +108,7 @@ AutoCenterDepot::AutoCenterDepot(frc::DriverStation::Alliance alliance, int posi
         }, false, false));
     
     // Delay for intake processing
-    m_tasks.push_back(std::make_shared<Delay>(Constants::kIntakeAutoProcessingTime));
+    m_tasks.push_back(std::make_shared<Delay>(Constants::kAutoIntakeProcessingTime));
 
     // Move back, turn around
     m_tasks.push_back(std::make_shared<FollowPath>(

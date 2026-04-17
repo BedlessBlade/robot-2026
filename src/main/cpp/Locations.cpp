@@ -93,7 +93,7 @@ std::vector<frc::Pose2d> Locations::GetCenterPosition(frc::DriverStation::Allian
     frc::Pose2d{
       units::meter_t{Constants::kFieldLength / 2} - 17.975_in,
       units::meter_t{(Constants::kFieldWidth / 2) + ((onLeft ? 1 : -1) * Constants::kStartOffsetY)},
-      0_deg
+      (onLeft ? -1 : 1) * 67.5_deg
     }.RotateAround(Constants::kFieldCenter, (alliance == frc::DriverStation::Alliance::kRed ? 180_deg : 0_deg)),
 
     //5 - In middle of field, aligned with ramp on y

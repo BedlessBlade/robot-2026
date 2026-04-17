@@ -50,7 +50,7 @@ AutoCenterOne::AutoCenterOne(frc::DriverStation::Alliance alliance, int position
     }, false, false));
   
   // give time for intake to finish intaking
-  m_tasks.push_back(std::make_shared<Delay>(Constants::kIntakeAutoProcessingTime));
+  m_tasks.push_back(std::make_shared<Delay>(Constants::kAutoIntakeProcessingTime));
   
   // stop intaking balls, go to ramp, go over and move to shooting position
   m_tasks.push_back(std::make_shared<StopIntake>());
@@ -63,11 +63,11 @@ AutoCenterOne::AutoCenterOne(frc::DriverStation::Alliance alliance, int position
   
   // shoot balls for 2 seconds - should be enough to empty hopper
   m_tasks.push_back(std::make_shared<StartShooter>());
-  m_tasks.push_back(std::make_shared<Delay>(1.0));
+  m_tasks.push_back(std::make_shared<Delay>(Constants::kAutoIntakeToggleDelay));
   m_tasks.push_back(std::make_shared<StowIntake>());
-  m_tasks.push_back(std::make_shared<Delay>(0.5));
+  m_tasks.push_back(std::make_shared<Delay>(Constants::kAutoIntakeToggleDelay));
   m_tasks.push_back(std::make_shared<DeployIntake>());
-  m_tasks.push_back(std::make_shared<Delay>(1.0));
+  m_tasks.push_back(std::make_shared<Delay>(Constants::kAutoIntakeToggleDelay));
   m_tasks.push_back(std::make_shared<StopShooter>());
 
   // Go back over ramp & start teleop in neutral zone
