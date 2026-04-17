@@ -13,7 +13,7 @@ void Locations::Generate(frc::DriverStation::Alliance alliance) { }
 std::vector<frc::Pose2d> Locations::GetOutpostPosition(frc::DriverStation::Alliance alliance) const {
   return std::vector<frc::Pose2d>{
     //0: In front of Outpost
-    frc::Pose2d{ 60_in, 25.62_in, 180_deg}
+    frc::Pose2d{ 60_in, 25.62_in, 180_deg }
       .RotateAround(Constants::kFieldCenter, (alliance == frc::DriverStation::Alliance::kRed ? 180_deg : 0_deg)),
 
     //1: Actual Outpost

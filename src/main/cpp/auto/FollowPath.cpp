@@ -61,5 +61,6 @@ bool FollowPath::IsDone() const {
 }
 
 bool FollowPath::AtPoint() const {
-  return SwerveDrive::GetInstance().GetPose2d().Translation().Distance(m_points[m_pointIndex].Translation()).value() < Constants::kPathFollowingTolerance;
+  return SwerveDrive::GetInstance().GetPose2d().Translation().Distance(m_points[m_pointIndex].Translation()).value() < Constants::kPathFollowingTolerance && 
+        (SwerveDrive::GetInstance().GetPose2d().Rotation().Degrees().value() - m_points[m_pointIndex].Rotation().Degrees().value()) < Constants::kPathFollowingAngleTolerance;
 }

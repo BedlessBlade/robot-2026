@@ -65,7 +65,6 @@ Robot::Robot()
   m_autoEndChooser.SetDefaultOption("Neutral Zone", true);
   m_autoEndChooser.AddOption("Alliance Zone", false);
 
-
   frc::SmartDashboard::PutData("Start Location", &m_startChooser);
   frc::SmartDashboard::PutData("Auto", &m_autoChooser);
   frc::SmartDashboard::PutData("Field", &m_field);
@@ -81,9 +80,7 @@ Robot::Robot()
   LEDs::GetInstance();
   Shooter::GetInstance();
 
-
   m_compressor.EnableDigital();
-
   
   // This initializes the main looper. What you put here will run @200 Hz while
   // the robot is on.
@@ -398,18 +395,18 @@ void Robot::DisabledExit() {
     // location autos
     } else if (autoName == "Depot") { 
       m_auto = std::make_shared<AutoDepot>(alliance.value(), m_startChooser.GetSelected(), endInCenter); 
-    } else if (autoName == "Outpost") { 
-      m_auto = std::make_shared<AutoOutpost>(alliance.value(), m_startChooser.GetSelected(), endInCenter); 
+    // } else if (autoName == "Outpost") { 
+    //   m_auto = std::make_shared<AutoOutpost>(alliance.value(), m_startChooser.GetSelected(), endInCenter); 
     
     // center autos
     } else if (autoName == "CenterOne") { 
       m_auto = std::make_shared<AutoCenterOne>(alliance.value(), m_startChooser.GetSelected(), endInCenter); 
     } else if (autoName == "CenterTwo") { 
       m_auto = std::make_shared<AutoCenterTwo>(alliance.value(), m_startChooser.GetSelected(), endInCenter);
-    } else if (autoName == "CenterDepot") {
-      m_auto = std::make_shared<AutoCenterDepot>(alliance.value(), m_startChooser.GetSelected(), endInCenter);
-    } else if (autoName == "CenterDefence") {
-      m_auto = std::make_shared<AutoCenterDefence>(alliance.value(), m_startChooser.GetSelected());
+    // } else if (autoName == "CenterDepot") {
+    //   m_auto = std::make_shared<AutoCenterDepot>(alliance.value(), m_startChooser.GetSelected(), endInCenter);
+    // } else if (autoName == "CenterDefence") {
+    //   m_auto = std::make_shared<AutoCenterDefence>(alliance.value(), m_startChooser.GetSelected());
 
     // autodonothing!!!
     } else { 
