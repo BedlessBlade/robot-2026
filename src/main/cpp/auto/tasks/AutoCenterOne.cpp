@@ -22,14 +22,13 @@
 
 #include "systems/SwerveDrive.h"
 
-
+// alliance - red = 0, blue = 1
 AutoCenterOne::AutoCenterOne(frc::DriverStation::Alliance alliance, int position, bool endInCenter){
-  // todos: clean up and make more readable
-  //        tune shooting time
-  
-  // alliance - red = 0, blue = 1
+  // todos: make more efficiency
 
   bool onLeft = position < 3;
+
+  if (position != 2 && position != 4) { return; }
 
   
   // goes over the ramp and line up to collect balls
@@ -48,7 +47,7 @@ AutoCenterOne::AutoCenterOne(frc::DriverStation::Alliance alliance, int position
     std::vector<frc::Pose2d>{
       Locations::GetInstance().GetCenterPosition(alliance, onLeft)[2],
       Locations::GetInstance().GetCenterPosition(alliance, onLeft)[3],
-    }, false, false, true));
+    }, false, false));
   
   // give time for intake to finish intaking
   m_tasks.push_back(std::make_shared<Delay>(Constants::kIntakeAutoProcessingTime));
@@ -64,7 +63,11 @@ AutoCenterOne::AutoCenterOne(frc::DriverStation::Alliance alliance, int position
   
   // shoot balls for 2 seconds - should be enough to empty hopper
   m_tasks.push_back(std::make_shared<StartShooter>());
-  m_tasks.push_back(std::make_shared<Delay>(Constants::kAutoShootFullTime));
+  m_tasks.push_back(std::make_shared<Delay>(1.0));
+  m_tasks.push_back(std::make_shared<StowIntake>());
+  m_tasks.push_back(std::make_shared<Delay>(0.5));
+  m_tasks.push_back(std::make_shared<DeployIntake>());
+  m_tasks.push_back(std::make_shared<Delay>(1.0));
   m_tasks.push_back(std::make_shared<StopShooter>());
 
   // Go back over ramp & start teleop in neutral zone

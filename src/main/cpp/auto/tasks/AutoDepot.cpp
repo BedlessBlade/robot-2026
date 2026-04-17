@@ -60,8 +60,9 @@ AutoDepot::AutoDepot(frc::DriverStation::Alliance alliance, int position, bool e
   
   // shoot collected balls
   m_tasks.push_back(std::make_shared<StartShooter>());
-  m_tasks.push_back(std::make_shared<StowIntake>());
   m_tasks.push_back(std::make_shared<Delay>(1.0));
+  m_tasks.push_back(std::make_shared<StowIntake>());
+  m_tasks.push_back(std::make_shared<Delay>(0.5));
   m_tasks.push_back(std::make_shared<DeployIntake>());
   m_tasks.push_back(std::make_shared<Delay>(1.0));
   m_tasks.push_back(std::make_shared<StopShooter>());

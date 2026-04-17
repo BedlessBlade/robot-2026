@@ -148,7 +148,7 @@ public:
   static constexpr double kIntakeForce = 0.75;
 
   static constexpr double kStartIntakeThresh = 0.5;
-  static constexpr double kIntakeAutoProcessingTime = 0.25;
+  static constexpr double kIntakeAutoProcessingTime = 0.05;
 
   //Shooter ------------------------------------------------------
   // Shooter motor CANIDs
