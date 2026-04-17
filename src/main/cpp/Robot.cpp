@@ -56,13 +56,13 @@ Robot::Robot()
   m_autoChooser.AddOption("Shoot", "Shoot");
   m_autoChooser.AddOption("Shoot & Back Up", "ShootBackUp");
   m_autoChooser.AddOption("To Depot", "Depot");
-  m_autoChooser.AddOption("To Outpost", "Outpost");
+  // m_autoChooser.AddOption("To Outpost", "Outpost");
   m_autoChooser.AddOption("To Neutral Zone (1 Sweep)", "CenterOne");
   m_autoChooser.AddOption("To Neutral Zone (2 Sweeps)", "CenterTwo");
-  m_autoChooser.AddOption("To Neutral & Depot", "CenterDepot");
-  m_autoChooser.AddOption("spin", "CenterDefence");
+  // m_autoChooser.AddOption("To Neutral & Depot", "CenterDepot");
+  // m_autoChooser.AddOption("spin", "CenterDefence");
 
-  m_autoEndChooser.SetDefaultOption("Center", true);
+  m_autoEndChooser.SetDefaultOption("Neutral Zone", true);
   m_autoEndChooser.AddOption("Alliance Zone", false);
 
 

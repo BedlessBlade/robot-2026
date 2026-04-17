@@ -29,7 +29,13 @@ AutoCenterTwo::AutoCenterTwo(frc::DriverStation::Alliance alliance, int position
   bool onLeft = position < 3;
 
   // safeguard to prevent auto from running when not in the right position
-  if (position != 2 && position != 4) { return; }
+  if (position != 2 && position != 4) { 
+    m_tasks.push_back(std::make_shared<FollowPath>(
+      std::vector<frc::Pose2d>{
+        Locations::GetInstance().GetStartPosition(alliance, position),
+        Locations::GetInstance().GetStartPosition(alliance, onLeft ? 2 : 4)
+      }, false, false));
+  return; }
   
   // goes over the ramp and line up to collect balls
   m_tasks.push_back(std::make_shared<DeployIntake>());
@@ -56,7 +62,7 @@ AutoCenterTwo::AutoCenterTwo(frc::DriverStation::Alliance alliance, int position
   m_tasks.push_back(std::make_shared<StopIntake>());
   m_tasks.push_back(std::make_shared<FollowPath>(
     std::vector<frc::Pose2d>{
-      Locations::GetInstance().GetCenterPosition(alliance, onLeft)[3],
+      Locations::GetInstance().GetCenterPosition(alliance, onLeft)[6],
       Locations::GetInstance().GetCenterPosition(alliance, onLeft)[0],
       Locations::GetInstance().GetShootingPosition(alliance, onLeft)
     }, false, false));

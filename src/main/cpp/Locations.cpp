@@ -102,6 +102,13 @@ std::vector<frc::Pose2d> Locations::GetCenterPosition(frc::DriverStation::Allian
       units::meter_t{(Constants::kFieldWidth / 2) + ((onLeft ? 1 : -1) * Constants::kStartOffsetY)},
       0_deg
     }.RotateAround(Constants::kFieldCenter, (alliance == frc::DriverStation::Alliance::kRed ? 180_deg : 0_deg)),
+
+    // 6 - Pos 4 but rotated 45
+    frc::Pose2d{
+      units::meter_t{Constants::kFieldLength / 2} - 17.975_in,
+      units::meter_t{(Constants::kFieldWidth / 2) + ((onLeft ? 1 : -1) * Constants::kStartOffsetY)},
+      (onLeft ? -1 : 1) * 112.5_deg
+    }.RotateAround(Constants::kFieldCenter, (alliance == frc::DriverStation::Alliance::kRed ? 180_deg : 0_deg)),
   };
 }
 

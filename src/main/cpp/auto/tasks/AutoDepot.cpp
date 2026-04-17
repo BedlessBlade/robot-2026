@@ -42,7 +42,7 @@ AutoDepot::AutoDepot(frc::DriverStation::Alliance alliance, int position, bool e
     }, false, false, true));
   
   // give time to process
-  m_tasks.push_back(std::make_shared<Delay>(Constants::kIntakeAutoProcessingTime));
+  m_tasks.push_back(std::make_shared<Delay>(Constants::kAutoIntakeProcessingTime));
   m_tasks.push_back(std::make_shared<StopIntake>());
 
   // move back and spin around

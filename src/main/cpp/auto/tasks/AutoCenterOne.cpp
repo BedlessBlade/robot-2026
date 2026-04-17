@@ -28,7 +28,13 @@ AutoCenterOne::AutoCenterOne(frc::DriverStation::Alliance alliance, int position
 
   bool onLeft = position < 3;
 
-  if (position != 2 && position != 4) { return; }
+  if (position != 2 && position != 4) { 
+    m_tasks.push_back(std::make_shared<FollowPath>(
+      std::vector<frc::Pose2d>{
+        Locations::GetInstance().GetStartPosition(alliance, position),
+        Locations::GetInstance().GetStartPosition(alliance, onLeft ? 2 : 4)
+      }, false, false));
+  return; }
 
   
   // goes over the ramp and line up to collect balls
