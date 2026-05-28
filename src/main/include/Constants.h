@@ -214,8 +214,8 @@ public:
   // auto 
   static constexpr double kAutoShootPreloadTime = 1.5; // seconds
   static constexpr double kAutoShootFullTime = 4.0; 
-  static constexpr double kAutoIntakeToggleDelay = 1.6; 
-  static constexpr double kAutoIntakeProcessingTime = 0.05;
+  static constexpr double kAutoIntakeToggleDelay = 2.0; 
+  static constexpr double kAutoIntakeProcessingTime = 0.0;
 
   //Compressor ------------------------------------------------------
   static constexpr double kMinPressure = 100;

@@ -19,7 +19,7 @@
 #include "auto/DeployIntake.h"
 #include "auto/StowIntake.h"
 
-AutoOutpost::AutoOutpost(frc::DriverStation::Alliance alliance, int position, bool endInCenter) {
+AutoOutpost::AutoOutpost(frc::DriverStation::Alliance alliance, int position, int endBehavior) {
   bool onLeft = position < 3;
 
   // back up to shoot
@@ -50,12 +50,19 @@ AutoOutpost::AutoOutpost(frc::DriverStation::Alliance alliance, int position, bo
   m_tasks.push_back(std::make_shared<StopShooter>());
 
   //Drives to neutral zone
-  if (endInCenter) {
+  if (endBehavior) {
     m_tasks.push_back(std::make_shared<FollowPath>(
       std::vector<frc::Pose2d>{
         Locations::GetInstance().GetOutpostPosition(alliance)[1],
         Locations::GetInstance().GetStartPosition(alliance, 4),
         Locations::GetInstance().GetCenterPosition(alliance, false)[0]
       }, false, false));
+      if (endBehavior == 2) {
+        m_tasks.push_back(std::make_shared<FollowPath>(
+          std::vector<frc::Pose2d>{
+            Locations::GetInstance().GetCenterPosition(alliance, onLeft)[0],
+            Locations::GetInstance().GetDotPosition(alliance, onLeft ? 1 : 3)
+          }, false, false));
+      }
   }
 }

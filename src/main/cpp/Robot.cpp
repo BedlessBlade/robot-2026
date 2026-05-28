@@ -30,6 +30,7 @@
 #include "auto/tasks/AutoShootBackUp.h"
 #include "auto/tasks/AutoDepot.h"
 #include "auto/tasks/AutoOutpost.h"
+#include "auto/tasks/AutoDot.h"
 #include "auto/tasks/AutoCenterDepot.h"
 #include "auto/tasks/AutoCenterOne.h"
 #include "auto/tasks/AutoCenterTwo.h"
@@ -57,18 +58,27 @@ Robot::Robot()
   m_autoChooser.AddOption("Shoot & Back Up", "ShootBackUp");
   m_autoChooser.AddOption("To Depot", "Depot");
   // m_autoChooser.AddOption("To Outpost", "Outpost");
+  m_autoChooser.AddOption("To Nearest Dot", "Dot");
   m_autoChooser.AddOption("To Neutral Zone (1 Sweep)", "CenterOne");
   m_autoChooser.AddOption("To Neutral Zone (2 Sweeps)", "CenterTwo");
   // m_autoChooser.AddOption("To Neutral & Depot", "CenterDepot");
   // m_autoChooser.AddOption("spin", "CenterDefence");
 
-  m_autoEndChooser.SetDefaultOption("Neutral Zone", true);
-  m_autoEndChooser.AddOption("Alliance Zone", false);
+  m_autoEndChooser.SetDefaultOption("Neutral Zone", 0);
+  m_autoEndChooser.AddOption("Alliance Zone", 1);
+  m_autoEndChooser.AddOption("Dot", 2);
+
+  m_dotPreference.SetDefaultOption("None", 0);
+  m_dotPreference.AddOption("Left", 1);
+  m_dotPreference.AddOption("Center", 2);
+  m_dotPreference.AddOption("Right", 3);
+
 
   frc::SmartDashboard::PutData("Start Location", &m_startChooser);
   frc::SmartDashboard::PutData("Auto", &m_autoChooser);
   frc::SmartDashboard::PutData("Field", &m_field);
   frc::SmartDashboard::PutData("Auto End Position", &m_autoEndChooser);
+  frc::SmartDashboard::PutData("Dot Preference", &m_dotPreference);
   frc::SmartDashboard::PutString("Pose (Inches)", "(0, 0, 0)");
   frc::SmartDashboard::PutBoolean("Intake Down?", SupaIntake::GetInstance().GetIntakeDown());
 
@@ -383,8 +393,8 @@ void Robot::DisabledExit() {
 
     std::string autoName = m_autoChooser.GetSelected();
     double t = frc::Timer::GetFPGATimestamp().value();
-    bool endInCenter = m_autoEndChooser.GetSelected();
-    // bool endInCenter = false;
+    bool endBehavior = m_autoEndChooser.GetSelected();
+    // bool endBehavior = false;
 
     // simple autos
     if (autoName == "Shoot") { 
@@ -394,17 +404,20 @@ void Robot::DisabledExit() {
 
     // location autos
     } else if (autoName == "Depot") { 
-      m_auto = std::make_shared<AutoDepot>(alliance.value(), m_startChooser.GetSelected(), endInCenter); 
-    // } else if (autoName == "Outpost") { 
-    //   m_auto = std::make_shared<AutoOutpost>(alliance.value(), m_startChooser.GetSelected(), endInCenter); 
+      m_auto = std::make_shared<AutoDepot>(alliance.value(), m_startChooser.GetSelected(), endBehavior); 
+    } else if (autoName == "Dot") {
+      m_auto = std::make_shared<AutoDot>(alliance.value(), m_startChooser.GetSelected(), endBehavior);
     
     // center autos
     } else if (autoName == "CenterOne") { 
-      m_auto = std::make_shared<AutoCenterOne>(alliance.value(), m_startChooser.GetSelected(), endInCenter); 
+      m_auto = std::make_shared<AutoCenterOne>(alliance.value(), m_startChooser.GetSelected(), endBehavior); 
     } else if (autoName == "CenterTwo") { 
-      m_auto = std::make_shared<AutoCenterTwo>(alliance.value(), m_startChooser.GetSelected(), endInCenter);
+      m_auto = std::make_shared<AutoCenterTwo>(alliance.value(), m_startChooser.GetSelected(), endBehavior);
+
+    // } else if (autoName == "Outpost") { 
+    //   m_auto = std::make_shared<AutoOutpost>(alliance.value(), m_startChooser.GetSelected(), endBehavior); 
     // } else if (autoName == "CenterDepot") {
-    //   m_auto = std::make_shared<AutoCenterDepot>(alliance.value(), m_startChooser.GetSelected(), endInCenter);
+    //   m_auto = std::make_shared<AutoCenterDepot>(alliance.value(), m_startChooser.GetSelected(), endBehavior);
     // } else if (autoName == "CenterDefence") {
     //   m_auto = std::make_shared<AutoCenterDefence>(alliance.value(), m_startChooser.GetSelected());
 

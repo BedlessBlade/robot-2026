@@ -7,5 +7,5 @@
 class AutoCenterTwo : public TaskList {
 public:
   
-  AutoCenterTwo(frc::DriverStation::Alliance alliance, int position, bool endInCenter);
+  AutoCenterTwo(frc::DriverStation::Alliance alliance, int position, int endBehavior);
 };

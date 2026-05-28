@@ -21,7 +21,7 @@ public:
 
   std::vector<frc::Pose2d> GetDepotPosition(frc::DriverStation::Alliance alliance) const;
   std::vector<frc::Pose2d> GetCenterPosition(frc::DriverStation::Alliance alliance, bool onLeft) const;
-
+  frc::Pose2d GetDotPosition(frc::DriverStation::Alliance alliance, int position) const;
 
 private:
   Locations();
