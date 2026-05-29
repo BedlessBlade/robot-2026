@@ -80,7 +80,7 @@ AutoDepot::AutoDepot(frc::DriverStation::Alliance alliance, int position, int en
           std::vector<frc::Pose2d>{
             Locations::GetInstance().GetCenterPosition(alliance, true)[0],
             Locations::GetInstance().GetDotPosition(alliance, 1)
-          }, false, false));
+          }, false, true));
       }
   }
 }

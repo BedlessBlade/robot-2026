@@ -12,19 +12,11 @@
 
 // alliance - red = 0, blue = 1
 AutoDot::AutoDot(frc::DriverStation::Alliance alliance, int position, int endBehavior){
-  // todos: make more efficiency
 
   bool onLeft = position < 3;
 
-  if (position != 2 && position != 4) { 
-    m_tasks.push_back(std::make_shared<FollowPath>(
-      std::vector<frc::Pose2d>{
-        Locations::GetInstance().GetStartPosition(alliance, position),
-        Locations::GetInstance().GetStartPosition(alliance, onLeft ? 2 : 4)
-      }, false, false));
-    // return;
-  }
-
+  // big brain only go if pos 2 or 4
+  if (position % 2) { return; }
   
   // go over line and to dot
   m_tasks.push_back(std::make_shared<FollowPath>(

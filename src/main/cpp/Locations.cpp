@@ -136,7 +136,7 @@ frc::Pose2d Locations::GetStartPosition(frc::DriverStation::Alliance alliance, i
 frc::Pose2d Locations::GetDotPosition(frc::DriverStation::Alliance alliance, int position) const {
   return frc::Pose2d{
     units::meter_t{Constants::kFieldLength / 2},
-    (position < 2 ? (units::meter_t{Constants::kFieldWidth / 2} - 24.66_in) : 0_m + 24.66_in),
+    units::meter_t{Constants::kFieldWidth / 2} + units::inch_t{position < 2 ? 133.47 : -133.47},
     0_deg
   }.RotateAround(Constants::kFieldCenter, (alliance == frc::DriverStation::Alliance::kRed ? 180_deg : 0_deg));
 }

@@ -68,17 +68,10 @@ Robot::Robot()
   m_autoEndChooser.AddOption("Alliance Zone", 1);
   m_autoEndChooser.AddOption("Dot", 2);
 
-  m_dotPreference.SetDefaultOption("None", 0);
-  m_dotPreference.AddOption("Left", 1);
-  m_dotPreference.AddOption("Center", 2);
-  m_dotPreference.AddOption("Right", 3);
-
-
   frc::SmartDashboard::PutData("Start Location", &m_startChooser);
   frc::SmartDashboard::PutData("Auto", &m_autoChooser);
   frc::SmartDashboard::PutData("Field", &m_field);
   frc::SmartDashboard::PutData("Auto End Position", &m_autoEndChooser);
-  frc::SmartDashboard::PutData("Dot Preference", &m_dotPreference);
   frc::SmartDashboard::PutString("Pose (Inches)", "(0, 0, 0)");
   frc::SmartDashboard::PutBoolean("Intake Down?", SupaIntake::GetInstance().GetIntakeDown());
 
@@ -393,8 +386,7 @@ void Robot::DisabledExit() {
 
     std::string autoName = m_autoChooser.GetSelected();
     double t = frc::Timer::GetFPGATimestamp().value();
-    bool endBehavior = m_autoEndChooser.GetSelected();
-    // bool endBehavior = false;
+    int endBehavior = m_autoEndChooser.GetSelected();
 
     // simple autos
     if (autoName == "Shoot") { 
