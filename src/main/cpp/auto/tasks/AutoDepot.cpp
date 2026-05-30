@@ -60,11 +60,12 @@ AutoDepot::AutoDepot(frc::DriverStation::Alliance alliance, int position, int en
   
   // shoot collected balls
   m_tasks.push_back(std::make_shared<StartShooter>());
-  m_tasks.push_back(std::make_shared<Delay>(Constants::kAutoIntakeToggleDelay));
-  m_tasks.push_back(std::make_shared<StowIntake>());
-  m_tasks.push_back(std::make_shared<Delay>(Constants::kAutoIntakeToggleDelay));
-  m_tasks.push_back(std::make_shared<DeployIntake>());
-  m_tasks.push_back(std::make_shared<Delay>(Constants::kAutoIntakeToggleDelay));
+  m_tasks.push_back(std::make_shared<Delay>(Constants::kAutoShootFullTime));
+  // m_tasks.push_back(std::make_shared<Delay>(Constants::kAutoIntakeToggleDelay));
+  // m_tasks.push_back(std::make_shared<StowIntake>());
+  // m_tasks.push_back(std::make_shared<Delay>(Constants::kAutoIntakeToggleDelay));
+  // m_tasks.push_back(std::make_shared<DeployIntake>());
+  // m_tasks.push_back(std::make_shared<Delay>(Constants::kAutoIntakeToggleDelay));
   m_tasks.push_back(std::make_shared<StopShooter>());
 
   // move into center
