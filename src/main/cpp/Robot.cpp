@@ -64,8 +64,8 @@ Robot::Robot()
   // m_autoChooser.AddOption("To Neutral & Depot", "CenterDepot");
   // m_autoChooser.AddOption("spin", "CenterDefence");
 
-  m_autoEndChooser.SetDefaultOption("Neutral Zone", 0);
-  m_autoEndChooser.AddOption("Alliance Zone", 1);
+  m_autoEndChooser.SetDefaultOption("Alliance Zone", 0);
+  m_autoEndChooser.AddOption("Neutral Zone", 1);
   m_autoEndChooser.AddOption("Dot", 2);
 
   frc::SmartDashboard::PutData("Start Location", &m_startChooser);

@@ -23,7 +23,7 @@
 AutoDepot::AutoDepot(frc::DriverStation::Alliance alliance, int position, int endBehavior) {
   // alliance - red = 0, blue = 1
 
-  bool onLeft = position < 3;
+  // bool onLeft = position < 3;
 
   // start intake deploy and move in front of depot
   m_tasks.push_back(std::make_shared<DeployIntake>());
@@ -69,7 +69,7 @@ AutoDepot::AutoDepot(frc::DriverStation::Alliance alliance, int position, int en
   m_tasks.push_back(std::make_shared<StopShooter>());
 
   // move into center
-  if (endBehavior) {
+  if (endBehavior > 1) {
     m_tasks.push_back(std::make_shared<FollowPath>(
       std::vector<frc::Pose2d>{
         Locations::GetInstance().GetDepotPosition(alliance)[2],

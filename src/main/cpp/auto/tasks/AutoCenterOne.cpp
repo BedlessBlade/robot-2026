@@ -79,7 +79,7 @@ AutoCenterOne::AutoCenterOne(frc::DriverStation::Alliance alliance, int position
   m_tasks.push_back(std::make_shared<StopShooter>());
 
   // Go back over ramp & start teleop in neutral zone
-  if (endBehavior) {
+  if (endBehavior > 1) {
     m_tasks.push_back(std::make_shared<FollowPath>(
       std::vector<frc::Pose2d>{
         Locations::GetInstance().GetShootingPosition(alliance, onLeft),
