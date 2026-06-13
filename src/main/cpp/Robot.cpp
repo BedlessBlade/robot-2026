@@ -299,12 +299,12 @@ Robot::Robot()
 
       if (Controllers::GetInstance().GetOperatorController().GetRightTriggerAxis() > 0.5) {
         if (Shooter::GetInstance().GetShooterState() == Shooter::shooterStates::IDLE) {
-          if (ShotCalculator::GetInstance().ShotValid()) {
+          //if (ShotCalculator::GetInstance().ShotValid()) {
             Shooter::GetInstance().StartShooting();
-          } else {
-            Controllers::GetInstance().GetDriverController().SetRumble(frc::GenericHID::RumbleType::kBothRumble, .2);
-            Controllers::GetInstance().GetOperatorController().SetRumble(frc::GenericHID::RumbleType::kBothRumble, .2);
-          }
+          //} else {
+          //  Controllers::GetInstance().GetDriverController().SetRumble(frc::GenericHID::RumbleType::kBothRumble, .2);
+          //  Controllers::GetInstance().GetOperatorController().SetRumble(frc::GenericHID::RumbleType::kBothRumble, .2);
+          //}
         }
 
       } else {

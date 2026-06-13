@@ -122,7 +122,7 @@ public:
   static constexpr double kPathFollowingAngleKi = 0.0;
   static constexpr double kPathFollowingAngleKd = 0.0;
   static constexpr double kPathFollowingTau = 0.0;
-  static constexpr double kPathFollowingMaxV = 3.5;                   // meters per second
+  static constexpr double kPathFollowingMaxV = 3;                   // meters per second
   static constexpr double kPathFollowingMaxW = 5;                   // radians per second
   static constexpr double kPathFollowingTolerance = 0.2;           // meters
   static constexpr double kPathFollowingAngleTolerance = 3;         // degrees
@@ -134,7 +134,7 @@ public:
   //Indexer ------------------------------------------------------
   static constexpr int kIndexerSpinMotorID = 14;
   static constexpr int kIndexerUpMotorID = 15;
-  static constexpr double kIndexerSpinMotorSpeed = 0.75;
+  static constexpr double kIndexerSpinMotorSpeed = 0.6;
   static constexpr double kIndexerUpMotorSpeed = -1; 
 
   //Intake ------------------------------------------------------

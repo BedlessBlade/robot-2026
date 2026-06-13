@@ -63,31 +63,31 @@ void Cameras::Update(Robot::Mode mode, double t) {
   };
 
   // Back Left camera
-  results = m_backLeftCamera.GetAllUnreadResults();
-  if (results.size() > 0) {
-    for (auto result : results) {
-      // Prefer multitag results
-      auto pose = m_backLeftPoseEstimator.EstimateCoprocMultiTagPose(result);
+  // results = m_backLeftCamera.GetAllUnreadResults();
+  // if (results.size() > 0) {
+  //   for (auto result : results) {
+  //     // Prefer multitag results
+  //     auto pose = m_backLeftPoseEstimator.EstimateCoprocMultiTagPose(result);
 
-      // Fall back to single tag estimate
-      if (!pose.has_value()) {
-        pose = m_backLeftPoseEstimator.EstimateLowestAmbiguityPose(result);
-      }
+  //     // Fall back to single tag estimate
+  //     if (!pose.has_value()) {
+  //       pose = m_backLeftPoseEstimator.EstimateLowestAmbiguityPose(result);
+  //     }
 
-      // Skip if no tags are visable
-      if (!pose.has_value()) {
-        continue;
-      }
+  //     // Skip if no tags are visable
+  //     if (!pose.has_value()) {
+  //       continue;
+  //     }
 
-      // Skip single tag estimates with high ambiguity
-      if (pose -> targetsUsed.size() == 1 && pose -> targetsUsed[0].GetPoseAmbiguity() > 0.2) {
-        continue;
-      }
+  //     // Skip single tag estimates with high ambiguity
+  //     if (pose -> targetsUsed.size() == 1 && pose -> targetsUsed[0].GetPoseAmbiguity() > 0.2) {
+  //       continue;
+  //     }
 
-      // Add pose
-      SwerveDrive::GetInstance().VisionUpdate(pose.value().estimatedPose.ToPose2d(), pose.value().timestamp);
-    };
-  };
+  //     // Add pose
+  //     SwerveDrive::GetInstance().VisionUpdate(pose.value().estimatedPose.ToPose2d(), pose.value().timestamp);
+  //   };
+  // };
 
   // Back Right camera
   results = m_backRightCamera.GetAllUnreadResults();
