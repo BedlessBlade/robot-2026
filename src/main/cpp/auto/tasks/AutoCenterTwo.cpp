@@ -44,7 +44,6 @@ AutoCenterTwo::AutoCenterTwo(frc::DriverStation::Alliance alliance, int position
     std::vector<frc::Pose2d>{
       Locations::GetInstance().GetStartPosition(alliance, position),
       Locations::GetInstance().GetCenterPosition(alliance, onLeft)[0],
-      // Locations::GetInstance().GetCenterPosition(alliance, onLeft)[1],
       Locations::GetInstance().GetCenterPosition(alliance, onLeft)[2]
     }, false, false));
   
@@ -71,11 +70,6 @@ AutoCenterTwo::AutoCenterTwo(frc::DriverStation::Alliance alliance, int position
   // shoot balls for 2 seconds - should be enough to empty hopper
   m_tasks.push_back(std::make_shared<StartShooter>());
   m_tasks.push_back(std::make_shared<Delay>(Constants::kAutoShootFullTime));
-  // m_tasks.push_back(std::make_shared<Delay>(Constants::kAutoIntakeToggleDelay));
-  // m_tasks.push_back(std::make_shared<StowIntake>());
-  // m_tasks.push_back(std::make_shared<Delay>(Constants::kAutoIntakeToggleDelay));
-  // m_tasks.push_back(std::make_shared<DeployIntake>());
-  // m_tasks.push_back(std::make_shared<Delay>(Constants::kAutoIntakeToggleDelay));
   m_tasks.push_back(std::make_shared<StopShooter>());
 
   // Go back over ramp & start teleop in neutral zone
