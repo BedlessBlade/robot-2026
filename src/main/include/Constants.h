@@ -124,7 +124,7 @@ public:
   static constexpr double kPathFollowingTau = 0.0;
   static constexpr double kPathFollowingMaxV = 2;                   // meters per second
   static constexpr double kPathFollowingMaxW = 5;                   // radians per second
-  static constexpr double kPathFollowingTolerance = 0.15;           // meters
+  static constexpr double kPathFollowingTolerance = 0.2;           // meters
   static constexpr double kPathFollowingAngleTolerance = 3;         // degrees
   static constexpr double kPathFollowingVelocityTolerance = 0.1;    // meters per second
 
@@ -213,9 +213,9 @@ public:
 
   // auto 
   static constexpr double kAutoShootPreloadTime = 1.5; // seconds
-  static constexpr double kAutoShootFullTime = 4.0; 
-  static constexpr double kAutoIntakeToggleDelay = 1.6; 
-  static constexpr double kAutoIntakeProcessingTime = 0.05;
+  static constexpr double kAutoShootFullTime = 3.0; 
+  static constexpr double kAutoIntakeToggleDelay = 2.0; 
+  static constexpr double kAutoIntakeProcessingTime = 0.0;
 
   //Compressor ------------------------------------------------------
   static constexpr double kMinPressure = 100;

@@ -20,10 +20,10 @@
 #include "auto/StowIntake.h"
 
 
-AutoDepot::AutoDepot(frc::DriverStation::Alliance alliance, int position, bool endInCenter) {
+AutoDepot::AutoDepot(frc::DriverStation::Alliance alliance, int position, int endBehavior) {
   // alliance - red = 0, blue = 1
 
-  bool onLeft = position < 3;
+  // bool onLeft = position < 3;
 
   // start intake deploy and move in front of depot
   m_tasks.push_back(std::make_shared<DeployIntake>());
@@ -60,20 +60,28 @@ AutoDepot::AutoDepot(frc::DriverStation::Alliance alliance, int position, bool e
   
   // shoot collected balls
   m_tasks.push_back(std::make_shared<StartShooter>());
-  m_tasks.push_back(std::make_shared<Delay>(Constants::kAutoIntakeToggleDelay));
-  m_tasks.push_back(std::make_shared<StowIntake>());
-  m_tasks.push_back(std::make_shared<Delay>(Constants::kAutoIntakeToggleDelay));
-  m_tasks.push_back(std::make_shared<DeployIntake>());
-  m_tasks.push_back(std::make_shared<Delay>(Constants::kAutoIntakeToggleDelay));
+  m_tasks.push_back(std::make_shared<Delay>(Constants::kAutoShootFullTime));
+  // m_tasks.push_back(std::make_shared<Delay>(Constants::kAutoIntakeToggleDelay));
+  // m_tasks.push_back(std::make_shared<StowIntake>());
+  // m_tasks.push_back(std::make_shared<Delay>(Constants::kAutoIntakeToggleDelay));
+  // m_tasks.push_back(std::make_shared<DeployIntake>());
+  // m_tasks.push_back(std::make_shared<Delay>(Constants::kAutoIntakeToggleDelay));
   m_tasks.push_back(std::make_shared<StopShooter>());
 
   // move into center
-  if (endInCenter) {
+  if (endBehavior > 1) {
     m_tasks.push_back(std::make_shared<FollowPath>(
       std::vector<frc::Pose2d>{
         Locations::GetInstance().GetDepotPosition(alliance)[2],
         Locations::GetInstance().GetStartPosition(alliance, 2),
         Locations::GetInstance().GetCenterPosition(alliance, true)[0]
       }, false, false));
+      if (endBehavior == 2) {
+        m_tasks.push_back(std::make_shared<FollowPath>(
+          std::vector<frc::Pose2d>{
+            Locations::GetInstance().GetCenterPosition(alliance, true)[0],
+            Locations::GetInstance().GetDotPosition(alliance, 1)
+          }, false, true));
+      }
   }
 }

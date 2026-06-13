@@ -23,7 +23,7 @@
 #include "systems/SwerveDrive.h"
 
 
-AutoCenterTwo::AutoCenterTwo(frc::DriverStation::Alliance alliance, int position, bool endInCenter) {  
+AutoCenterTwo::AutoCenterTwo(frc::DriverStation::Alliance alliance, int position, int endBehavior) {  
   // alliance - red = 0, blue = 1
   
   bool onLeft = position < 3;
@@ -35,7 +35,8 @@ AutoCenterTwo::AutoCenterTwo(frc::DriverStation::Alliance alliance, int position
         Locations::GetInstance().GetStartPosition(alliance, position),
         Locations::GetInstance().GetStartPosition(alliance, onLeft ? 2 : 4)
       }, false, false));
-  return; }
+    // return; 
+  }
   
   // goes over the ramp and line up to collect balls
   m_tasks.push_back(std::make_shared<DeployIntake>());
@@ -43,7 +44,7 @@ AutoCenterTwo::AutoCenterTwo(frc::DriverStation::Alliance alliance, int position
     std::vector<frc::Pose2d>{
       Locations::GetInstance().GetStartPosition(alliance, position),
       Locations::GetInstance().GetCenterPosition(alliance, onLeft)[0],
-      Locations::GetInstance().GetCenterPosition(alliance, onLeft)[1],
+      // Locations::GetInstance().GetCenterPosition(alliance, onLeft)[1],
       Locations::GetInstance().GetCenterPosition(alliance, onLeft)[2]
     }, false, false));
   
@@ -69,11 +70,12 @@ AutoCenterTwo::AutoCenterTwo(frc::DriverStation::Alliance alliance, int position
   
   // shoot balls for 2 seconds - should be enough to empty hopper
   m_tasks.push_back(std::make_shared<StartShooter>());
-  m_tasks.push_back(std::make_shared<Delay>(Constants::kAutoIntakeToggleDelay));
-  m_tasks.push_back(std::make_shared<StowIntake>());
-  m_tasks.push_back(std::make_shared<Delay>(Constants::kAutoIntakeToggleDelay));
-  m_tasks.push_back(std::make_shared<DeployIntake>());
-  m_tasks.push_back(std::make_shared<Delay>(Constants::kAutoIntakeToggleDelay));
+  m_tasks.push_back(std::make_shared<Delay>(Constants::kAutoShootFullTime));
+  // m_tasks.push_back(std::make_shared<Delay>(Constants::kAutoIntakeToggleDelay));
+  // m_tasks.push_back(std::make_shared<StowIntake>());
+  // m_tasks.push_back(std::make_shared<Delay>(Constants::kAutoIntakeToggleDelay));
+  // m_tasks.push_back(std::make_shared<DeployIntake>());
+  // m_tasks.push_back(std::make_shared<Delay>(Constants::kAutoIntakeToggleDelay));
   m_tasks.push_back(std::make_shared<StopShooter>());
 
   // Go back over ramp & start teleop in neutral zone
@@ -102,12 +104,20 @@ AutoCenterTwo::AutoCenterTwo(frc::DriverStation::Alliance alliance, int position
       Locations::GetInstance().GetCenterPosition(alliance, onLeft)[0],
     }, false, false));
   
-  if (!endInCenter) {
+  if (endBehavior == 0) {
     m_tasks.push_back(std::make_shared<FollowPath>(
-    std::vector<frc::Pose2d>{
-      Locations::GetInstance().GetCenterPosition(alliance, onLeft)[0],
-      Locations::GetInstance().GetStartPosition(alliance, position),
-      Locations::GetInstance().GetShootingPosition(alliance, onLeft)
-    }, false, false));
-  }
+      std::vector<frc::Pose2d>{
+        Locations::GetInstance().GetCenterPosition(alliance, onLeft)[0],
+        Locations::GetInstance().GetStartPosition(alliance, position),
+        Locations::GetInstance().GetShootingPosition(alliance, onLeft)
+      }, false, false));
+    m_tasks.push_back(std::make_shared<StartShooter>());
+    m_tasks.push_back(std::make_shared<Delay>(1.0));
+  } else if (endBehavior == 2) {
+    m_tasks.push_back(std::make_shared<FollowPath>(
+      std::vector<frc::Pose2d>{
+        Locations::GetInstance().GetCenterPosition(alliance, onLeft)[0],
+        Locations::GetInstance().GetDotPosition(alliance, onLeft ? 1 : 3)
+      }, false, false));
+  } 
 }
