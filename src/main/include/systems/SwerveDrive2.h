@@ -11,10 +11,12 @@
 #include <units/angular_velocity.h>
 #include <units/velocity.h>
 #include <frc/kinematics/ChassisSpeeds.h>
+#include <frc/controller/PIDController.h>
 
 // Subsystem includes
 #include "Robot.h"
 #include "System.h"
+#include "Constants.h"
 
 using namespace ctre::phoenix6;
 
@@ -27,10 +29,7 @@ public:
     }
 
     // Field or robot relative speed setters
-    void SetVelocity(units::meters_per_second_t vx = 0_mps, 
-                    units::meters_per_second_t vy = 0_mps, 
-                    units::radians_per_second_t w = 0_deg_per_s, 
-                    bool fieldRel = true);
+    void SetVelocity(units::meters_per_second_t vx = 0_mps, units::meters_per_second_t vy = 0_mps, units::radians_per_second_t w = 0_deg_per_s);
 
     // Velocity and acceleration limit setters
     void SetMaxVelocity(units::meters_per_second_t maxVel);
@@ -39,10 +38,10 @@ public:
     void SetMaxAngularAcceleration(units::radians_per_second_squared_t maxAngAccel);
 
     // Drive to pose function
-    bool DriveToPose(frc::Pose2d startPose, frc::Pose2d endPose, units::meter_t distThreshold);
+    bool DriveToPose(frc::Pose2d startPose, frc::Pose2d endPose, units::radian_t startAngle, units::radian_t endAngle, units::meter_t distThreshold, bool persistVelCommand);
 
     // Drive arround point function
-    bool RotateAroundPoint(frc::Pose2d centerPoint, units::meter_t circleRadius, frc::Rotation2d goalHeading, units::meter_t distThreshold);
+    bool RotateAroundPoint(frc::Pose2d centerPose, frc::Pose2d startPose, frc::Pose2d endPose, units::radian_t startAngle, units::radian_t endAngle, units::meter_t distThreshold, bool persistVelCommand);
 
     // 
     frc::SwerveModulePosition GetModulePosition(int moduleID);
@@ -71,6 +70,11 @@ private:
 
     // Kalman filter based state observer, estimates robot field relative pose
     frc::SwerveDrivePoseEstimator<4> m_poseEstimator;
+
+    // translation and heading PID controllers
+    frc::PIDController m_xController{Constants::kPathFollowingKp, Constants::kPathFollowingKi, Constants::kPathFollowingKd, Constants::kDt};
+    frc::PIDController m_yController{Constants::kPathFollowingKp, Constants::kPathFollowingKi, Constants::kPathFollowingKd, Constants::kDt};
+    frc::PIDController m_thetaController{Constants::kPathFollowingAngleKp, Constants::kPathFollowingAngleKi, Constants::kPathFollowingAngleKd, Constants::kDt};
 
     // Drivetrain velocity limits (m/s and deg/s)
     units::meters_per_second_t m_maxVel;

@@ -147,14 +147,117 @@ void SwerveDrive2::Update(Robot::Mode mode, double t) {
 }
 
 // Drive to pose
-bool SwerveDrive2::DriveToPose(frc::Pose2d endPose, frc::Pose2d startPose, units::meter_t distThreshold) {
+bool SwerveDrive2::DriveToPose(frc::Pose2d startPose, frc::Pose2d endPose, units::radian_t startAngle, units::radian_t endAngle, units::meter_t distThreshold, bool persistVelCommand) {
+    // start to end (P21) and robot to end (P2R) vectors
     frc::Translation2d P21 = frc::Translation2d{endPose.X() - startPose.X(), endPose.Y() - startPose.Y()};
     frc::Translation2d P2R = frc::Translation2d{endPose.X() - GetPose().X(), endPose.Y() - GetPose().Y()};
 
-    units::meter_t error_normal = P21.Dot(P2R) / P21.Norm();
-    units::meter_t error_tangent = units::meter_t{std::sqrt(P2R.SquaredNorm().value() - error_normal.value() * error_normal.value())};
+    if (P2R.Norm() > distThreshold) {
+        // Normal and tangent path error
+        double robotAngle = std::acos(P21.Dot(P2R).value() / (P21.Norm().value() * P2R.Norm().value()));
+        units::meter_t errorNorm = P2R.Norm() * std::sin(robotAngle);
+        units::meter_t errorTan = P2R.Norm() * std::cos(robotAngle);
 
-    return true;
+        // Normal and tangent velocity commands
+        units::meters_per_second_t normVelCommand = units::meters_per_second_t{m_xController.Calculate(0.0, errorNorm.value())};
+        units::meters_per_second_t tanVelCommand = units::meters_per_second_t{m_yController.Calculate(0.0, errorTan.value())};
+
+        // Convert path velocity to field coordinate system
+        double pathAngle = P21.Angle().Radians().value();
+        units::meters_per_second_t xVelCommand = tanVelCommand * std::cos(pathAngle) + normVelCommand * std::cos(pathAngle + M_PI/2);
+        units::meters_per_second_t yVelCommand = tanVelCommand * std::sin(pathAngle) + normVelCommand * std::sin(pathAngle + M_PI/2);
+
+        // Heading error
+        units::radian_t errorHeading = (endAngle - (endAngle - startAngle) * errorTan / P21.Norm()) - GetPose().Rotation().Radians();
+
+        // Heading velocity command
+        units::radians_per_second_t wCommand = units::radians_per_second_t{m_thetaController.Calculate(0.0, errorHeading.value())};
+
+        // Set goal
+        m_xVel = xVelCommand;
+        m_yVel = yVelCommand;
+        m_w = wCommand;
+
+        // Return path not finished
+        return false;
+    
+    } else {
+        // Path end behavior
+        if (!persistVelCommand) {
+            m_xVel = 0_mps;
+            m_yVel = 0_mps;
+            m_w = 0_rad_per_s;
+        }
+
+        // Reset PID controllers
+        m_xController.Reset();
+        m_yController.Reset();
+        m_thetaController.Reset();
+
+        // Return path finished
+        return true;
+    }
+}
+
+// Rotate arrond point
+bool SwerveDrive2::RotateAroundPoint(frc::Pose2d centerPose, frc::Pose2d startPose, frc::Pose2d endPose, units::radian_t startAngle, units::radian_t endAngle, units::meter_t distThreshold, bool persistVelCommand) {
+    // Center to start (P1C), robot (PRC), and end pose (P2C) vectors
+    frc::Translation2d P1C = frc::Translation2d{startPose.X() - centerPose.X(), startPose.Y() - centerPose.Y()};
+    frc::Translation2d P2C = frc::Translation2d{endPose.X() - centerPose.X(), endPose.Y() - centerPose.Y()};
+    frc::Translation2d PRC = frc::Translation2d{GetPose().X() - centerPose.X(), GetPose().X() - centerPose.Y()};
+    frc::Translation2d P2R = frc::Translation2d{endPose.X() - GetPose().X(), endPose.Y() - GetPose().X()};
+    
+    if (P2R.Norm() > distThreshold) {
+        // Path angles and radius
+        double robotAngle = std::acos(PRC.Dot(P1C).value() / (PRC.Norm().value() * P1C.Norm().value()));
+        double robotEndAngle = std::acos(P2C.Dot(P1C).value() / (P2C.Norm().value() * P1C.Norm().value()));
+        units::meter_t pathRadius = P1C.Norm();
+
+        // Normal and tangent path errors
+        units::meter_t robotArclength = pathRadius * robotAngle;
+        units::meter_t endArclength = pathRadius * robotEndAngle;
+        units::meter_t errorTan = endArclength - robotArclength;
+        units::meter_t errorNorm = pathRadius - PRC.Norm();
+
+        // Normal and tangent velocity commands
+        units::meters_per_second_t normVelCommand = units::meters_per_second_t{m_xController.Calculate(0.0, errorNorm.value())};
+        units::meters_per_second_t tanVelCommand = units::meters_per_second_t{m_yController.Calculate(0.0, errorTan.value())};
+
+        // Convert path velocity to field coordinate system
+        double pathAngle = PRC.Angle().Radians().value();
+        units::meters_per_second_t xVelCommand = tanVelCommand * std::cos(pathAngle) + normVelCommand * std::cos(pathAngle + M_PI/2);
+        units::meters_per_second_t yVelCommand = tanVelCommand * std::sin(pathAngle) + normVelCommand * std::sin(pathAngle + M_PI/2);
+
+        // Heading error
+        units::radian_t errorHeading = (endAngle - (endAngle - startAngle) * errorTan / endArclength) - GetPose().Rotation().Radians();
+
+        // Heading velocity command
+        units::radians_per_second_t wCommand = units::radians_per_second_t{m_thetaController.Calculate(0.0, errorHeading.value())};
+
+        // Set goal
+        m_xVel = xVelCommand;
+        m_yVel = yVelCommand;
+        m_w = wCommand;
+
+        // Return path not finished
+        return false;
+    
+    } else {
+        // Path end behavior
+        if (!persistVelCommand) {
+            m_xVel = 0_mps;
+            m_yVel = 0_mps;
+            m_w = 0_rad_per_s;
+        }
+
+        // Reset PID controllers
+        m_xController.Reset();
+        m_yController.Reset();
+        m_thetaController.Reset();
+
+        // Return path finished
+        return true;
+    }
 }
 
 // Get module position

@@ -13,6 +13,7 @@
 
 class Constants {
 public:
+  static constexpr units::second_t kDt = 0.005_s;
 
   static constexpr double kInchesPerMeter = 39.37;
 
