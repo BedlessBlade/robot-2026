@@ -155,7 +155,8 @@ bool SwerveDrive2::DriveToPose(frc::Pose2d startPose, frc::Pose2d endPose, units
     if (P2R.Norm() > distThreshold) {
         // Normal and tangent path error
         double robotAngle = std::acos(P21.Dot(P2R).value() / (P21.Norm().value() * P2R.Norm().value()));
-        units::meter_t errorNorm = P2R.Norm() * std::sin(robotAngle);
+        int robotAngleSign = P21.Cross(P2R).value() / std::abs(P21.Cross(P2R).value());
+        units::meter_t errorNorm = P2R.Norm() * std::sin(robotAngle) * robotAngleSign;
         units::meter_t errorTan = P2R.Norm() * std::cos(robotAngle);
 
         // Normal and tangent velocity commands
