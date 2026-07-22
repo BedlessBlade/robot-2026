@@ -154,16 +154,15 @@ bool SwerveDrive2::DriveToPose(frc::Pose2d startPose, frc::Pose2d endPose, units
 
     if (P2R.Norm() > distThreshold) {
         // Normal and tangent path error
-        double robotAngle = std::acos(P21.Dot(P2R).value() / (P21.Norm().value() * P2R.Norm().value()));
-        int robotAngleSign = P21.Cross(P2R).value() / std::abs(P21.Cross(P2R).value());
-        units::meter_t errorNorm = P2R.Norm() * std::sin(robotAngle) * robotAngleSign;
+        double robotAngle = std::copysign(std::acos(P21.Dot(P2R).value() / (P21.Norm().value() * P2R.Norm().value())), P21.Cross(P2R).value());
+        units::meter_t errorNorm = P2R.Norm() * std::sin(robotAngle);
         units::meter_t errorTan = P2R.Norm() * std::cos(robotAngle);
 
         // Normal and tangent velocity commands
         units::meters_per_second_t normVelCommand = units::meters_per_second_t{m_xController.Calculate(0.0, errorNorm.value())};
         units::meters_per_second_t tanVelCommand = units::meters_per_second_t{m_yController.Calculate(0.0, errorTan.value())};
 
-        // Convert path velocity to field coordinate system
+        // Project path velocity to field coordinate system
         double pathAngle = P21.Angle().Radians().value();
         units::meters_per_second_t xVelCommand = tanVelCommand * std::cos(pathAngle) + normVelCommand * std::cos(pathAngle + M_PI/2);
         units::meters_per_second_t yVelCommand = tanVelCommand * std::sin(pathAngle) + normVelCommand * std::sin(pathAngle + M_PI/2);
