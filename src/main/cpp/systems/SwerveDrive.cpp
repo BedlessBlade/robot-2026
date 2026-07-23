@@ -65,7 +65,11 @@ SwerveDrive::SwerveDrive()
                frc::Rotation2d{m_encoders[3].GetPosition().GetValue() * 2 *
                                M_PI}}},
           frc::Pose2d{}
-        } 
+        },
+      m_maxVel{Constants::kMaxV},
+      m_maxAccel{1},
+      m_maxAngVel{1},
+      m_maxAngAccel{1}
       {
   // Configure the PID values for the position mode on the steering motors
   auto [kS, kV, kP, kI, kD] = Constants::kSteeringMotorGains;
@@ -146,63 +150,71 @@ void SwerveDrive::Update(Robot::Mode mode, double t) {
            m_encoders[3].GetPosition().GetValue()}});
 
   if (mode == Robot::kAuto || mode == Robot::kTeleop) {
-    double vx = m_vx;
-    double vy = m_vy;
-    double w = m_w;
+    units::meters_per_second_t vx = units::meters_per_second_t{m_vx};
+    units::meters_per_second_t vy = units::meters_per_second_t{m_vy};
+    units::radians_per_second_t w = units::radians_per_second_t{m_w};
 
-    if (Shooter::GetInstance().GetShooterState() != Shooter::shooterStates::IDLE) {
-        vx *= Constants::kShootingMode;
-        vy *= Constants::kShootingMode;
-        w *= Constants::kShootingMode;
+    frc::ChassisSpeeds desiredSpeeds = frc::ChassisSpeeds{vx, vy, w};
+
+    if (Shooter::GetInstance().GetShooterState() == Shooter::FIRE) {
+      m_maxVel = ;
+      m_maxAccel = ;
+      m_maxAngVel = ;
+      m_maxAngAccel = ;
     }
 
-   if (mode == Robot::kTeleop && m_rampEnabled) {
-      if (Shooter::GetInstance().GetShooterState() != Shooter::shooterStates::IDLE) {
-        if (m_fastFilter) {
-          m_fastFilter = false;
-          m_filterXFast.Reset(units::meters_per_second_t{m_vx});
-          m_filterYFast.Reset(units::meters_per_second_t{m_vy});
-          m_filterWFast.Reset(units::radians_per_second_t{m_w});
+    // Limit velocity
+    if (m_maxVel > 0_mps && m_maxAngVel > 0_rad_per_s) {
+        units::meters_per_second_t desiredVel = units::meters_per_second_t{std::hypot(desiredSpeeds.vx.value(), desiredSpeeds.vy.value())};
 
+        // Clamp linear velocity
+        if (desiredVel > m_maxVel) {
+            double scaleFactor = m_maxVel / desiredVel;
+            desiredSpeeds = frc::ChassisSpeeds{desiredSpeeds.vx * scaleFactor, desiredSpeeds.vy * scaleFactor, desiredSpeeds.omega};
         }
-      } else if (!m_fastFilter) {
-        m_fastFilter = true;
-        m_filterXSlow.Reset(units::meters_per_second_t{m_vx});
-        m_filterYSlow.Reset(units::meters_per_second_t{m_vy});
-        m_filterWSlow.Reset(units::radians_per_second_t{m_w});
 
-      }
-
-      if (m_fastFilter) {
-        // limit acceleration to prevent tipping
-        vx = m_filterXFast.Calculate(units::meters_per_second_t{m_vx}).value();
-        vy = m_filterYFast.Calculate(units::meters_per_second_t{m_vy}).value();
-        w = m_filterWFast.Calculate(units::radians_per_second_t{m_w}).value();
-
-      } else {
-        // limit acceleration when shooting
-        vx = m_filterXSlow.Calculate(units::meters_per_second_t{m_vx}).value();
-        vy = m_filterYSlow.Calculate(units::meters_per_second_t{m_vy}).value();
-        w = m_filterWSlow.Calculate(units::radians_per_second_t{m_w}).value();
-      }
+        // Clamp angular velocity
+        desiredSpeeds.omega = units::radians_per_second_t{std::clamp(desiredSpeeds.omega.value(), -m_maxAngVel.value(), m_maxAngVel.value())};
     }
 
-    // Use the WPILib kinematics class to determine the individual wheel
-    // angles and velocities.
-    frc::ChassisSpeeds speeds;
-    speeds = frc::ChassisSpeeds::FromFieldRelativeSpeeds(
-      units::meters_per_second_t{vx}, units::meters_per_second_t{vy},
-      units::radians_per_second_t{w}, GetPose2d().Rotation());
-    auto states = m_kinematics.ToSwerveModuleStates(speeds);
+    // Limit acceleration
+    if (m_maxAccel > 0_mps_sq && m_maxAngAccel > 0_rad_per_s_sq) {
+        units::meters_per_second_t xVelDiff = desiredSpeeds.vx - m_lastSpeeds.vx;
+        units::meters_per_second_t yVelDiff = desiredSpeeds.vy - m_lastSpeeds.vy;
+
+        // Find atainable acceleration
+        units::meters_per_second_squared_t desiredAccel = units::meters_per_second_t{std::hypot(xVelDiff.value(), yVelDiff.value())} / Constants::kDt;
+        units::meters_per_second_squared_t obtainableAccel = units::meters_per_second_squared_t{std::clamp(desiredAccel.value(), 0.0, m_maxAccel.value())};
+        double accelAngle = std::atan2(xVelDiff.value(), yVelDiff.value());
+
+        // Find atainable angular acceleration
+        units::radians_per_second_squared_t desiredAngAccel = (desiredSpeeds.omega - m_lastSpeeds.omega) / Constants::kDt;
+        units::radians_per_second_squared_t obtainableAngAccel = units::radians_per_second_squared_t{std::clamp(desiredAngAccel.value(), -m_maxAngAccel.value(), m_maxAngAccel.value())};
+
+        // calculate final desired speed
+        xVelDiff = std::cos(accelAngle) * obtainableAccel * Constants::kDt;
+        yVelDiff = std::sin(accelAngle) * obtainableAccel * Constants::kDt;
+        units::radians_per_second_t omegaVelDiff = obtainableAngAccel * Constants::kDt;
+
+        desiredSpeeds = frc::ChassisSpeeds{m_lastSpeeds.vx + xVelDiff, m_lastSpeeds.vx + yVelDiff, m_lastSpeeds.omega + omegaVelDiff};
+    }
+
+    // store last speed command
+    frc::ChassisSpeeds m_lastSpeeds = desiredSpeeds;
+
+    // reset max vel and accel
+    m_maxVel = ;
+    m_maxAccel = ;
+    m_maxAngVel = ;
+    m_maxAngAccel = ;
+
+    // Use the WPILib kinematics class to determine the individual wheel angles and velocities.
+    auto states = m_kinematics.ToSwerveModuleStates(frc::ChassisSpeeds::FromFieldRelativeSpeeds(desiredSpeeds, GetPose2d().Rotation()));
 
     // Prevent velocities from clipping
     frc::SwerveDriveKinematics<4>::DesaturateWheelSpeeds(
         &states, units::meters_per_second_t{Constants::kMaxV});
     auto [fl, fr, bl, br] = states;
-
-    
-
-
 
     // Optimize the angle setpoints to make the wheels reach the correct angle
     // as fast as possible (not go the long way around).
@@ -315,4 +327,24 @@ void SwerveDrive::SetMode(SwerveDrive::SpeedMode mode) {
 
 SwerveDrive::SpeedMode SwerveDrive::GetMode() {
   return m_speedMode;
+}
+
+// Set max velocity
+void SwerveDrive::SetMaxVelocity(units::meters_per_second_t maxVel) {
+    m_maxVel = maxVel;
+}
+
+// Set max angular velocity
+void SwerveDrive::SetMaxAngularVelocity(units::radians_per_second_t maxAngVel) {
+    m_maxAngVel = maxAngVel;
+}
+
+// Set max acceleration
+void SwerveDrive::SetMaxAcceleration(units::meters_per_second_squared_t maxAccel) {
+    m_maxAccel = maxAccel;
+}
+
+// Set max angular acceleration
+void SwerveDrive::SetMaxAngularAcceleration(units::radians_per_second_squared_t maxAngAccel) {
+    m_maxAngAccel = maxAngAccel;
 }

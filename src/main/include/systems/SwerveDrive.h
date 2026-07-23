@@ -42,6 +42,12 @@ public:
   SwerveDrive::SpeedMode GetMode();
   frc::ChassisSpeeds GetStates();
 
+  // Velocity and acceleration limit setters
+  void SetMaxVelocity(units::meters_per_second_t maxVel);
+  void SetMaxAngularVelocity(units::radians_per_second_t maxAngVel);
+  void SetMaxAcceleration(units::meters_per_second_squared_t maxAccel);
+  void SetMaxAngularAcceleration(units::radians_per_second_squared_t maxAngAccel);
+
 
   //wpi::array<frc::SwerveModuleState, 4U> states;
 
@@ -88,6 +94,16 @@ private:
   bool m_fastFilter = true;
   SpeedMode m_speedMode;
 
+  // Drivetrain velocity limits (m/s and deg/s)
+  units::meters_per_second_t m_maxVel;
+  units::radians_per_second_t m_maxAngVel;
+
+  // Drivetrain acceleration limits (m/s^2 and deg/s^2)
+  units::meters_per_second_squared_t m_maxAccel;
+  units::radians_per_second_squared_t m_maxAngAccel;
+
+  // Last goal velocity
+  frc::ChassisSpeeds m_lastSpeeds;
 
   // Make the constructor private so that the GetInstance() function must be
   // used.
