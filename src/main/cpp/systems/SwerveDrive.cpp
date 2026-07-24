@@ -66,10 +66,10 @@ SwerveDrive::SwerveDrive()
                                M_PI}}},
           frc::Pose2d{}
         },
-      m_maxVel{Constants::kMaxV},
-      m_maxAccel{1},
-      m_maxAngVel{1},
-      m_maxAngAccel{1}
+      m_maxVel{Constants::kDriveMaxVelocity},
+      m_maxAccel{Constants::kDriveMaxAccelerationFast},
+      m_maxAngVel{Constants::kDriveMaxAngularVelocity},
+      m_maxAngAccel{Constants::kDriveMaxAngularAccelerationFast}
       {
   // Configure the PID values for the position mode on the steering motors
   auto [kS, kV, kP, kI, kD] = Constants::kSteeringMotorGains;
@@ -157,10 +157,10 @@ void SwerveDrive::Update(Robot::Mode mode, double t) {
     frc::ChassisSpeeds desiredSpeeds = frc::ChassisSpeeds{vx, vy, w};
 
     if (Shooter::GetInstance().GetShooterState() == Shooter::FIRE) {
-      m_maxVel = ;
-      m_maxAccel = ;
-      m_maxAngVel = ;
-      m_maxAngAccel = ;
+      m_maxVel = Constants::kDriveMaxVelocity;
+      m_maxAccel = Constants::kDriveMaxAccelerationSlow;
+      m_maxAngVel = Constants::kDriveMaxAngularVelocity;
+      m_maxAngAccel = Constants::kDriveMaxAngularAccelerationSlow;
     }
 
     // Limit velocity
@@ -203,10 +203,10 @@ void SwerveDrive::Update(Robot::Mode mode, double t) {
     frc::ChassisSpeeds m_lastSpeeds = desiredSpeeds;
 
     // reset max vel and accel
-    m_maxVel = ;
-    m_maxAccel = ;
-    m_maxAngVel = ;
-    m_maxAngAccel = ;
+    m_maxVel = Constants::kDriveMaxVelocity;
+    m_maxAccel = Constants::kDriveMaxAccelerationFast;
+    m_maxAngVel = Constants::kDriveMaxAngularVelocity;
+    m_maxAngAccel = Constants::kDriveMaxAngularAccelerationFast;
 
     // Use the WPILib kinematics class to determine the individual wheel angles and velocities.
     auto states = m_kinematics.ToSwerveModuleStates(frc::ChassisSpeeds::FromFieldRelativeSpeeds(desiredSpeeds, GetPose2d().Rotation()));
