@@ -60,17 +60,17 @@ public:
   static constexpr double kWheelRadius = (3.875 / kInchesPerMeter) / 2; // meters
 
   static constexpr double kDriveCurrentLimit = 60; // Amps
-  static constexpr auto kDriveMaxAccelerationFast = units::meters_per_second_t{10} / 1_s;
-  static constexpr auto kDriveMaxAccelerationSlow = units::meters_per_second_t{4} / 1_s;
-  static constexpr auto kDriveMaxAngularAccelerationFast = units::radians_per_second_t{50} / 1_s;
-  static constexpr auto kDriveMaxAngularAccelerationSlow = units::radians_per_second_t{20} / 1_s;
+  static constexpr auto kDriveMaxAccelerationFast = units::meters_per_second_t{5} / 1_s;
+  static constexpr auto kDriveMaxAccelerationSlow = units::meters_per_second_t{5} / 1_s;
+  static constexpr auto kDriveMaxAngularAccelerationFast = units::radians_per_second_t{5} / 1_s;
+  static constexpr auto kDriveMaxAngularAccelerationSlow = units::radians_per_second_t{5} / 1_s;
   static constexpr double kDriveVelocityMultiplier = 1 / 4.65;
   static constexpr double kDriveGearRatio = 1.0 / 6.75;
   static constexpr double kDriveControlMultipler = 4.65; // meters per second
   static constexpr double kDriveAngularControlMultiplier = 5.0; // radians per second
   static constexpr double kMaxV = 4.65; // meters per second
-  static constexpr auto kDriveMaxVelocity = units::meters_per_second_t{kDriveControlMultipler};
-  static constexpr auto kDriveMaxAngularVelocity = units::radians_per_second_t{kDriveAngularControlMultiplier};
+  static constexpr auto kDriveMaxVelocity = units::meters_per_second_t{1};
+  static constexpr auto kDriveMaxAngularVelocity = units::radians_per_second_t{2};
 
   static constexpr double kDefaultMaxV = 1.0; // meters per second
   static constexpr double kDefaultMaxW = 1.0; // radians per second

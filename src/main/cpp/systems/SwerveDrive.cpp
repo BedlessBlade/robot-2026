@@ -10,6 +10,7 @@
 #include "Constants.h"
 #include "Robot.h"
 #include "frc/filter/SlewRateLimiter.h"
+#include <iostream>
 
 
 // We need to initialize the gyro and kinematics members. The kinematics
@@ -185,7 +186,9 @@ void SwerveDrive::Update(Robot::Mode mode, double t) {
         // Find atainable acceleration
         units::meters_per_second_squared_t desiredAccel = units::meters_per_second_t{std::hypot(xVelDiff.value(), yVelDiff.value())} / Constants::kDt;
         units::meters_per_second_squared_t obtainableAccel = units::meters_per_second_squared_t{std::clamp(desiredAccel.value(), 0.0, m_maxAccel.value())};
-        double accelAngle = std::atan2(xVelDiff.value(), yVelDiff.value());
+        double accelAngle = std::atan2(yVelDiff.value(), xVelDiff.value());
+
+        //std::cout << accelAngle << std::endl;
 
         // Find atainable angular acceleration
         units::radians_per_second_squared_t desiredAngAccel = (desiredSpeeds.omega - m_lastSpeeds.omega) / Constants::kDt;
@@ -196,11 +199,11 @@ void SwerveDrive::Update(Robot::Mode mode, double t) {
         yVelDiff = std::sin(accelAngle) * obtainableAccel * Constants::kDt;
         units::radians_per_second_t omegaVelDiff = obtainableAngAccel * Constants::kDt;
 
-        desiredSpeeds = frc::ChassisSpeeds{m_lastSpeeds.vx + xVelDiff, m_lastSpeeds.vx + yVelDiff, m_lastSpeeds.omega + omegaVelDiff};
+        desiredSpeeds = frc::ChassisSpeeds{m_lastSpeeds.vx + xVelDiff, m_lastSpeeds.vy + yVelDiff, m_lastSpeeds.omega + omegaVelDiff};
     }
 
     // store last speed command
-    frc::ChassisSpeeds m_lastSpeeds = desiredSpeeds;
+    m_lastSpeeds = desiredSpeeds;
 
     // reset max vel and accel
     m_maxVel = Constants::kDriveMaxVelocity;
