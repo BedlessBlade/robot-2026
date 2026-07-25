@@ -12,7 +12,6 @@
 #include "frc/filter/SlewRateLimiter.h"
 #include <iostream>
 
-
 // We need to initialize the gyro and kinematics members. The kinematics
 // constructor needs the positions of the four wheels. The coordinate system is
 // +x is towards the front of the robot, and +y is to the robot's left.
@@ -316,20 +315,8 @@ void SwerveDrive::VisionUpdate(frc::Pose2d pose, units::second_t timestamp) {
   m_poseEstimator.AddVisionMeasurement(pose, timestamp);
 }
 
-void SwerveDrive::EnableRamp() { m_rampEnabled = true; }
-
-void SwerveDrive::DisableRamp() { m_rampEnabled = false; }
-
 double SwerveDrive::VelocityMagnitude() {
   return std::sqrt(m_vx * m_vx + m_vy * m_vy);
-}
-
-void SwerveDrive::SetMode(SwerveDrive::SpeedMode mode) {
-  m_speedMode = mode;
-}
-
-SwerveDrive::SpeedMode SwerveDrive::GetMode() {
-  return m_speedMode;
 }
 
 // Set max velocity
@@ -350,4 +337,57 @@ void SwerveDrive::SetMaxAcceleration(units::meters_per_second_squared_t maxAccel
 // Set max angular acceleration
 void SwerveDrive::SetMaxAngularAcceleration(units::radians_per_second_squared_t maxAngAccel) {
     m_maxAngAccel = maxAngAccel;
+}
+
+// Drive to pose
+bool SwerveDrive::DriveToPose(frc::Pose2d startPose, frc::Pose2d endPose, units::radian_t startAngle, units::radian_t endAngle, units::meter_t distThreshold, bool persistVelCommand) {
+    // start to end (P21) and robot to end (P2R) vectors
+    frc::Translation2d P21 = frc::Translation2d{endPose.X() - startPose.X(), endPose.Y() - startPose.Y()};
+    frc::Translation2d P2R = frc::Translation2d{endPose.X() - GetPose2d().X(), endPose.Y() - GetPose2d().Y()};
+
+    if (P2R.Norm() > distThreshold) {
+        // Normal and tangent path error
+        double robotAngle = std::copysign(std::acos(P21.Dot(P2R).value() / (P21.Norm().value() * P2R.Norm().value())), P21.Cross(P2R).value());
+        units::meter_t errorNorm = P2R.Norm() * std::sin(robotAngle);
+        units::meter_t errorTan = P2R.Norm() * std::cos(robotAngle);
+
+        // Normal and tangent velocity commands
+        units::meters_per_second_t normVelCommand = units::meters_per_second_t{m_xController.Calculate(0.0, errorNorm.value())};
+        units::meters_per_second_t tanVelCommand = units::meters_per_second_t{m_yController.Calculate(0.0, errorTan.value())};
+
+        // Project path velocity to field coordinate system
+        double pathAngle = P21.Angle().Radians().value();
+        units::meters_per_second_t xVelCommand = tanVelCommand * std::cos(pathAngle) + normVelCommand * std::cos(pathAngle + M_PI/2);
+        units::meters_per_second_t yVelCommand = tanVelCommand * std::sin(pathAngle) + normVelCommand * std::sin(pathAngle + M_PI/2);
+
+        // Heading error
+        units::radian_t errorHeading = (endAngle - (endAngle - startAngle) * errorTan / P21.Norm()) - GetPose2d().Rotation().Radians();
+
+        // Heading velocity command
+        units::radians_per_second_t wCommand = units::radians_per_second_t{m_thetaController.Calculate(0.0, errorHeading.value())};
+
+        // Set goal
+        m_vx = xVelCommand.value();
+        m_vy = yVelCommand.value();
+        m_w = wCommand.value();
+
+        // Return path not finished
+        return false;
+    
+    } else {
+        // Path end behavior
+        if (!persistVelCommand) {
+            m_vx = 0;
+            m_vy = 0;
+            m_w = 0;
+        }
+
+        // Reset PID controllers
+        m_xController.Reset();
+        m_yController.Reset();
+        m_thetaController.Reset();
+
+        // Return path finished
+        return true;
+    }
 }

@@ -10,6 +10,7 @@
 #include <units/angular_velocity.h>
 #include <units/velocity.h>
 #include <frc/kinematics/ChassisSpeeds.h>
+#include <frc/controller/PIDController.h>
 
 #include "Robot.h"
 #include "System.h"
@@ -48,10 +49,8 @@ public:
   void SetMaxAcceleration(units::meters_per_second_squared_t maxAccel);
   void SetMaxAngularAcceleration(units::radians_per_second_squared_t maxAngAccel);
 
-
-  //wpi::array<frc::SwerveModuleState, 4U> states;
-
-
+  // Drive to pose function
+  bool DriveToPose(frc::Pose2d startPose, frc::Pose2d endPose, units::radian_t startAngle, units::radian_t endAngle, units::meter_t distThreshold, bool persistVelCommand);
 
 private:
   // The gyroscope keeps track of which direction the robot is facing.
@@ -76,24 +75,6 @@ private:
   // second
   double m_vx, m_vy, m_w;
 
-  // Slew rate limiters to prevent excessive acceleration
-  frc::SlewRateLimiter<units::meters_per_second> m_filterXFast{
-      Constants::kDriveMaxAccelerationFast};
-  frc::SlewRateLimiter<units::meters_per_second> m_filterYFast{
-      Constants::kDriveMaxAccelerationFast};
-  frc::SlewRateLimiter<units::radians_per_second> m_filterWFast{
-      Constants::kDriveMaxAngularAccelerationFast};
-  frc::SlewRateLimiter<units::meters_per_second> m_filterXSlow{
-      Constants::kDriveMaxAccelerationSlow};
-  frc::SlewRateLimiter<units::meters_per_second> m_filterYSlow{
-      Constants::kDriveMaxAccelerationSlow};
-  frc::SlewRateLimiter<units::radians_per_second> m_filterWSlow{
-      Constants::kDriveMaxAngularAccelerationSlow};
-
-  bool m_rampEnabled = true;
-  bool m_fastFilter = true;
-  SpeedMode m_speedMode;
-
   // Drivetrain velocity limits (m/s and deg/s)
   units::meters_per_second_t m_maxVel;
   units::radians_per_second_t m_maxAngVel;
@@ -105,7 +86,11 @@ private:
   // Last goal velocity
   frc::ChassisSpeeds m_lastSpeeds;
 
-  // Make the constructor private so that the GetInstance() function must be
-  // used.
+  // translation and heading PID controllers
+  frc::PIDController m_xController{Constants::kPathFollowingKp, Constants::kPathFollowingKi, Constants::kPathFollowingKd, Constants::kDt};
+  frc::PIDController m_yController{Constants::kPathFollowingKp, Constants::kPathFollowingKi, Constants::kPathFollowingKd, Constants::kDt};
+  frc::PIDController m_thetaController{Constants::kPathFollowingAngleKp, Constants::kPathFollowingAngleKi, Constants::kPathFollowingAngleKd, Constants::kDt};
+
+  // Make the constructor private so that the GetInstance() function must be used
   SwerveDrive();
 };
