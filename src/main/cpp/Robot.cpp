@@ -201,11 +201,11 @@ Robot::Robot()
         m_autoAlignSetpoint = {frc::Translation2d{0_m, ySetpoint}, frc::Rotation2d{thetaSetpoint}};
 
         m_autoAlignMode = kRamp;
-        SwerveDrive::GetInstance().DisableRamp();
+        //SwerveDrive::GetInstance().DisableRamp();
 
       } else if (Controllers::GetInstance().GetDriverController().GetXButtonReleased()) {
         m_autoAlignMode = kNone;
-        SwerveDrive::GetInstance().EnableRamp();
+        //SwerveDrive::GetInstance().EnableRamp();
 
       }
 
@@ -424,7 +424,7 @@ void Robot::DisabledExit() {
 
 void Robot::TeleopInit() {
   // Make sure that ramping is enabled for the driver motors even if auto is incomplete
-  SwerveDrive::GetInstance().EnableRamp();
+  //SwerveDrive::GetInstance().EnableRamp();
 }
 
 bool Robot::HubActive() {

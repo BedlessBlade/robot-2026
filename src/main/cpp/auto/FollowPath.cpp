@@ -18,7 +18,7 @@ void FollowPath::Start(double t) {
 
   m_started = true;
 
-  SwerveDrive::GetInstance().DisableRamp();
+  //SwerveDrive::GetInstance().DisableRamp();
 }
 
 void FollowPath::Update(double t) {
@@ -53,7 +53,7 @@ void FollowPath::Update(double t) {
 
 void FollowPath::Stop() {
   SwerveDrive::GetInstance().DriveVelocity(0, 0, 0);
-  SwerveDrive::GetInstance().EnableRamp();
+  //SwerveDrive::GetInstance().EnableRamp();
 }
 
 bool FollowPath::IsDone() const {

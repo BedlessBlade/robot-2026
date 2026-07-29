@@ -156,6 +156,7 @@ void SwerveDrive::Update(Robot::Mode mode, double t) {
 
     frc::ChassisSpeeds desiredSpeeds = frc::ChassisSpeeds{vx, vy, w};
 
+    // Conditional velocity and acceleration limits, set last before calculating velocity commands m
     if (Shooter::GetInstance().GetShooterState() == Shooter::FIRE) {
       m_maxVel = Constants::kDriveMaxVelocity;
       m_maxAccel = Constants::kDriveMaxAccelerationSlow;
@@ -340,10 +341,23 @@ void SwerveDrive::SetMaxAngularAcceleration(units::radians_per_second_squared_t 
 }
 
 // Drive to pose
-bool SwerveDrive::DriveToPose(frc::Pose2d startPose, frc::Pose2d endPose, units::radian_t startAngle, units::radian_t endAngle, units::meter_t distThreshold, bool persistVelCommand) {
+bool SwerveDrive::DriveToPose(frc::Pose2d startPose, frc::Pose2d endPose, units::meter_t distThreshold, bool persistVelCommand) {
     // start to end (P21) and robot to end (P2R) vectors
     frc::Translation2d P21 = frc::Translation2d{endPose.X() - startPose.X(), endPose.Y() - startPose.Y()};
     frc::Translation2d P2R = frc::Translation2d{endPose.X() - GetPose2d().X(), endPose.Y() - GetPose2d().Y()};
+
+    // Normalize start and end angle to [-pi, pi)
+    double startAngle = startPose.Rotation().Radians().value();
+    startAngle = std::fmod(std::abs(startAngle), 2 * M_PI);
+    startAngle = startAngle > M_PI ? startAngle - 2 * M_PI : startAngle;
+
+    double endAngle = endPose.Rotation().Radians().value();
+    endAngle = std::fmod(std::abs(endAngle), 2 * M_PI);
+    endAngle = endAngle > M_PI ? endAngle - 2 * M_PI : endAngle;
+
+    double currentHeading = GetPose2d().Rotation().Radians().value();
+    currentHeading = std::fmod(std::abs(currentHeading), 2 * M_PI);
+    currentHeading = currentHeading > M_PI ? currentHeading - 2 * M_PI : currentHeading;
 
     if (P2R.Norm() > distThreshold) {
         // Normal and tangent path error
@@ -351,20 +365,25 @@ bool SwerveDrive::DriveToPose(frc::Pose2d startPose, frc::Pose2d endPose, units:
         units::meter_t errorNorm = P2R.Norm() * std::sin(robotAngle);
         units::meter_t errorTan = P2R.Norm() * std::cos(robotAngle);
 
-        // Normal and tangent velocity commands
+        // Normal and tangent velocity commands, clamp tangent to prioritize normal (cross path) error
         units::meters_per_second_t normVelCommand = units::meters_per_second_t{m_xController.Calculate(0.0, errorNorm.value())};
-        units::meters_per_second_t tanVelCommand = units::meters_per_second_t{m_yController.Calculate(0.0, errorTan.value())};
+        units::meters_per_second_t tanVelCommand = units::meters_per_second_t{std::clamp(m_yController.Calculate(0.0, errorTan.value()), -m_maxVel.value(), m_maxVel.value())};
+
+        // Set tangent velocity command to maxVel for non persistVelCommand paths
+        if (persistVelCommand) {
+          tanVelCommand = m_maxVel;
+        }
 
         // Project path velocity to field coordinate system
         double pathAngle = P21.Angle().Radians().value();
         units::meters_per_second_t xVelCommand = tanVelCommand * std::cos(pathAngle) + normVelCommand * std::cos(pathAngle + M_PI/2);
         units::meters_per_second_t yVelCommand = tanVelCommand * std::sin(pathAngle) + normVelCommand * std::sin(pathAngle + M_PI/2);
 
-        // Heading error
-        units::radian_t errorHeading = (endAngle - (endAngle - startAngle) * errorTan / P21.Norm()) - GetPose2d().Rotation().Radians();
-
+        // Goal heading as a function of path progress
+        double goalHeading = endAngle - (endAngle - startAngle) * errorTan / P21.Norm();
+      
         // Heading velocity command
-        units::radians_per_second_t wCommand = units::radians_per_second_t{m_thetaController.Calculate(0.0, errorHeading.value())};
+        units::radians_per_second_t wCommand = units::radians_per_second_t{m_thetaController.Calculate(currentHeading, goalHeading)};
 
         // Set goal
         m_vx = xVelCommand.value();

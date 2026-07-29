@@ -69,8 +69,8 @@ public:
   static constexpr double kDriveControlMultipler = 4.65; // meters per second
   static constexpr double kDriveAngularControlMultiplier = 5.0; // radians per second
   static constexpr double kMaxV = 4.65; // meters per second
-  static constexpr auto kDriveMaxVelocity = units::meters_per_second_t{1};
-  static constexpr auto kDriveMaxAngularVelocity = units::radians_per_second_t{2};
+  static constexpr auto kDriveMaxVelocity = units::meters_per_second_t{3};
+  static constexpr auto kDriveMaxAngularVelocity = units::radians_per_second_t{5};
 
   static constexpr double kDefaultMaxV = 1.0; // meters per second
   static constexpr double kDefaultMaxW = 1.0; // radians per second

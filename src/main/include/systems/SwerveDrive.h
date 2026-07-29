@@ -50,7 +50,7 @@ public:
   void SetMaxAngularAcceleration(units::radians_per_second_squared_t maxAngAccel);
 
   // Drive to pose function
-  bool DriveToPose(frc::Pose2d startPose, frc::Pose2d endPose, units::radian_t startAngle, units::radian_t endAngle, units::meter_t distThreshold, bool persistVelCommand);
+  bool DriveToPose(frc::Pose2d startPose, frc::Pose2d endPose, units::meter_t distThreshold, bool persistVelCommand);
 
 private:
   // The gyroscope keeps track of which direction the robot is facing.
