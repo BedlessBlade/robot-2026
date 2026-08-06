@@ -50,7 +50,10 @@ public:
   void SetMaxAngularAcceleration(units::radians_per_second_squared_t maxAngAccel);
 
   // Drive to pose function
-  bool DriveToPose(frc::Pose2d startPose, frc::Pose2d endPose, units::meter_t distThreshold, bool persistVelCommand);
+  void DriveToPose(frc::Pose2d startPose, frc::Pose2d endPose, units::meter_t distThreshold, units::radian_t angleThreshold, bool persistVelCommand);
+
+  // Get atPositionSetpoint
+  bool AtPositionSetpoint();
 
 private:
   // The gyroscope keeps track of which direction the robot is facing.
@@ -90,6 +93,9 @@ private:
   frc::PIDController m_xController{Constants::kPathFollowingKp, Constants::kPathFollowingKi, Constants::kPathFollowingKd, Constants::kDt};
   frc::PIDController m_yController{Constants::kPathFollowingKp, Constants::kPathFollowingKi, Constants::kPathFollowingKd, Constants::kDt};
   frc::PIDController m_thetaController{Constants::kPathFollowingAngleKp, Constants::kPathFollowingAngleKi, Constants::kPathFollowingAngleKd, Constants::kDt};
+
+  // at position setpoint
+  bool m_atPositionSetpoint;
 
   // Make the constructor private so that the GetInstance() function must be used
   SwerveDrive();

@@ -67,9 +67,9 @@ SwerveDrive::SwerveDrive()
           frc::Pose2d{}
         },
       m_maxVel{Constants::kDriveMaxVelocity},
-      m_maxAccel{Constants::kDriveMaxAccelerationFast},
+      m_maxAccel{Constants::kDriveMaxAcceleration},
       m_maxAngVel{Constants::kDriveMaxAngularVelocity},
-      m_maxAngAccel{Constants::kDriveMaxAngularAccelerationFast}
+      m_maxAngAccel{Constants::kDriveMaxAngularAcceleration}
       {
   // Configure the PID values for the position mode on the steering motors
   auto [kS, kV, kP, kI, kD] = Constants::kSteeringMotorGains;
@@ -158,10 +158,10 @@ void SwerveDrive::Update(Robot::Mode mode, double t) {
 
     // Conditional velocity and acceleration limits, set last before calculating velocity commands m
     if (Shooter::GetInstance().GetShooterState() == Shooter::FIRE) {
-      m_maxVel = Constants::kDriveMaxVelocity;
-      m_maxAccel = Constants::kDriveMaxAccelerationSlow;
-      m_maxAngVel = Constants::kDriveMaxAngularVelocity;
-      m_maxAngAccel = Constants::kDriveMaxAngularAccelerationSlow;
+      m_maxVel = Constants::kDriveMaxVelocityShooting;
+      m_maxAccel = Constants::kDriveMaxAccelerationShooting;
+      m_maxAngVel = Constants::kDriveMaxAngularVelocityShooting;
+      m_maxAngAccel = Constants::kDriveMaxAngularAccelerationShooting;
     }
 
     // Limit velocity
@@ -207,9 +207,9 @@ void SwerveDrive::Update(Robot::Mode mode, double t) {
 
     // reset max vel and accel
     m_maxVel = Constants::kDriveMaxVelocity;
-    m_maxAccel = Constants::kDriveMaxAccelerationFast;
+    m_maxAccel = Constants::kDriveMaxAcceleration;
     m_maxAngVel = Constants::kDriveMaxAngularVelocity;
-    m_maxAngAccel = Constants::kDriveMaxAngularAccelerationFast;
+    m_maxAngAccel = Constants::kDriveMaxAngularAcceleration;
 
     // Use the WPILib kinematics class to determine the individual wheel angles and velocities.
     auto states = m_kinematics.ToSwerveModuleStates(frc::ChassisSpeeds::FromFieldRelativeSpeeds(desiredSpeeds, GetPose2d().Rotation()));
@@ -341,7 +341,7 @@ void SwerveDrive::SetMaxAngularAcceleration(units::radians_per_second_squared_t 
 }
 
 // Drive to pose
-bool SwerveDrive::DriveToPose(frc::Pose2d startPose, frc::Pose2d endPose, units::meter_t distThreshold, bool persistVelCommand) {
+void SwerveDrive::DriveToPose(frc::Pose2d startPose, frc::Pose2d endPose, units::meter_t distThreshold, units::radian_t angleThreshold, bool persistVelCommand) {
     // start to end (P21) and robot to end (P2R) vectors
     frc::Translation2d P21 = frc::Translation2d{endPose.X() - startPose.X(), endPose.Y() - startPose.Y()};
     frc::Translation2d P2R = frc::Translation2d{endPose.X() - GetPose2d().X(), endPose.Y() - GetPose2d().Y()};
@@ -359,7 +359,12 @@ bool SwerveDrive::DriveToPose(frc::Pose2d startPose, frc::Pose2d endPose, units:
     currentHeading = std::fmod(std::abs(currentHeading), 2 * M_PI);
     currentHeading = currentHeading > M_PI ? currentHeading - 2 * M_PI : currentHeading;
 
-    if (P2R.Norm() > distThreshold) {
+    // End conditions
+    bool atGoalPosition = P2R.Norm() < distThreshold;
+    bool atGoalHeading = abs(currentHeading - endAngle) < angleThreshold.value();
+
+    // Drivetrain velocity commands
+    if (atGoalPosition && atGoalHeading) {
         // Normal and tangent path error
         double robotAngle = std::copysign(std::acos(P21.Dot(P2R).value() / (P21.Norm().value() * P2R.Norm().value())), P21.Cross(P2R).value());
         units::meter_t errorNorm = P2R.Norm() * std::sin(robotAngle);
@@ -370,8 +375,8 @@ bool SwerveDrive::DriveToPose(frc::Pose2d startPose, frc::Pose2d endPose, units:
         units::meters_per_second_t tanVelCommand = units::meters_per_second_t{std::clamp(m_yController.Calculate(0.0, errorTan.value()), -m_maxVel.value(), m_maxVel.value())};
 
         // Set tangent velocity command to maxVel for non persistVelCommand paths
-        if (persistVelCommand) {
-          tanVelCommand = m_maxVel;
+        if (persistVelCommand && !atGoalPosition) {
+            tanVelCommand = units::meters_per_second_t{std::copysign(m_maxVel.value(), tanVelCommand.value())};
         }
 
         // Project path velocity to field coordinate system
@@ -391,7 +396,7 @@ bool SwerveDrive::DriveToPose(frc::Pose2d startPose, frc::Pose2d endPose, units:
         m_w = wCommand.value();
 
         // Return path not finished
-        return false;
+        m_atPositionSetpoint = false;
     
     } else {
         // Path end behavior
@@ -407,6 +412,10 @@ bool SwerveDrive::DriveToPose(frc::Pose2d startPose, frc::Pose2d endPose, units:
         m_thetaController.Reset();
 
         // Return path finished
-        return true;
+        m_atPositionSetpoint = true;
     }
+}
+
+bool SwerveDrive::AtPositionSetpoint() {
+  return m_atPositionSetpoint;
 }

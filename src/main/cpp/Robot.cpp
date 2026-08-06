@@ -348,13 +348,13 @@ Robot::Robot()
 
     } else if (mode == kDisabled) {
       LEDs::GetInstance().SetPattern(LEDs::LEDstates::OFF);
-      if (std::abs(SwerveDrive::GetInstance().GetPose2d().Translation().X().value() - Constants::kFieldLength / 2) <= Constants::kBrakeDistance && !m_braking) {
-        SwerveDrive::GetInstance().Brake();
-        m_braking = true;
-      } else if (m_braking) {
-        SwerveDrive::GetInstance().Coast();
-        m_braking = false;
-      }
+      // if (std::abs(SwerveDrive::GetInstance().GetPose2d().Translation().X().value() - Constants::kFieldLength / 2) <= Constants::kBrakeDistance && !m_braking) {
+      //   SwerveDrive::GetInstance().Brake();
+      //   m_braking = true;
+      // } else if (m_braking) {
+      //   SwerveDrive::GetInstance().Coast();
+      //   m_braking = false;
+      // }
     }
 
     // Call update functions for subsystems instances
