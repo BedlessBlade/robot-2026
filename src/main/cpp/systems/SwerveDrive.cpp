@@ -341,10 +341,11 @@ void SwerveDrive::SetMaxAngularAcceleration(units::radians_per_second_squared_t 
 }
 
 // Drive to pose
-void SwerveDrive::DriveToPose(frc::Pose2d startPose, frc::Pose2d endPose, units::meter_t distThreshold, units::radian_t angleThreshold, bool persistVelCommand) {
+void SwerveDrive::DriveToPose(frc::Pose2d startPose, frc::Pose2d endPose, frc::Pose2d nextPose, units::meter_t distThreshold, units::radian_t angleThreshold, bool persistVelCommand) {
     // start to end (P21) and robot to end (P2R) vectors
     frc::Translation2d P21 = frc::Translation2d{endPose.X() - startPose.X(), endPose.Y() - startPose.Y()};
     frc::Translation2d P2R = frc::Translation2d{endPose.X() - GetPose2d().X(), endPose.Y() - GetPose2d().Y()};
+    frc::Translation2d P32 = frc::Translation2d{nextPose.X() - endPose.X(), nextPose.Y() - endPose.Y()};
 
     // Normalize start and end angle to [-pi, pi)
     double startAngle = startPose.Rotation().Radians().value();
@@ -359,12 +360,15 @@ void SwerveDrive::DriveToPose(frc::Pose2d startPose, frc::Pose2d endPose, units:
     currentHeading = std::fmod(std::abs(currentHeading), 2 * M_PI);
     currentHeading = currentHeading > M_PI ? currentHeading - 2 * M_PI : currentHeading;
 
+    // Decelerate
+    if (P32.Norm() == 0_m) {}
+
     // End conditions
     bool atGoalPosition = P2R.Norm() < distThreshold;
     bool atGoalHeading = abs(currentHeading - endAngle) < angleThreshold.value();
 
     // Drivetrain velocity commands
-    if (atGoalPosition && atGoalHeading) {
+    if (atGoalPosition) {
         // Normal and tangent path error
         double robotAngle = std::copysign(std::acos(P21.Dot(P2R).value() / (P21.Norm().value() * P2R.Norm().value())), P21.Cross(P2R).value());
         units::meter_t errorNorm = P2R.Norm() * std::sin(robotAngle);

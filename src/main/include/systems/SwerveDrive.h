@@ -50,7 +50,7 @@ public:
   void SetMaxAngularAcceleration(units::radians_per_second_squared_t maxAngAccel);
 
   // Drive to pose function
-  void DriveToPose(frc::Pose2d startPose, frc::Pose2d endPose, units::meter_t distThreshold, units::radian_t angleThreshold, bool persistVelCommand);
+  void DriveToPose(frc::Pose2d startPose, frc::Pose2d endPose, frc::Pose2d nextPose, units::meter_t distThreshold, units::radian_t angleThreshold, bool persistVelCommand);
 
   // Get atPositionSetpoint
   bool AtPositionSetpoint();
