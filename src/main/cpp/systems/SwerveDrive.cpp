@@ -360,63 +360,83 @@ void SwerveDrive::DriveToPose(frc::Pose2d startPose, frc::Pose2d endPose, frc::P
     currentHeading = std::fmod(std::abs(currentHeading), 2 * M_PI);
     currentHeading = currentHeading > M_PI ? currentHeading - 2 * M_PI : currentHeading;
 
-    // Decelerate
-    if (P32.Norm() == 0_m) {}
+    // Decelerate command
+    bool decelCommand = false;
+    units::meter_t decelThreshold = (m_maxVel * m_maxVel) / (2 * m_maxAccel);
+    if (P21.Norm() < 2 * decelThreshold) {
+      // Short path, max vel not reached
+      decelThreshold = P21.Norm() / 2;
+    }
+
+    // Compensate for angle between current and next path, larger the angle larger the decel threshold
+    decelThreshold = decelThreshold * std::abs(P21.Dot(P32).value() / (P21.Norm().value() * P32.Norm().value()));
+
+    if (P2R.Norm() <= decelThreshold) {
+      decelCommand = true;
+    } 
 
     // End conditions
     bool atGoalPosition = P2R.Norm() < distThreshold;
     bool atGoalHeading = abs(currentHeading - endAngle) < angleThreshold.value();
 
-    // Drivetrain velocity commands
-    if (atGoalPosition) {
-        // Normal and tangent path error
-        double robotAngle = std::copysign(std::acos(P21.Dot(P2R).value() / (P21.Norm().value() * P2R.Norm().value())), P21.Cross(P2R).value());
-        units::meter_t errorNorm = P2R.Norm() * std::sin(robotAngle);
-        units::meter_t errorTan = P2R.Norm() * std::cos(robotAngle);
-
-        // Normal and tangent velocity commands, clamp tangent to prioritize normal (cross path) error
-        units::meters_per_second_t normVelCommand = units::meters_per_second_t{m_xController.Calculate(0.0, errorNorm.value())};
-        units::meters_per_second_t tanVelCommand = units::meters_per_second_t{std::clamp(m_yController.Calculate(0.0, errorTan.value()), -m_maxVel.value(), m_maxVel.value())};
-
-        // Set tangent velocity command to maxVel for non persistVelCommand paths
-        if (persistVelCommand && !atGoalPosition) {
-            tanVelCommand = units::meters_per_second_t{std::copysign(m_maxVel.value(), tanVelCommand.value())};
-        }
-
-        // Project path velocity to field coordinate system
-        double pathAngle = P21.Angle().Radians().value();
-        units::meters_per_second_t xVelCommand = tanVelCommand * std::cos(pathAngle) + normVelCommand * std::cos(pathAngle + M_PI/2);
-        units::meters_per_second_t yVelCommand = tanVelCommand * std::sin(pathAngle) + normVelCommand * std::sin(pathAngle + M_PI/2);
-
-        // Goal heading as a function of path progress
-        double goalHeading = endAngle - (endAngle - startAngle) * errorTan / P21.Norm();
+    if (persistVelCommand && atGoalPosition) {
+      // End conditon if persisting Velocity commands between points
       
-        // Heading velocity command
-        units::radians_per_second_t wCommand = units::radians_per_second_t{m_thetaController.Calculate(currentHeading, goalHeading)};
+      // Reset PID controllers
+      m_xController.Reset();
+      m_yController.Reset();
+      m_thetaController.Reset();
 
-        // Set goal
-        m_vx = xVelCommand.value();
-        m_vy = yVelCommand.value();
-        m_w = wCommand.value();
+      // Return path not finished
+      m_atPositionSetpoint = true;
 
-        // Return path not finished
-        m_atPositionSetpoint = false;
-    
+    } else if (!persistVelCommand && atGoalPosition && atGoalHeading) {
+      // End condition if not persisting velocity commands between points
+      m_vx = 0;
+      m_vy = 0;
+      m_w = 0;
+
+      // Reset PID controllers
+      m_xController.Reset();
+      m_yController.Reset();
+      m_thetaController.Reset();
+
+      // Return path not finished
+      m_atPositionSetpoint = true;
+
     } else {
-        // Path end behavior
-        if (!persistVelCommand) {
-            m_vx = 0;
-            m_vy = 0;
-            m_w = 0;
-        }
+      // Drivetrain velocity commands
+      double robotAngle = std::copysign(std::acos(P21.Dot(P2R).value() / (P21.Norm().value() * P2R.Norm().value())), P21.Cross(P2R).value());
+      units::meter_t errorNorm = P2R.Norm() * std::sin(robotAngle);
+      units::meter_t errorTan = P2R.Norm() * std::cos(robotAngle);
 
-        // Reset PID controllers
-        m_xController.Reset();
-        m_yController.Reset();
-        m_thetaController.Reset();
+      // Normal and tangent velocity commands, clamp tangent to prioritize normal (cross path) error
+      units::meters_per_second_t normVelCommand = units::meters_per_second_t{m_xController.Calculate(0.0, errorNorm.value())};
+      units::meters_per_second_t tanVelCommand = units::meters_per_second_t{std::clamp(m_yController.Calculate(0.0, errorTan.value()), -m_maxVel.value(), m_maxVel.value())};
 
-        // Return path finished
-        m_atPositionSetpoint = true;
+      // Set tangent velocity command to maxVel for non persistVelCommand paths
+      if (!decelCommand) {
+          tanVelCommand = units::meters_per_second_t{std::copysign(m_maxVel.value(), tanVelCommand.value())};
+      }
+
+      // Project path velocity to field coordinate system
+      double pathAngle = P21.Angle().Radians().value();
+      units::meters_per_second_t xVelCommand = tanVelCommand * std::cos(pathAngle) + normVelCommand * std::cos(pathAngle + M_PI/2);
+      units::meters_per_second_t yVelCommand = tanVelCommand * std::sin(pathAngle) + normVelCommand * std::sin(pathAngle + M_PI/2);
+
+      // Goal heading as a function of path progress
+      double goalHeading = endAngle - (endAngle - startAngle) * errorTan / P21.Norm();
+    
+      // Heading velocity command
+      units::radians_per_second_t wCommand = units::radians_per_second_t{m_thetaController.Calculate(currentHeading, goalHeading)};
+
+      // Set goal
+      m_vx = xVelCommand.value();
+      m_vy = yVelCommand.value();
+      m_w = wCommand.value();
+
+      // Return path not finished
+      m_atPositionSetpoint = false;
     }
 }
 
