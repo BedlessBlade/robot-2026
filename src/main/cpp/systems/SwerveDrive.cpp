@@ -368,8 +368,11 @@ void SwerveDrive::DriveToPose(frc::Pose2d startPose, frc::Pose2d endPose, frc::P
       decelThreshold = P21.Norm() / 2;
     }
 
-    // Compensate for angle between current and next path, larger the angle larger the decel threshold
-    decelThreshold = decelThreshold * std::abs(P21.Dot(P32).value() / (P21.Norm().value() * P32.Norm().value()));
+    double lookAheadAngle = std::acos(P21.Dot(P32).value() / (P21.Norm().value() * P32.Norm().value()));
+    if (lookAheadAngle >= M_PI / 2 && P32.Norm() > 0_m) {
+      // If P21 and P32 are pointing in a similar direction (i.e., > 90 deg), apply angle based correction to reduce decelThreshold (e.g., if parallel set threshold to 0) 
+      decelThreshold *= std::sin(lookAheadAngle);
+    }
 
     if (P2R.Norm() <= decelThreshold) {
       decelCommand = true;
