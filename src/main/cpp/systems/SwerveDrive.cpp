@@ -150,11 +150,27 @@ void SwerveDrive::Update(Robot::Mode mode, double t) {
            m_encoders[3].GetPosition().GetValue()}});
 
   if (mode == Robot::kAuto || mode == Robot::kTeleop) {
-    units::meters_per_second_t vx = units::meters_per_second_t{m_vx};
-    units::meters_per_second_t vy = units::meters_per_second_t{m_vy};
-    units::radians_per_second_t w = units::radians_per_second_t{m_w};
+    // Create desired speeds chassisSpeeds object
+    frc::ChassisSpeeds desiredSpeeds = frc::ChassisSpeeds{units::meters_per_second_t{m_vx}, units::meters_per_second_t{m_vy}, units::radians_per_second_t{m_w}};
 
-    frc::ChassisSpeeds desiredSpeeds = frc::ChassisSpeeds{vx, vy, w};
+    // Position mode
+    if (m_positionMode = XHold) {
+      // Hold robot along specified X position
+
+    } else if (m_positionMode = YHold) {
+      // Hold robot along specified Y position
+
+    } else if (m_positionMode = PoseHold) {
+      // Hold robot at pose
+
+    }
+
+    // Heading mode
+    if (m_headingMode = HeadingHold) {
+      // Hold robot at specified heading
+
+    }
+
 
     // Conditional velocity and acceleration limits, set last before calculating velocity commands m
     if (Shooter::GetInstance().GetShooterState() == Shooter::FIRE) {
@@ -342,7 +358,11 @@ void SwerveDrive::SetMaxAngularAcceleration(units::radians_per_second_squared_t 
 
 // Drive to pose
 void SwerveDrive::DriveToPose(frc::Pose2d startPose, frc::Pose2d endPose, frc::Pose2d nextPose, units::meter_t distThreshold, units::radian_t angleThreshold, bool persistVelCommand) {
-    // start to end (P21) and robot to end (P2R) vectors
+    // Disable position and heading hold
+    m_positionMode = None;
+    m_headingMode = None; 
+
+    // Start to end (P21) and robot to end (P2R) vectors
     frc::Translation2d P21 = frc::Translation2d{endPose.X() - startPose.X(), endPose.Y() - startPose.Y()};
     frc::Translation2d P2R = frc::Translation2d{endPose.X() - GetPose2d().X(), endPose.Y() - GetPose2d().Y()};
     frc::Translation2d P32 = frc::Translation2d{nextPose.X() - endPose.X(), nextPose.Y() - endPose.Y()};
@@ -362,6 +382,7 @@ void SwerveDrive::DriveToPose(frc::Pose2d startPose, frc::Pose2d endPose, frc::P
 
     // Decelerate command
     bool decelCommand = false;
+
     units::meter_t decelThreshold = (m_maxVel * m_maxVel) / (2 * m_maxAccel);
     if (P21.Norm() < 2 * decelThreshold) {
       // Short path, max vel not reached
@@ -380,15 +401,13 @@ void SwerveDrive::DriveToPose(frc::Pose2d startPose, frc::Pose2d endPose, frc::P
 
     // End conditions
     bool atGoalPosition = P2R.Norm() < distThreshold;
-    bool atGoalHeading = abs(currentHeading - endAngle) < angleThreshold.value();
+    bool atGoalHeading = std::abs(currentHeading - endAngle) < angleThreshold.value();
 
     if (persistVelCommand && atGoalPosition) {
       // End conditon if persisting Velocity commands between points
       
       // Reset PID controllers
-      m_xController.Reset();
-      m_yController.Reset();
-      m_thetaController.Reset();
+      RestControllers();
 
       // Return path not finished
       m_atPositionSetpoint = true;
@@ -400,9 +419,7 @@ void SwerveDrive::DriveToPose(frc::Pose2d startPose, frc::Pose2d endPose, frc::P
       m_w = 0;
 
       // Reset PID controllers
-      m_xController.Reset();
-      m_yController.Reset();
-      m_thetaController.Reset();
+      RestControllers();
 
       // Return path not finished
       m_atPositionSetpoint = true;
@@ -443,6 +460,32 @@ void SwerveDrive::DriveToPose(frc::Pose2d startPose, frc::Pose2d endPose, frc::P
     }
 }
 
+void SwerveDrive::HoldAtPose(frc::Pose2d endPose) {
+  m_vx = m_xController.Calculate(GetPose2d().X().value(), endPose.X().value());
+  m_vy = m_yController.Calculate(GetPose2d().Y().value(), endPose.Y().value());
+
+  // Normalize goal angle and current heading
+  double endAngle = endPose.Rotation().Radians().value();
+  endAngle = std::fmod(std::abs(endAngle), 2 * M_PI);
+  endAngle = endAngle > M_PI ? endAngle - 2 * M_PI : endAngle;
+
+  double currentHeading = GetPose2d().Rotation().Radians().value();
+  currentHeading = std::fmod(std::abs(currentHeading), 2 * M_PI);
+  currentHeading = currentHeading > M_PI ? currentHeading - 2 * M_PI : currentHeading;
+
+  m_w = m_thetaController.Calculate(currentHeading, endAngle);
+}
+
 bool SwerveDrive::AtPositionSetpoint() {
   return m_atPositionSetpoint;
+}
+
+void SwerveDrive::RestControllers() {
+  if (!m_controllersRest) {
+    m_xController.Reset();
+    m_yController.Reset();
+    m_thetaController.Reset();
+
+    m_controllersRest = true;
+  }
 }

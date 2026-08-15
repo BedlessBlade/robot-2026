@@ -24,8 +24,6 @@ public:
     return instance;
   }
 
-  enum SpeedMode { Slow, Medium, Fast };
-
   void Update(Robot::Mode mode, double t) override;
   frc::Rotation2d GetGyroRotation2d() const;
   units::angular_velocity::degrees_per_second_t GetGyroAngVelocity2d();
@@ -36,11 +34,7 @@ public:
   void DriveVelocity(double vx = 0, double vy = 0, double w = 0);
   void ResetPose(frc::Pose2d pose);
   void VisionUpdate(frc::Pose2d pose, units::second_t timestamp);
-  void EnableRamp();
-  void DisableRamp();
   double VelocityMagnitude();
-  void SetMode(SwerveDrive::SpeedMode mode);
-  SwerveDrive::SpeedMode GetMode();
   frc::ChassisSpeeds GetStates();
 
   // Velocity and acceleration limit setters
@@ -49,8 +43,10 @@ public:
   void SetMaxAcceleration(units::meters_per_second_squared_t maxAccel);
   void SetMaxAngularAcceleration(units::radians_per_second_squared_t maxAngAccel);
 
-  // Drive to pose function
+  // Drive to pose functions
   void DriveToPose(frc::Pose2d startPose, frc::Pose2d endPose, frc::Pose2d nextPose, units::meter_t distThreshold, units::radian_t angleThreshold, bool persistVelCommand);
+  void HoldAtPose(frc::Pose2d endPose);
+  void RestControllers();
 
   // Get atPositionSetpoint
   bool AtPositionSetpoint();
@@ -96,6 +92,7 @@ private:
 
   // at position setpoint
   bool m_atPositionSetpoint;
+  bool m_controllersRest;
 
   // Make the constructor private so that the GetInstance() function must be used
   SwerveDrive();
