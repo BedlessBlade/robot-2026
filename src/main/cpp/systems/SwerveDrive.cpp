@@ -153,79 +153,106 @@ void SwerveDrive::Update(Robot::Mode mode, double t) {
     // Create desired speeds chassisSpeeds object
     frc::ChassisSpeeds desiredSpeeds = frc::ChassisSpeeds{units::meters_per_second_t{m_vx}, units::meters_per_second_t{m_vy}, units::radians_per_second_t{m_w}};
 
-    // Position mode
-    if (m_positionMode = XHold) {
+    // Normalize hold and current headings
+    double holdAngle = NormalizeAngle(m_holdPose.Rotation().Radians().value());
+    double currentHeading = NormalizeAngle(GetPose2d().Rotation().Radians().value());
+
+    // Reset controllers
+    if (m_positionMode != m_lastPositionMode || m_headingMode != m_lastHeadingMode) {
+      // Reset controllers if position or heading mode changes
+      RestControllers();
+
+    } else if (m_holdPose != m_lastHoldPose) {
+      // Reset controllers if hold pose changes
+      RestControllers();
+    }
+
+    // Position hold mode
+    if (m_positionMode = XHOLD) {
       // Hold robot along specified X position
+      desiredSpeeds.vx = units::meters_per_second_t{m_xController.Calculate(GetPose2d().X().value(), m_holdPose.X().value())};
 
-    } else if (m_positionMode = YHold) {
+    } else if (m_positionMode = YHOLD) {
       // Hold robot along specified Y position
+      desiredSpeeds.vy = units::meters_per_second_t{m_yController.Calculate(GetPose2d().Y().value(), m_holdPose.Y().value())};
 
-    } else if (m_positionMode = PoseHold) {
-      // Hold robot at pose
-
+    } else if (m_positionMode = POSEHOLD) {
+      // Hold pose
+      desiredSpeeds.vx = units::meters_per_second_t{m_xController.Calculate(GetPose2d().X().value(), m_holdPose.X().value())};
+      desiredSpeeds.vy = units::meters_per_second_t{m_yController.Calculate(GetPose2d().Y().value(), m_holdPose.Y().value())};
+      desiredSpeeds.omega = units::radians_per_second_t{m_thetaController.Calculate(currentHeading, holdAngle)};
     }
 
-    // Heading mode
-    if (m_headingMode = HeadingHold) {
-      // Hold robot at specified heading
-
+    // Heading hold mode
+    if (m_headingMode = HEADINGHOLD) {
+      desiredSpeeds.omega = units::radians_per_second_t{m_thetaController.Calculate(currentHeading, holdAngle)};
     }
 
+    m_lastHeadingMode = m_headingMode;
+    m_lastPositionMode = m_positionMode;
 
-    // Conditional velocity and acceleration limits, set last before calculating velocity commands m
+    // Reset hold modes if in teleop
+    if (mode == Robot::kTeleop) {
+      SetPositionMode(positionModes::NONE);
+      SetHeadingMode(headingModes::NONE);
+    }
+
+    // Conditional velocity and acceleration limits, set last before calculating velocity commands
     if (Shooter::GetInstance().GetShooterState() == Shooter::FIRE) {
-      m_maxVel = Constants::kDriveMaxVelocityShooting;
-      m_maxAccel = Constants::kDriveMaxAccelerationShooting;
-      m_maxAngVel = Constants::kDriveMaxAngularVelocityShooting;
-      m_maxAngAccel = Constants::kDriveMaxAngularAccelerationShooting;
+      SetMaxVelocity(Constants::kDriveMaxVelocityShooting);
+      SetMaxAcceleration(Constants::kDriveMaxAccelerationShooting);
+      SetMaxAngularVelocity(Constants::kDriveMaxAngularVelocityShooting);
+      SetMaxAngularAcceleration(Constants::kDriveMaxAngularAccelerationShooting);
     }
 
     // Limit velocity
     if (m_maxVel > 0_mps && m_maxAngVel > 0_rad_per_s) {
-        units::meters_per_second_t desiredVel = units::meters_per_second_t{std::hypot(desiredSpeeds.vx.value(), desiredSpeeds.vy.value())};
+      units::meters_per_second_t desiredVel = units::meters_per_second_t{std::hypot(desiredSpeeds.vx.value(), desiredSpeeds.vy.value())};
 
-        // Clamp linear velocity
-        if (desiredVel > m_maxVel) {
-            double scaleFactor = m_maxVel / desiredVel;
-            desiredSpeeds = frc::ChassisSpeeds{desiredSpeeds.vx * scaleFactor, desiredSpeeds.vy * scaleFactor, desiredSpeeds.omega};
-        }
+      // Clamp linear velocity
+      if (desiredVel > m_maxVel) {
+          double scaleFactor = m_maxVel / desiredVel;
+          desiredSpeeds = frc::ChassisSpeeds{desiredSpeeds.vx * scaleFactor, desiredSpeeds.vy * scaleFactor, desiredSpeeds.omega};
+      }
 
-        // Clamp angular velocity
-        desiredSpeeds.omega = units::radians_per_second_t{std::clamp(desiredSpeeds.omega.value(), -m_maxAngVel.value(), m_maxAngVel.value())};
+      // Clamp angular velocity
+      desiredSpeeds.omega = units::radians_per_second_t{std::clamp(desiredSpeeds.omega.value(), -m_maxAngVel.value(), m_maxAngVel.value())};
     }
 
     // Limit acceleration
     if (m_maxAccel > 0_mps_sq && m_maxAngAccel > 0_rad_per_s_sq) {
-        units::meters_per_second_t xVelDiff = desiredSpeeds.vx - m_lastSpeeds.vx;
-        units::meters_per_second_t yVelDiff = desiredSpeeds.vy - m_lastSpeeds.vy;
+      units::meters_per_second_t xVelDiff = desiredSpeeds.vx - m_lastSpeeds.vx;
+      units::meters_per_second_t yVelDiff = desiredSpeeds.vy - m_lastSpeeds.vy;
 
-        // Find atainable acceleration
-        units::meters_per_second_squared_t desiredAccel = units::meters_per_second_t{std::hypot(xVelDiff.value(), yVelDiff.value())} / Constants::kDt;
-        units::meters_per_second_squared_t obtainableAccel = units::meters_per_second_squared_t{std::clamp(desiredAccel.value(), 0.0, m_maxAccel.value())};
-        double accelAngle = std::atan2(yVelDiff.value(), xVelDiff.value());
+      // Find atainable acceleration
+      units::meters_per_second_squared_t desiredAccel = units::meters_per_second_t{std::hypot(xVelDiff.value(), yVelDiff.value())} / Constants::kDt;
+      units::meters_per_second_squared_t obtainableAccel = units::meters_per_second_squared_t{std::clamp(desiredAccel.value(), 0.0, m_maxAccel.value())};
+      double accelAngle = std::atan2(yVelDiff.value(), xVelDiff.value());
 
-        //std::cout << accelAngle << std::endl;
+      //std::cout << accelAngle << std::endl;
 
-        // Find atainable angular acceleration
-        units::radians_per_second_squared_t desiredAngAccel = (desiredSpeeds.omega - m_lastSpeeds.omega) / Constants::kDt;
-        units::radians_per_second_squared_t obtainableAngAccel = units::radians_per_second_squared_t{std::clamp(desiredAngAccel.value(), -m_maxAngAccel.value(), m_maxAngAccel.value())};
+      // Find atainable angular acceleration
+      units::radians_per_second_squared_t desiredAngAccel = (desiredSpeeds.omega - m_lastSpeeds.omega) / Constants::kDt;
+      units::radians_per_second_squared_t obtainableAngAccel = units::radians_per_second_squared_t{std::clamp(desiredAngAccel.value(), -m_maxAngAccel.value(), m_maxAngAccel.value())};
 
-        // calculate final desired speed
-        xVelDiff = std::cos(accelAngle) * obtainableAccel * Constants::kDt;
-        yVelDiff = std::sin(accelAngle) * obtainableAccel * Constants::kDt;
-        units::radians_per_second_t omegaVelDiff = obtainableAngAccel * Constants::kDt;
+      // calculate final desired speed
+      xVelDiff = std::cos(accelAngle) * obtainableAccel * Constants::kDt;
+      yVelDiff = std::sin(accelAngle) * obtainableAccel * Constants::kDt;
+      units::radians_per_second_t omegaVelDiff = obtainableAngAccel * Constants::kDt;
 
-        desiredSpeeds = frc::ChassisSpeeds{m_lastSpeeds.vx + xVelDiff, m_lastSpeeds.vy + yVelDiff, m_lastSpeeds.omega + omegaVelDiff};
+      desiredSpeeds = frc::ChassisSpeeds{m_lastSpeeds.vx + xVelDiff, m_lastSpeeds.vy + yVelDiff, m_lastSpeeds.omega + omegaVelDiff};
     }
 
     // store last speed command
     m_lastSpeeds = desiredSpeeds;
 
-    // reset max vel and accel
-    m_maxVel = Constants::kDriveMaxVelocity;
-    m_maxAccel = Constants::kDriveMaxAcceleration;
-    m_maxAngVel = Constants::kDriveMaxAngularVelocity;
-    m_maxAngAccel = Constants::kDriveMaxAngularAcceleration;
+    // Reset max vel and accel 
+    if (mode == Robot::kTeleop) {
+      SetMaxVelocity(Constants::kDriveMaxVelocity);
+      SetMaxAcceleration(Constants::kDriveMaxAcceleration);
+      SetMaxAngularVelocity(Constants::kDriveMaxAngularVelocity);
+      SetMaxAngularAcceleration(Constants::kDriveMaxAngularAcceleration);
+    }
 
     // Use the WPILib kinematics class to determine the individual wheel angles and velocities.
     auto states = m_kinematics.ToSwerveModuleStates(frc::ChassisSpeeds::FromFieldRelativeSpeeds(desiredSpeeds, GetPose2d().Rotation()));
@@ -358,122 +385,98 @@ void SwerveDrive::SetMaxAngularAcceleration(units::radians_per_second_squared_t 
 
 // Drive to pose
 void SwerveDrive::DriveToPose(frc::Pose2d startPose, frc::Pose2d endPose, frc::Pose2d nextPose, units::meter_t distThreshold, units::radian_t angleThreshold, bool persistVelCommand) {
-    // Disable position and heading hold
-    m_positionMode = None;
-    m_headingMode = None; 
+  // Start to end (P21) and robot to end (P2R) vectors
+  frc::Translation2d P21 = frc::Translation2d{endPose.X() - startPose.X(), endPose.Y() - startPose.Y()};
+  frc::Translation2d P2R = frc::Translation2d{endPose.X() - GetPose2d().X(), endPose.Y() - GetPose2d().Y()};
+  frc::Translation2d P32 = frc::Translation2d{nextPose.X() - endPose.X(), nextPose.Y() - endPose.Y()};
 
-    // Start to end (P21) and robot to end (P2R) vectors
-    frc::Translation2d P21 = frc::Translation2d{endPose.X() - startPose.X(), endPose.Y() - startPose.Y()};
-    frc::Translation2d P2R = frc::Translation2d{endPose.X() - GetPose2d().X(), endPose.Y() - GetPose2d().Y()};
-    frc::Translation2d P32 = frc::Translation2d{nextPose.X() - endPose.X(), nextPose.Y() - endPose.Y()};
+  // Normalize start and end angle to [-pi, pi)
+  double startAngle = NormalizeAngle(startPose.Rotation().Radians().value());
+  double endAngle = NormalizeAngle(endPose.Rotation().Radians().value());
+  double currentHeading = NormalizeAngle(GetPose2d().Rotation().Radians().value());
 
-    // Normalize start and end angle to [-pi, pi)
-    double startAngle = startPose.Rotation().Radians().value();
-    startAngle = std::fmod(std::abs(startAngle), 2 * M_PI);
-    startAngle = startAngle > M_PI ? startAngle - 2 * M_PI : startAngle;
+  // Decelerate command
+  bool decelCommand = false;
 
-    double endAngle = endPose.Rotation().Radians().value();
-    endAngle = std::fmod(std::abs(endAngle), 2 * M_PI);
-    endAngle = endAngle > M_PI ? endAngle - 2 * M_PI : endAngle;
+  units::meter_t decelThreshold = (m_maxVel * m_maxVel) / (2 * m_maxAccel);
+  if (P21.Norm() < 2 * decelThreshold) {
+    // Short path, max vel not reached
+    decelThreshold = P21.Norm() / 2;
+  }
 
-    double currentHeading = GetPose2d().Rotation().Radians().value();
-    currentHeading = std::fmod(std::abs(currentHeading), 2 * M_PI);
-    currentHeading = currentHeading > M_PI ? currentHeading - 2 * M_PI : currentHeading;
+  double lookAheadAngle = std::acos(P21.Dot(P32).value() / (P21.Norm().value() * P32.Norm().value()));
+  if (lookAheadAngle >= M_PI / 2 && P32.Norm() > 0_m) {
+    // If P21 and P32 are pointing in a similar direction (i.e., > 90 deg), apply angle based correction to reduce decelThreshold (e.g., if parallel set threshold to 0) 
+    decelThreshold *= std::sin(lookAheadAngle);
+  }
 
-    // Decelerate command
-    bool decelCommand = false;
+  if (P2R.Norm() <= decelThreshold) {
+    decelCommand = true;
+  } 
 
-    units::meter_t decelThreshold = (m_maxVel * m_maxVel) / (2 * m_maxAccel);
-    if (P21.Norm() < 2 * decelThreshold) {
-      // Short path, max vel not reached
-      decelThreshold = P21.Norm() / 2;
+  // End conditions
+  bool atGoalPosition = P2R.Norm() < distThreshold;
+  bool atGoalHeading = std::abs(currentHeading - endAngle) < angleThreshold.value();
+
+  if (persistVelCommand && atGoalPosition) {
+    // End conditon if persisting Velocity commands between points (ignore heading end condition)
+    // Reset PID controllers
+    RestControllers();
+
+    // Return path finished
+    m_atPositionSetpoint = true;
+
+  } else if (!persistVelCommand && atGoalPosition && atGoalHeading) {
+    // End condition if not persisting velocity commands between points (do not ignore heading end condition)
+    m_vx = 0;
+    m_vy = 0;
+    m_w = 0;
+
+    // turn on pose hold mode
+    SetPositionMode(positionModes::POSEHOLD);
+    SetHoldPose(endPose);
+
+    // Return path finished
+    m_atPositionSetpoint = true;
+
+  } else {
+    // Disable hold mode
+    SetPositionMode(positionModes::NONE);
+    SetHeadingMode(headingModes::NONE);
+
+    // Drivetrain velocity commands
+    double robotAngle = std::copysign(std::acos(P21.Dot(P2R).value() / (P21.Norm().value() * P2R.Norm().value())), P21.Cross(P2R).value());
+    units::meter_t errorNorm = P2R.Norm() * std::sin(robotAngle);
+    units::meter_t errorTan = P2R.Norm() * std::cos(robotAngle);
+
+    // Normal and tangent velocity commands, clamp tangent to prioritize normal (cross path) error
+    units::meters_per_second_t normVelCommand = units::meters_per_second_t{m_xController.Calculate(0.0, errorNorm.value())};
+    units::meters_per_second_t tanVelCommand = units::meters_per_second_t{std::clamp(m_yController.Calculate(0.0, errorTan.value()), -m_maxVel.value(), m_maxVel.value())};
+
+    // Set tangent velocity command to maxVel for non persistVelCommand paths
+    if (!decelCommand) {
+      tanVelCommand = units::meters_per_second_t{std::copysign(m_maxVel.value(), tanVelCommand.value())};
     }
 
-    double lookAheadAngle = std::acos(P21.Dot(P32).value() / (P21.Norm().value() * P32.Norm().value()));
-    if (lookAheadAngle >= M_PI / 2 && P32.Norm() > 0_m) {
-      // If P21 and P32 are pointing in a similar direction (i.e., > 90 deg), apply angle based correction to reduce decelThreshold (e.g., if parallel set threshold to 0) 
-      decelThreshold *= std::sin(lookAheadAngle);
-    }
+    // Project path velocity to field coordinate system
+    double pathAngle = P21.Angle().Radians().value();
+    units::meters_per_second_t xVelCommand = tanVelCommand * std::cos(pathAngle) + normVelCommand * std::cos(pathAngle + M_PI/2);
+    units::meters_per_second_t yVelCommand = tanVelCommand * std::sin(pathAngle) + normVelCommand * std::sin(pathAngle + M_PI/2);
 
-    if (P2R.Norm() <= decelThreshold) {
-      decelCommand = true;
-    } 
+    // Goal heading as a function of path progress
+    double goalHeading = endAngle - (endAngle - startAngle) * errorTan / P21.Norm();
+  
+    // Heading velocity command
+    units::radians_per_second_t wCommand = units::radians_per_second_t{m_thetaController.Calculate(currentHeading, goalHeading)};
 
-    // End conditions
-    bool atGoalPosition = P2R.Norm() < distThreshold;
-    bool atGoalHeading = std::abs(currentHeading - endAngle) < angleThreshold.value();
+    // Set goal
+    m_vx = xVelCommand.value();
+    m_vy = yVelCommand.value();
+    m_w = wCommand.value();
 
-    if (persistVelCommand && atGoalPosition) {
-      // End conditon if persisting Velocity commands between points
-      
-      // Reset PID controllers
-      RestControllers();
-
-      // Return path not finished
-      m_atPositionSetpoint = true;
-
-    } else if (!persistVelCommand && atGoalPosition && atGoalHeading) {
-      // End condition if not persisting velocity commands between points
-      m_vx = 0;
-      m_vy = 0;
-      m_w = 0;
-
-      // Reset PID controllers
-      RestControllers();
-
-      // Return path not finished
-      m_atPositionSetpoint = true;
-
-    } else {
-      // Drivetrain velocity commands
-      double robotAngle = std::copysign(std::acos(P21.Dot(P2R).value() / (P21.Norm().value() * P2R.Norm().value())), P21.Cross(P2R).value());
-      units::meter_t errorNorm = P2R.Norm() * std::sin(robotAngle);
-      units::meter_t errorTan = P2R.Norm() * std::cos(robotAngle);
-
-      // Normal and tangent velocity commands, clamp tangent to prioritize normal (cross path) error
-      units::meters_per_second_t normVelCommand = units::meters_per_second_t{m_xController.Calculate(0.0, errorNorm.value())};
-      units::meters_per_second_t tanVelCommand = units::meters_per_second_t{std::clamp(m_yController.Calculate(0.0, errorTan.value()), -m_maxVel.value(), m_maxVel.value())};
-
-      // Set tangent velocity command to maxVel for non persistVelCommand paths
-      if (!decelCommand) {
-          tanVelCommand = units::meters_per_second_t{std::copysign(m_maxVel.value(), tanVelCommand.value())};
-      }
-
-      // Project path velocity to field coordinate system
-      double pathAngle = P21.Angle().Radians().value();
-      units::meters_per_second_t xVelCommand = tanVelCommand * std::cos(pathAngle) + normVelCommand * std::cos(pathAngle + M_PI/2);
-      units::meters_per_second_t yVelCommand = tanVelCommand * std::sin(pathAngle) + normVelCommand * std::sin(pathAngle + M_PI/2);
-
-      // Goal heading as a function of path progress
-      double goalHeading = endAngle - (endAngle - startAngle) * errorTan / P21.Norm();
-    
-      // Heading velocity command
-      units::radians_per_second_t wCommand = units::radians_per_second_t{m_thetaController.Calculate(currentHeading, goalHeading)};
-
-      // Set goal
-      m_vx = xVelCommand.value();
-      m_vy = yVelCommand.value();
-      m_w = wCommand.value();
-
-      // Return path not finished
-      m_atPositionSetpoint = false;
-    }
-}
-
-void SwerveDrive::HoldAtPose(frc::Pose2d endPose) {
-  m_vx = m_xController.Calculate(GetPose2d().X().value(), endPose.X().value());
-  m_vy = m_yController.Calculate(GetPose2d().Y().value(), endPose.Y().value());
-
-  // Normalize goal angle and current heading
-  double endAngle = endPose.Rotation().Radians().value();
-  endAngle = std::fmod(std::abs(endAngle), 2 * M_PI);
-  endAngle = endAngle > M_PI ? endAngle - 2 * M_PI : endAngle;
-
-  double currentHeading = GetPose2d().Rotation().Radians().value();
-  currentHeading = std::fmod(std::abs(currentHeading), 2 * M_PI);
-  currentHeading = currentHeading > M_PI ? currentHeading - 2 * M_PI : currentHeading;
-
-  m_w = m_thetaController.Calculate(currentHeading, endAngle);
+    // Return path not finished
+    m_atPositionSetpoint = false;
+  }
 }
 
 bool SwerveDrive::AtPositionSetpoint() {
@@ -481,11 +484,27 @@ bool SwerveDrive::AtPositionSetpoint() {
 }
 
 void SwerveDrive::RestControllers() {
-  if (!m_controllersRest) {
-    m_xController.Reset();
-    m_yController.Reset();
-    m_thetaController.Reset();
+  m_xController.Reset();
+  m_yController.Reset();
+  m_thetaController.Reset();
+}
 
-    m_controllersRest = true;
-  }
+void SwerveDrive::SetPositionMode(positionModes positionMode) {
+  // Update position mode
+  m_positionMode = positionMode;
+}
+
+void SwerveDrive::SetHeadingMode(headingModes headingMode) {
+  // Update heading mode
+  m_headingMode = headingMode;
+}
+
+void SwerveDrive::SetHoldPose(frc::Pose2d holdPose) {
+  // Update hold pose
+  m_holdPose = holdPose;
+}
+
+double SwerveDrive::NormalizeAngle(double angle) {
+  angle = std::fmod(std::abs(angle), 2 * M_PI);
+  return angle > M_PI ? angle - 2 * M_PI : angle;
 }

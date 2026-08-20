@@ -45,11 +45,18 @@ public:
 
   // Drive to pose functions
   void DriveToPose(frc::Pose2d startPose, frc::Pose2d endPose, frc::Pose2d nextPose, units::meter_t distThreshold, units::radian_t angleThreshold, bool persistVelCommand);
-  void HoldAtPose(frc::Pose2d endPose);
-  void RestControllers();
-
-  // Get atPositionSetpoint
   bool AtPositionSetpoint();
+
+  // Hold Mode
+  enum positionModes {NONE, XHOLD, YHOLD, POSEHOLD};
+  enum headingModes {NONE, HEADINGHOLD};
+  void SetPositionMode(positionModes positionMode);
+  void SetHeadingMode(headingModes headingMode);
+  void SetHoldPose(frc::Pose2d holdPose);
+
+  // Helper functions
+  double NormalizeAngle(double angle);
+  void RestControllers();
 
 private:
   // The gyroscope keeps track of which direction the robot is facing.
@@ -82,7 +89,7 @@ private:
   units::meters_per_second_squared_t m_maxAccel;
   units::radians_per_second_squared_t m_maxAngAccel;
 
-  // Last goal velocity
+  // Drivetrain velocity and acceleration Limiter
   frc::ChassisSpeeds m_lastSpeeds;
 
   // translation and heading PID controllers
@@ -90,9 +97,16 @@ private:
   frc::PIDController m_yController{Constants::kPathFollowingKp, Constants::kPathFollowingKi, Constants::kPathFollowingKd, Constants::kDt};
   frc::PIDController m_thetaController{Constants::kPathFollowingAngleKp, Constants::kPathFollowingAngleKi, Constants::kPathFollowingAngleKd, Constants::kDt};
 
-  // at position setpoint
+  // P2P Path follower
   bool m_atPositionSetpoint;
-  bool m_controllersRest;
+
+  // hold mode
+  positionModes m_positionMode;
+  positionModes m_lastPositionMode;
+  headingModes m_headingMode;
+  headingModes m_lastHeadingMode;
+  frc::Pose2d m_holdPose;
+  frc::Pose2d m_lastHoldPose;
 
   // Make the constructor private so that the GetInstance() function must be used
   SwerveDrive();
