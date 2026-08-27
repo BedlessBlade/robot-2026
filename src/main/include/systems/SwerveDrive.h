@@ -45,6 +45,7 @@ public:
 
   // Drive to pose functions
   void DriveToPose(frc::Pose2d startPose, frc::Pose2d endPose, frc::Pose2d nextPose, units::meter_t distThreshold, units::radian_t angleThreshold, bool persistVelCommand);
+  void RotateAroundPoint(frc::Pose2d centerPose, frc::Pose2d startPose, frc::Pose2d endPose, units::meter_t distThreshold, units::radian_t angleThreshold, bool persistVelCommand);
   bool AtPositionSetpoint();
 
   // Hold Mode
