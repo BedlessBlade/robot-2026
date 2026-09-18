@@ -178,8 +178,8 @@ public:
   static constexpr double kShooterAzimuthP = 0.15;
   static constexpr double kShooterAzimuthI = 0.0;
   static constexpr double kShooterAzimuthD = 1.5;
-  static constexpr double kMinAzimuthOutput = -0.75;
-  static constexpr double kMaxAzimuthOutput = 0.75;
+  static constexpr double kMinAzimuthOutput = -1;
+  static constexpr double kMaxAzimuthOutput = 1;
 
   static constexpr double kShooterAzimuthS = 0.0;
   static constexpr double kShooterAzimuthV = 0.00109;
@@ -188,7 +188,7 @@ public:
   // Turret limits and misc
   static constexpr double kMinShooterAzimuth = 0.0;
   static constexpr double kMaxShooterAzimuth = 320.0;
-  static constexpr double kAzimuthMotorRevsToRevs = 140.1 / 1;
+  static constexpr double kAzimuthMotorRevsToRevs = 129.48 / 1;
   static constexpr frc::Transform2d kTurretOffset{-4_in, -9.5_in, 0_deg}; // turret is 4" back in x, 9.5" over
   static constexpr units::second_t kPhaseDelay = 0.05_s; // reduced from 0.1 s
   
