@@ -68,12 +68,16 @@ Robot::Robot()
   m_autoEndChooser.AddOption("Neutral Zone", 1);
   m_autoEndChooser.AddOption("Dot", 2);
 
+  m_alternateMode.SetDefaultOption("False", false);
+  m_alternateMode.AddOption("True", true);
+
   frc::SmartDashboard::PutData("Start Location", &m_startChooser);
   frc::SmartDashboard::PutData("Auto", &m_autoChooser);
   frc::SmartDashboard::PutData("Field", &m_field);
   frc::SmartDashboard::PutData("Auto End Position", &m_autoEndChooser);
   frc::SmartDashboard::PutString("Pose (Inches)", "(0, 0, 0)");
   frc::SmartDashboard::PutBoolean("Intake Down?", SupaIntake::GetInstance().GetIntakeDown());
+  frc::SmartDashboard::PutData("Alternate Mode", &m_alternateMode);
 
   // Call GetInstance() so the constructors get called
   SupaIntake::GetInstance();
@@ -219,26 +223,38 @@ Robot::Robot()
       double leftX = Controllers::GetInstance().GetDriverController().GetLeftX();
       double vy = Util::Exp(-leftX) * Constants::kDriveControlMultipler;
 
+      if (m_alternateMode.GetSelected()) {
+        // Alternate Mode
+        double leftMultiplier = Util::Exp(Controllers::GetInstance().GetDriverController().GetRightTriggerAxis()) *  Constants::kDriveControlMultipler;
+
+        leftY = Controllers::GetInstance().GetDriverController().GetLeftY();
+        leftX = Controllers::GetInstance().GetDriverController().GetLeftX();
+        double leftMagnitude = std::sqrt(leftY * leftY + leftX * leftX);
+
+        vx = -leftY * leftMultiplier / leftMagnitude;
+        vy = -leftX * leftMultiplier / leftMagnitude;
+      }
+
       double rightX = Controllers::GetInstance().GetDriverController().GetRightX();
       double w = Util::Exp(-rightX) * Constants::kDriveAngularControlMultiplier;
 
       // Slow/ Medium Mode
-      if (Controllers::GetInstance().GetDriverController().GetRightTriggerAxis() > 0.5) {
-        vy *= Constants::kSlowMode;
-        vx *= Constants::kSlowMode;
+      // if (Controllers::GetInstance().GetDriverController().GetRightTriggerAxis() > 0.5) {
+      //   vy *= Constants::kSlowMode;
+      //   vx *= Constants::kSlowMode;
 
-      } else if (Controllers::GetInstance().GetDriverController().GetLeftTriggerAxis() > 0.5) {
-        vx *= Constants::kMediumMode;
-        vy *= Constants::kMediumMode;
-      }
+      // } else if (Controllers::GetInstance().GetDriverController().GetLeftTriggerAxis() > 0.5) {
+      //   vx *= Constants::kMediumMode;
+      //   vy *= Constants::kMediumMode;
+      // }
 
       // Brake Mode
-      if (Controllers::GetInstance().GetDriverController().GetLeftBumperButton() || 
-          Controllers::GetInstance().GetDriverController().GetRightBumperButton()) {
-        // SwerveDrive::GetInstance().DriveVelocity(0, 0, 0);
-        vx = 0;
-        vy = 0;
-      }
+      // if (Controllers::GetInstance().GetDriverController().GetLeftBumperButton() || 
+      //     Controllers::GetInstance().GetDriverController().GetRightBumperButton()) {
+      //   // SwerveDrive::GetInstance().DriveVelocity(0, 0, 0);
+      //   vx = 0;
+      //   vy = 0;
+      // }
 
       // Invert driver controls when on red
       if (m_alliance == 'R') {
@@ -299,12 +315,12 @@ Robot::Robot()
 
       if (Controllers::GetInstance().GetOperatorController().GetRightTriggerAxis() > 0.5) {
         if (Shooter::GetInstance().GetShooterState() == Shooter::shooterStates::IDLE) {
-          //if (ShotCalculator::GetInstance().ShotValid()) {
+          if (ShotCalculator::GetInstance().ShotValid()) {
             Shooter::GetInstance().StartShooting();
-          //} else {
-          //  Controllers::GetInstance().GetDriverController().SetRumble(frc::GenericHID::RumbleType::kBothRumble, .2);
-          //  Controllers::GetInstance().GetOperatorController().SetRumble(frc::GenericHID::RumbleType::kBothRumble, .2);
-          //}
+          } else {
+            Controllers::GetInstance().GetDriverController().SetRumble(frc::GenericHID::RumbleType::kBothRumble, .2);
+            Controllers::GetInstance().GetOperatorController().SetRumble(frc::GenericHID::RumbleType::kBothRumble, .2);
+          }
         }
 
       } else {
@@ -335,7 +351,6 @@ Robot::Robot()
         SupaIntake::GetInstance().SetMotors(0.0);
 
       }
-
 
       // led handler
       if (HubActive()) {
