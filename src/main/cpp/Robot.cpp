@@ -231,22 +231,28 @@ Robot::Robot()
         leftX = Controllers::GetInstance().GetDriverController().GetLeftX();
         double leftMagnitude = std::sqrt(leftY * leftY + leftX * leftX);
 
-        vx = -leftY * leftMultiplier / leftMagnitude;
-        vy = -leftX * leftMultiplier / leftMagnitude;
+        // Deadband and divide by zero prevention
+        if (leftMagnitude > 0.2) {
+          vx = -leftY * leftMultiplier / leftMagnitude;
+          vy = -leftX * leftMultiplier / leftMagnitude;
+        } else {
+          vx = 0;
+          vy = 0;
+        }
       }
 
       double rightX = Controllers::GetInstance().GetDriverController().GetRightX();
       double w = Util::Exp(-rightX) * Constants::kDriveAngularControlMultiplier;
 
       // Slow/ Medium Mode
-      // if (Controllers::GetInstance().GetDriverController().GetRightTriggerAxis() > 0.5) {
-      //   vy *= Constants::kSlowMode;
-      //   vx *= Constants::kSlowMode;
+      if (Controllers::GetInstance().GetDriverController().GetLeftTriggerAxis() > 0.5) {
+        vy *= Constants::kSlowMode;
+        vx *= Constants::kSlowMode;
 
-      // } else if (Controllers::GetInstance().GetDriverController().GetLeftTriggerAxis() > 0.5) {
-      //   vx *= Constants::kMediumMode;
-      //   vy *= Constants::kMediumMode;
-      // }
+      //} else if (Controllers::GetInstance().GetDriverController().GetLeftTriggerAxis() > 0.5) {
+      //  vx *= Constants::kMediumMode;
+      //  vy *= Constants::kMediumMode;
+      }
 
       // Brake Mode
       // if (Controllers::GetInstance().GetDriverController().GetLeftBumperButton() || 
