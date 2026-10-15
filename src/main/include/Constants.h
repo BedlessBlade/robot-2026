@@ -178,14 +178,15 @@ public:
   static constexpr double kShooterAzimuthP = 0.15;
   static constexpr double kShooterAzimuthI = 0.0;
   static constexpr double kShooterAzimuthD = 1.5;
-  static constexpr double kMinAzimuthOutput = -1;
-  static constexpr double kMaxAzimuthOutput = 1;
+  static constexpr double kMinAzimuthOutput = -0.75;
+  static constexpr double kMaxAzimuthOutput = 0.75;
 
   static constexpr double kShooterAzimuthS = 0.0;
   static constexpr double kShooterAzimuthV = 0.00109;
   static constexpr double kShooterAzimuthA = 0.0;
 
   // Turret limits and misc
+  static constexpr double kAzimuthMotorCurrentLimit = 25.0; // Amps
   static constexpr double kMinShooterAzimuth = 0.0;
   static constexpr double kMaxShooterAzimuth = 320.0;
   static constexpr double kAzimuthMotorRevsToRevs = 129.48 / 1;

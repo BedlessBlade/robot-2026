@@ -31,21 +31,13 @@ Shooter::Shooter() :
         .OutputRange(Constants::kMinAzimuthOutput, Constants::kMaxAzimuthOutput)
         .SetFeedbackSensor(rev::spark::FeedbackSensor::kPrimaryEncoder);
     
-    //m_azimuthConfig.closedLoop.maxMotion
-    //     .CruiseVelocity(Constants::kShooterAzimuthCV) // Trapz max velocity
-    //     .MaxAcceleration(Constants::kShooterAzimuthAcc) // Trapz acceleration
-    //     .AllowedProfileError(Constants::kShooterAzimuthTol); // Trapz path following tolerance
+    // Configure turret motor current limit
+    m_azimuthConfig.SmartCurrentLimit(Constants::kAzimuthMotorCurrentLimit);
 
-
+    // Configure turrent motor inverted mode
     m_azimuthConfig.Inverted(true);
-
-
-    //m_azimuthConfig.closedLoop.feedForward
-    //    .kS(Constants::kShooterAzimuthS)
-    //    .kV(Constants::kShooterAzimuthV)
-    //    .kA(Constants::kShooterAzimuthA);
-
     
+    // Apply turrent motor config
     m_azimuthTurretMotor.Configure(m_azimuthConfig, rev::ResetMode::kResetSafeParameters, rev::PersistMode::kPersistParameters);
     m_azimuthTurretMotor.GetEncoder().SetPosition(0);
 
@@ -56,6 +48,9 @@ Shooter::Shooter() :
     m_shootConfig.Slot0.kP = Constants::kShooterMotorP; // Proportional gain
     m_shootConfig.Slot0.kI = Constants::kShooterMotorI; // Integral gain
     m_shootConfig.Slot0.kD = Constants::kShooterMotorD; // Derivative gain
+
+    // Configure shooter motors neutral mode
+    m_shootConfig.MotorOutput.NeutralMode.Coast;
     
     m_shooterMotorLeft.GetConfigurator().Apply(m_shootConfig);
     m_shooterMotorRight.SetControl(controls::Follower{m_shooterMotorLeft.GetDeviceID(), true});
