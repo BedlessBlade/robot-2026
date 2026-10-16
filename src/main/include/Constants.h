@@ -189,7 +189,7 @@ public:
   static constexpr double kAzimuthMotorCurrentLimit = 25.0; // Amps
   static constexpr double kMinShooterAzimuth = 0.0;
   static constexpr double kMaxShooterAzimuth = 320.0;
-  static constexpr double kAzimuthMotorRevsToRevs = 129.48 / 1;
+  static constexpr double kAzimuthMotorRevsToRevs = 111.5248 / 1;
   static constexpr frc::Transform2d kTurretOffset{-4_in, -9.5_in, 0_deg}; // turret is 4" back in x, 9.5" over
   static constexpr units::second_t kPhaseDelay = 0.05_s; // reduced from 0.1 s
   

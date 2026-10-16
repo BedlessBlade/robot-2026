@@ -111,6 +111,8 @@ bool Shooter::ReadyToFire() {
 
 // Define update function
 void Shooter::Update(Robot::Mode mode, double t) {
+    std::cout << m_azimuthTurretMotor.GetEncoder().GetPosition() << std::endl;
+
     if (mode == Robot::kAuto || mode == Robot::kTeleop) {
         // Shooter statemachine
         SetTurretAngle(ShotCalculator::GetInstance().GetTurretAngle());

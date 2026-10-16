@@ -47,6 +47,7 @@ private:
   frc::SendableChooser<std::string> m_autoChooser;
   frc::SendableChooser<int> m_autoEndChooser;
   frc::SendableChooser<bool> m_alternateMode;
+  frc::SendableChooser<bool> m_lockTurret;
 
   std::shared_ptr<Task> m_auto;
 

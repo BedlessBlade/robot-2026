@@ -71,6 +71,9 @@ Robot::Robot()
   m_alternateMode.SetDefaultOption("False", false);
   m_alternateMode.AddOption("True", true);
 
+  m_lockTurret.SetDefaultOption("False", false);
+  m_lockTurret.AddOption("True", true);
+
   frc::SmartDashboard::PutData("Start Location", &m_startChooser);
   frc::SmartDashboard::PutData("Auto", &m_autoChooser);
   frc::SmartDashboard::PutData("Field", &m_field);
@@ -78,6 +81,7 @@ Robot::Robot()
   frc::SmartDashboard::PutString("Pose (Inches)", "(0, 0, 0)");
   frc::SmartDashboard::PutBoolean("Intake Down?", SupaIntake::GetInstance().GetIntakeDown());
   frc::SmartDashboard::PutData("Alternate Mode", &m_alternateMode);
+  frc::SmartDashboard::PutData("lock", &m_lockTurret);
 
   // Call GetInstance() so the constructors get called
   SupaIntake::GetInstance();
@@ -316,6 +320,10 @@ Robot::Robot()
       } else if (Controllers::GetInstance().GetOperatorController().GetYButton()) {
         // Override 3
         ShotCalculator::GetInstance().SetShooterVelocity(45_tps);
+        ShotCalculator::GetInstance().SetTurretAngle(180_deg);
+      }
+
+      if (m_lockTurret.GetSelected()) { 
         ShotCalculator::GetInstance().SetTurretAngle(180_deg);
       }
 
