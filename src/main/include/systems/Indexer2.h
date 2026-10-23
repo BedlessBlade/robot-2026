@@ -7,23 +7,34 @@
 #include "Robot.h"
 #include "SMSubsytemBase.h"
 
+// System and desired states
 enum IndexerStates {IDLE, INDEXING, MANUAL};
+enum DesiredIndexerStates {IDLE, INDEXING};
 
-class Indexer2 : public SMSubSystemBase<IndexerStates> {
+class Indexer2 : public SMSubSystemBase<IndexerStates, DesiredIndexerStates> {
 public:
+    // singleton getinstance
+    static Indexer2 &GetInstance() {
+        static Indexer2 instance;
+        return instance;
+    }
+
+    // interface functions
+    void StartIndexing();
+    void StopIndexing();
 
 private:
+    //Instantiate indexer motors
+    rev::spark::SparkMax m_IndexerSpinMotor{Constants::kIndexerSpinMotorID, rev::spark::SparkMax::MotorType::kBrushless};
+    rev::spark::SparkMax m_IndexerUpMotor{Constants::kIndexerUpMotorID, rev::spark::SparkMax::MotorType::kBrushless};
 
+    // add configuration with current limits
 
+    // Private state machine handlers
+    void handleStateTransition() override;
+    void applyStates() override;
+    void logSubsystem() override;
+
+    // Private singleton constructor 
+    Indexer2();
 };
-
-// class Indexer : public SMSubsystemBase {       
-
-// };
-
-//Initializes the SparkMax objects.
-//rev::spark::SparkMax m_IndexerSpinMotor{Constants::kIndexerSpinMotorID, rev::spark::SparkMax::MotorType::kBrushless};
-//rev::spark::SparkMax m_IndexerUpMotor{Constants::kIndexerUpMotorID, rev::spark::SparkMax::MotorType::kBrushless};
-
-//void StartIndexing();
-//void StopIndexing();

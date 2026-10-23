@@ -2,30 +2,50 @@
 
 #include "Robot.h"
 
-//#include "ctre/phoenix6/SignalLogger.hpp"
-
-//using namespace ctre;
-
-template <typename States> class SMSubSystemBase {
+template <typename SystemStates, typename DesiredStates> class SMSubSystemBase {
 public:
-    // singleton getinstance
-    static SMSubSystemBase &GetInstance() {
-        static SMSubSystemBase instance;
-        return instance;
+    // setDesiredState: Sets m_desiredState to be evaluated by the state transition handler
+    void setDesiredState(DesiredStates state) {
+        m_desiredState = state;
     }
 
-    // Subsystem state getter
-    States getState() {
+    // getSystemState: returns current system state
+    SystemStates getSystemState() {
         return m_currentState;
     }
 
-    // Compare subsytem currentState to state
-    bool isState(States state) {
+    // compareSystemState: compares argument to current system state
+    bool compareSystemState(SystemStates state) {
         return m_currentState == state;
     }
 
-    // Queue subsytem state
-    void queueState(States nextState) {
+    // update: called periodically by the robot code, calls state handlers, logs current state, updates m_lastState
+    void update() {
+        handleStateTransition();
+        applyStates();
+
+        // Log values
+        logSubsystem();
+
+        // Store Last subsystem state
+        m_lastState = m_currentState;
+    }
+
+protected:
+    // Internal state variables
+    bool m_firstStep;
+    SystemStates m_currentState;
+    SystemStates m_lastState;
+    DesiredStates m_desiredState;
+    
+    // handleStateTransition: evaluates desired state triggers => evaluates state transition guard conditions => queues system state
+    // applyStates: evaluates entry and while actions, sets subsystem outputs
+    virtual void handleStateTransition();
+    virtual void applyStates();
+    virtual void logSubsystem();
+
+    // queueSystemState: queues system state, sets m_firstStep true if not equal to current state
+    void queueSystemState(SystemStates nextState) {
         // Update currentState to nextState and set firstStep to true if currentState is null or not equal to nextState
         if (m_currentState == NULL || !(m_currentState == nextState)) {
             m_currentState = nextState;
@@ -37,8 +57,8 @@ public:
         }
     }
 
-    // Initalize subsystem state
-    bool stateInit() {
+    // stateInit: resets m_firstStep
+    bool stateReInit() {
         // Set firstStep false and return true if firstStep is true
         if (m_firstStep) {
             m_firstStep = false;
@@ -49,29 +69,4 @@ public:
             return false
         }
     }
-
-    // Update function
-    void Update() {
-        inputPeriodic();
-        handleStateMachine();
-        outputPeriodic();
-
-        // Log current state
-        //phoenix6::SignalLogger::Write(m_subsystemName + "/currState", m_currentState);
-        //phoenix6::SignalLogger::WriteBoolean(m_subsystemName + "/currState", m_currentState);
-    }
-
-private:
-    // Internal state variables
-    std::string m_subsystemName;
-    bool m_firstStep;
-    States m_currentState;
-
-    // Periodic functions and state handler
-    virtual void inputPeriodic();
-    virtual void handleStateMachine();
-    virtual void outputPeriodic();
-
-    // Private singleton constructor
-    SMSubSystemBase() : m_firstStep = true;
 };
