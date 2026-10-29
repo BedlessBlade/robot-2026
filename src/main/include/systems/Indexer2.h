@@ -8,7 +8,7 @@
 #include "SMSubsytemBase.h"
 
 // System and desired states
-enum IndexerStates {IDLE, INDEXING, MANUAL};
+enum IndexerStates {IDLE, RUNNING, MANUAL};
 enum DesiredIndexerStates {IDLE, INDEXING};
 
 class Indexer2 : public SMSubSystemBase<IndexerStates, DesiredIndexerStates> {

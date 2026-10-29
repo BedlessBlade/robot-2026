@@ -11,7 +11,7 @@ void Indexer2::handleStateTransition() {
             break;
         
         case DesiredIndexerStates::INDEXING:
-            queueSystemState(IndexerStates::INDEXING);
+            queueSystemState(IndexerStates::RUNNING);
             break;
 
         default:
@@ -26,7 +26,7 @@ void Indexer2::applyStates() {
             m_IndexerUpMotor.Set(0.0);
             break;
         
-        case IndexerStates::INDEXING:
+        case IndexerStates::RUNNING:
             m_IndexerSpinMotor.Set(Constants::kIndexerSpinMotorSpeed);
             m_IndexerUpMotor.Set(Constants::kIndexerUpMotorSpeed);
             break;
