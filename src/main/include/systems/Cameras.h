@@ -2,6 +2,8 @@
 
 #include <memory>
 #include <photon/PhotonPoseEstimator.h>
+#include "frc/apriltag/AprilTag.h"
+#include "frc/apriltag/AprilTagFieldLayout.h"
 
 #include "Constants.h"
 #include "System.h"
@@ -16,6 +18,8 @@ public:
   void Update(Robot::Mode mode, double t) override;
 
 private:
+  frc::AprilTagFieldLayout m_testField{ std::vector<frc::AprilTag>{}, 1_m, 1_m };
+
   photon::PhotonCamera m_leftCamera{"FrontLeft"}; // Front left camera
   photon::PhotonCamera m_rightCamera{"FrontRight"}; // Front right camera
   photon::PhotonCamera m_backLeftCamera{"BackLeft"}; // Back left camera
